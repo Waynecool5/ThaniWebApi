@@ -8,11 +8,13 @@ namespace ThaniWebApi.Controllers.Points
     public interface IPointsRepository
     {
 
+        Task<IEnumerable<Point>> GetPointsAsync();
         Task<IEnumerable<Comp>> GetSomeJsonAsync();
+
+        Task<bool> InsertPointsAsync(Point Points);
 
         //Task<bool> UpdatePointsAsync(Point Points);
 
-        Task<IEnumerable<Point>> GetPointsAsync();
 
         //IEnumerable<Product> GetAll();
         //Product Get(int id);

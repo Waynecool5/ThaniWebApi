@@ -55,7 +55,7 @@ namespace ThaniWebApi
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "MassyPoints API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info { Title = "ThaniPointsAPI", Version = "v1" });
             });
 
             // at some point in application startup Insight.Database...

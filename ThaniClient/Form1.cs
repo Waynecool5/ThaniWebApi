@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace ThaniClient
 {
 
@@ -17,13 +18,15 @@ namespace ThaniClient
     public partial class Form1 : Form
     {
         static HttpClient _client = new HttpClient();
+        //static ICollection<TotalPoints> Tpoints { get; set; }
+        static dynamic Tpoints = null;
 
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_ClickAsync(object sender, EventArgs e)
         {
 
            
@@ -51,7 +54,21 @@ namespace ThaniClient
                     ptsCashier = "Wayne" };
 
 
-                var url = CreatePointAsync(points);
+                //var url = CreatePointAsync(points);
+                bool complete = await CreatePointAsync(points);
+
+                if (complete == true)
+                {
+                    this.txtCus = Tpoints.ptsCustomerNo;
+                    this.txtFname.Text = "";
+                    this.txtLname.Text = "";
+                    this.txtSales.Text = Tpoints.ptsTotal;
+                    this.txtPoints.Text = Tpoints.ptsValue;
+                    this.txtDiscount.Text = Tpoints.ptsDiscount;
+                    this.txtLoca.Text = Tpoints.ptsLocation;
+                    this.txtCashier.Text = Tpoints.ptsCashier;
+
+                }
             }
             catch (Exception ex)
             {
@@ -59,13 +76,21 @@ namespace ThaniClient
             }
 }
 
-        static async Task<Uri> CreatePointAsync(Point Points)
+        //static async Task<Uri> CreatePointAsync(Point Points)
+        static async Task<bool> CreatePointAsync(Point Points)
         {
+            
             HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/InsertPointsAsync", Points);
             response.EnsureSuccessStatusCode();
 
+            if (response.IsSuccessStatusCode)
+            {
+                Tpoints = await response.Content.ReadAsAsync<dynamic>();
+            }
             // return URI of the created resource.
-            return response.Headers.Location;
+            //return response.Headers.Location;
+
+            return response.IsSuccessStatusCode;
         }
 
     }
@@ -85,4 +110,9 @@ namespace ThaniClient
         public string ptsCashier { get; set; }
     }
 
+
+    internal class TotalPoints
+    {
+
+    }
 }

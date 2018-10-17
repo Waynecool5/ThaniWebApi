@@ -13,6 +13,7 @@ using Insight.Database;
 using Insight.Database.Reliable;
 using Insight.Database.Providers;
 using System.Collections;
+using System.Net.Http.Headers;
 
 namespace ThaniWebApi.Controllers.Points
 {
@@ -21,6 +22,7 @@ namespace ThaniWebApi.Controllers.Points
     public class PointsDataAccess : IPointsRepository
     {
         public ICollection<Point> Points { get; set; }
+        public ICollection<Point> msPoints { get; set; }
         public ICollection<Comp> CompData { get; set; }
 
         private HttpClient _client;
@@ -38,8 +40,7 @@ namespace ThaniWebApi.Controllers.Points
 
         public async Task<IEnumerable<Point>> GetPointsAsync()
         {
-
-
+            
             ////For async SQL connections
             //SqlConnectionStringBuilder database = new SqlConnectionStringBuilder(conn);
             //using (var SQLconn = database.Open())
@@ -50,22 +51,12 @@ namespace ThaniWebApi.Controllers.Points
             using (var Sqlconn = new SqlConnection(conn))
             {
                 await Sqlconn.OpenAsync();
+                   
+                Parm parm = new Parm { ID = -1, xMode = 0 };
+                //Execute Storeprocedure for all Points
 
-   
-                Parm parm = new Parm { mode = "select" };
-                //Execute Storeprocedure
+                Points = Sqlconn.Query<Point>("GetCustomerPoints",  parm); //Parameters.Empty);//,
 
-                Points = Sqlconn.Query<Point>("InsertDocuments",  parm); //Parameters.Empty);//,
-
-
-                //Points = conn.QueryOnto<Point>("GetList", new { mode = "select" });
-                //Beer beer = new Beer() { ID = 1 };
-                //connection.QueryOnto("GetBeerInfo", beer);
-
-                // connection remains open
-
-                //do next query
-                //conn.Execute("DeleteBeer", beer.First());
             }
 
 
@@ -82,12 +73,12 @@ namespace ThaniWebApi.Controllers.Points
                 Parm parm = new Parm { mode = "select" };
 
                 //var CompData = Sqlconn.Query("GetList", parm); //,
-
                 //var CompData = Sqlconn.Query<Comp>("GetList", new { mode = "select" }); //,
 
+                //Return data and place into 2 objects that are link by IList<>
                 CompData = Sqlconn.Query("GetList", parm,
                                 Query.Returns(Some<Comp>.Records)
-                                 .ThenChildren(Some<CompList>.Records)); //,
+                                 .ThenChildren(Some<CompList>.Records)); //, thrird object
                                                                          //id: Comp => Comp.ID,
                                                                          //into: (Comp, CompList) => beer.Glasses = CompList);
 
@@ -97,6 +88,55 @@ namespace ThaniWebApi.Controllers.Points
 
         }
 
+
+        public async Task<bool> InsertPointsAsync(Point Points)
+        {
+            var strVal = new StringBuilder();
+
+            strVal.Append(JsonConvert.SerializeObject(Points));
+
+            using (var Sqlconn = new SqlConnection(conn))
+            {
+                await Sqlconn.OpenAsync();
+
+                Parm parm = new Parm { document = strVal.ToString() };
+
+                //return point object for submission to MassyAPI
+                msPoints = Sqlconn.Query<Point>("InsertDocuments", parm);
+
+                if (msPoints.Count > 0)
+                {
+                    //submit to massyapi
+
+                }
+            }
+
+            var results = 1;
+            strVal.Clear();
+
+
+            return Convert.ToBoolean(results);
+        }
+
+        public async Task InsertMassyApiPoints(Point msPoints)
+        {
+
+            _client.BaseAddress = new Uri(clsGlobal.MassyAPIver134);
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
+
+
+            //Get date Massy API "/api/catalog/list"
+            var strPath = clsGlobal.MassyAPIver134 + "" + vStr
+            var response = await _client.GetAsync("MassyAPI");
+            response.EnsureSuccessStatusCode();
+            var stringResponse = await response.Content.ReadAsStringAsync();
+            var model = JsonConvert.DeserializeObject<>(stringResponse);
+
+            //ReturnsFirst10CatalogItems
+            // Assert.Equal(10, model.CatalogItems.Count());
+        }
 
         //public async Task UpdatePointsAsync(Point request)
         //{
@@ -203,6 +243,7 @@ namespace ThaniWebApi.Controllers.Points
 
 
         // Application transferring a large Text File to SQL Server in .Net 4.5  
+
         public async Task StreamTextToServer()
         {
             using (SqlConnection SQLconn = new SqlConnection(conn))
@@ -361,6 +402,9 @@ namespace ThaniWebApi.Controllers.Points
         
         public string mode { get; set; }
         public string document { get; set; }
+        public int ID { get; set; }
+        public int xMode { get; set; }
+        
     }
 }
 
