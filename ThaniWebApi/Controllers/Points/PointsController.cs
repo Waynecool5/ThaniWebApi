@@ -42,27 +42,27 @@ namespace ThaniWebApi.Controllers.Points
             //return await this.PointsDataProvider.GetSomeJsonAsync();
         }
 
-        //public async Task<Stream> Get()
-        [HttpPost]
+        //public async Task<Stream> Get()Point Points
+        [HttpGet]
         [Route("GetPointsAsync")]
-        public async Task GetPointsAsync(Point Points)
+        public async Task<IEnumerable<Point>> GetPointsAsync()
         {
-            return await this.PointsRepository.UpdatePointsAsync(Points);
+            return await this.PointsRepository.GetPointsAsync();
             //return await this.PointsDataProvider.GetSomeJsonAsync();
         }
 
-        public async Task GetMassyApiPoints(string vStr)
-        {
-            //Get date Massy API "/api/catalog/list"
-            var strPath = clsGlobal.MassyAPIver134 + "" + vStr
-            var response = await _client.GetAsync("MassyAPI");
-            response.EnsureSuccessStatusCode();
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var model = JsonConvert.DeserializeObject<CatalogIndexViewModel>(stringResponse);
+        //public async Task GetMassyApiPoints(string vStr)
+        //{
+        //    //Get date Massy API "/api/catalog/list"
+        //    var strPath = clsGlobal.MassyAPIver134 + "" + vStr
+        //    var response = await _client.GetAsync("MassyAPI");
+        //    response.EnsureSuccessStatusCode();
+        //    var stringResponse = await response.Content.ReadAsStringAsync();
+        //    var model = JsonConvert.DeserializeObject<CatalogIndexViewModel>(stringResponse);
 
-            //ReturnsFirst10CatalogItems
-            // Assert.Equal(10, model.CatalogItems.Count());
-        }
+        //    //ReturnsFirst10CatalogItems
+        //    // Assert.Equal(10, model.CatalogItems.Count());
+        //}
 
         //[HttpGet]
         //public HttpResponseMessage StreamContent(int id)

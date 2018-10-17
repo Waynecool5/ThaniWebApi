@@ -10,8 +10,9 @@ namespace ThaniWebApi.Controllers.Points
 
         Task<IEnumerable<Comp>> GetSomeJsonAsync();
 
-        Task<bool> UpdatePointsAsync(Point Points);
+        //Task<bool> UpdatePointsAsync(Point Points);
 
+        Task<IEnumerable<Point>> GetPointsAsync();
 
         //IEnumerable<Product> GetAll();
         //Product Get(int id);

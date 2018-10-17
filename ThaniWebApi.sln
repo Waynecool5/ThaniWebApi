@@ -10,6 +10,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThaniClient", "ThaniClient\
 		{64997AB2-D080-4388-80F3-F80CE684C23C} = {64997AB2-D080-4388-80F3-F80CE684C23C}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQL Scripts", "SQL Scripts", "{1CEBD4FE-E10C-4E29-B632-A423BB0681CD}"
+	ProjectSection(SolutionItems) = preProject
+		SQLScripts\Data.sql = SQLScripts\Data.sql
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

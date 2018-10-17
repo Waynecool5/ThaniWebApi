@@ -36,7 +36,7 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<IEnumerable<Point>> GetPointsAsync(@Json )
+        public async Task<IEnumerable<Point>> GetPointsAsync()
         {
 
 
@@ -55,8 +55,8 @@ namespace ThaniWebApi.Controllers.Points
                 Parm parm = new Parm { mode = "select" };
                 //Execute Storeprocedure
 
-                Points = Sqlconn.Query<Point>("InsertDocuments", Parameters.Empty);//, parm);
-                
+                Points = Sqlconn.Query<Point>("InsertDocuments",  parm); //Parameters.Empty);//,
+
 
                 //Points = conn.QueryOnto<Point>("GetList", new { mode = "select" });
                 //Beer beer = new Beer() { ID = 1 };
@@ -98,29 +98,29 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task UpdatePointsAsync(Point request)
-        {
-            using (var stream = await Request.Content.ReadAsStreamAsync())
-            {
-                var data = JsonConvert.DeserializeObject<ICollection<Point>>(stream);
+        //public async Task UpdatePointsAsync(Point request)
+        //{
+        //    using (var stream = await Request.Content.ReadAsStreamAsync())
+        //    {
+        //        var data = JsonConvert.DeserializeObject<ICollection<Point>>(stream);
 
-                var strVal = new StringBuilder();
+        //        var strVal = new StringBuilder();
 
-                strVal.Append(JsonConvert.SerializeObject(data));
-
-
-                using (var Sqlconn = new SqlConnection(conn))
-                {
-                    await Sqlconn.OpenAsync();
+        //        strVal.Append(JsonConvert.SerializeObject(data));
 
 
-                    Parm parm = new Parm { document = "" + strVal.ToString() };
+        //        using (var Sqlconn = new SqlConnection(conn))
+        //        {
+        //            await Sqlconn.OpenAsync();
 
-                    var results = Sqlconn.Query("InsertDocuments", parm);
 
-                }
-            }
-        }
+        //            Parm parm = new Parm { document = "" + strVal.ToString() };
+
+        //            var results = Sqlconn.Query("InsertDocuments", parm);
+
+        //        }
+        //    }
+        //}
 
         //public async Task<IEnumerable<Point>> GetSomeJsonAsync()
         //{
