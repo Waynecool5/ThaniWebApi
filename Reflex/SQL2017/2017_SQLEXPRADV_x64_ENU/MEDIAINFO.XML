@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MediaInfo>
+  <Properties xmlns="">
+    <Property Id="MediaLayout" Value="Advanced" />
+    <Property Id="BaselineVersion" Value="14.0.1000.169" />
+    <Property Id="SupportSku" Value="1" />
+    <Property Id="ReleaseTrain" Value="BASELINE" />
+    <Property Id="MROSharedVersion" Value="3.3.3.24" />
+    <Property Id="MPOSharedVersion" Value="9.2.0.24" />
+    <Property Id="MROInstanceVersion" Value="3.3.3.24" />
+    <Property Id="MPOInstanceVersion" Value="9.2.0.24" />
+    <Property Id="MRSSharedVersion" Value="9.2.0.24" />
+    <Property Id="MRSInstanceVersion" Value="9.2.0.24" />
+    <Property Id="MPSInstanceVersion" Value="9.2.0.24" />
+    <Property Id="MPSSharedVersion" Value="9.2.0.24" />
+  </Properties>
+</MediaInfo>
