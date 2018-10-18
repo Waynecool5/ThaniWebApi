@@ -22,7 +22,7 @@ namespace ThaniWebApi.Controllers.Points
     public class PointsDataAccess : IPointsRepository
     {
         public ICollection<Point> Points { get; set; }
-        public ICollection<Point> msPoints { get; set; }
+        public ICollection<Point> resultPts { get; set; }
         public ICollection<Comp> CompData { get; set; }
 
         private HttpClient _client;
@@ -102,12 +102,29 @@ namespace ThaniWebApi.Controllers.Points
                 Parm parm = new Parm { document = strVal.ToString() };
 
                 //return point object for submission to MassyAPI
-                msPoints = Sqlconn.Query<Point>("InsertDocuments", parm);
+                resultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
 
-                if (msPoints.Count > 0)
+                if (resultPts.Count > 0)
                 {
                     //submit to massyapi
+                    //HTTP GET Request sent to the below URL for massy points
+                    //http://beta.massycard.com/loyalty/massy/api/rest2/earn?
+                    //card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=
+                    //LOCATIONID &ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
 
+                    dynamic mPts = resultPts.Select(x => new MassyPoints()
+                    {
+                        card = x.ptsCustomerNo,
+                        units = x.ptsTotal,
+                        unitType = x.ptsUnitType,
+                        mlid = x.ptsMlid,
+                        ts = x.ptsUnix,
+                        pin = x.ptsPin,
+                        qsa = x.ptsQsa
+                    });
+
+                    //Send to MassyApi
+                    bool complete = await InsertMassyApiPoints(mPts);
                 }
             }
 
@@ -118,7 +135,7 @@ namespace ThaniWebApi.Controllers.Points
             return Convert.ToBoolean(results);
         }
 
-        public async Task InsertMassyApiPoints(Point msPoints)
+        public async Task<bool> InsertMassyApiPoints(MassyPoints mPts)
         {
 
             _client.BaseAddress = new Uri(clsGlobal.MassyAPIver134);
@@ -126,14 +143,20 @@ namespace ThaniWebApi.Controllers.Points
             _client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
 
+            var queryString = mPts.GetQueryString("earn");
 
             //Get date Massy API "/api/catalog/list"
-            var strPath = clsGlobal.MassyAPIver134 + "" + vStr
-            var response = await _client.GetAsync("MassyAPI");
-            response.EnsureSuccessStatusCode();
-            var stringResponse = await response.Content.ReadAsStringAsync();
-            var model = JsonConvert.DeserializeObject<>(stringResponse);
+            var strPath = clsGlobal.MassyAPIver134 + "" + queryString.ToString();
 
+            var response = await _client.GetAsync("MassyAPI");
+
+            response.EnsureSuccessStatusCode();
+
+            var stringResponse = await response.Content.ReadAsStringAsync();
+
+            //var model = JsonConvert.DeserializeObject<>(stringResponse);
+
+            return true;
             //ReturnsFirst10CatalogItems
             // Assert.Equal(10, model.CatalogItems.Count());
         }

@@ -26,55 +26,72 @@ namespace ThaniClient
             InitializeComponent();
         }
 
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.btnRedeem.Text = "Save Points";
+        }
+
         private async void button1_ClickAsync(object sender, EventArgs e)
         {
 
-           
-            //JSONDOCUMENT TABLE
-            //WEBAPI
-            // Update port # in the following line.
-            _client.BaseAddress = new Uri("http://localhost:54574/");
-            _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
-
-            try
+            if (this.btnRedeem.Text == "Save Points")
             {
-                // Create a new product
-                var points = new Point {
-                    Points_id = -1,
-                    Document_id = -1,
-                    ptsCustomerNo = "7678976890222",
-                    ptsUnitType = "P",
-                    ptsMode = "P",
-                    ptsTotal = 60,
-                    ptsValue = 600.00,
-                    ptsDiscount = 6.00,
-                    ptsLocation = "SS",
-                    ptsCashier = "Wayne" };
+                //Call Thani's Web Api
+                _client.BaseAddress = new Uri("http://localhost:54574/");
+                _client.DefaultRequestHeaders.Accept.Clear();
+                _client.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
 
-
-                //var url = CreatePointAsync(points);
-                bool complete = await CreatePointAsync(points);
-
-                if (complete == true)
+              try
                 {
-                    this.txtCus = Tpoints.ptsCustomerNo;
-                    this.txtFname.Text = "";
-                    this.txtLname.Text = "";
-                    this.txtSales.Text = Tpoints.ptsTotal;
-                    this.txtPoints.Text = Tpoints.ptsValue;
-                    this.txtDiscount.Text = Tpoints.ptsDiscount;
-                    this.txtLoca.Text = Tpoints.ptsLocation;
-                    this.txtCashier.Text = Tpoints.ptsCashier;
+                    // Create a new product
+                    var points = new Point {
+                        Points_id = -1,
+                        Document_id = -1,
+                        ptsCustomerNo = "7678976890222",
+                        ptsFirstName = "Test",
+                        ptsLastName = "Testers",
+                        ptsUnitType = "P",
+                        ptsMode = "P",
+                        ptsTotal = 60,
+                        ptsValue = 600.00,
+                        ptsValueRate = .10,
+                        ptsDiscount = 6.00,
+                        ptsDiscountRate = .10,
+                        ptsLocation = "SS",
+                        ptsCashier = "Wayne" };
+
+
+                    //var url = CreatePointAsync(points);
+                    bool complete = await CreatePointAsync(points);
+
+                    if (complete == true)
+                    {
+                        this.txtCus = Tpoints.ptsCustomerNo;
+                        this.txtFname.Text = "";
+                        this.txtLname.Text = "";
+                        this.txtSales.Text = Tpoints.ptsTotal;
+                        this.txtPoints.Text = Tpoints.ptsValue;
+                        this.txtDiscount.Text = Tpoints.ptsDiscount;
+                        this.txtLoca.Text = Tpoints.ptsLocation;
+                        this.txtCashier.Text = Tpoints.ptsCashier;
+
+                        this.btnRedeem.Text = "Redeem Points";
+                    }
+
+
+                 }
+                 catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+               }
+            else
+                {
 
                 }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-}
+        }
 
         //static async Task<Uri> CreatePointAsync(Point Points)
         static async Task<bool> CreatePointAsync(Point Points)
@@ -93,6 +110,11 @@ namespace ThaniClient
             return response.IsSuccessStatusCode;
         }
 
+        private void optType_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
     }
 
 
@@ -100,19 +122,23 @@ namespace ThaniClient
     {
         public int Points_id { get; set; }
         public int Document_id { get; set; }
-        public string ptsCustomerNo { get; set; }
-        public string ptsUnitType { get; set; }
+        public string ptsCustomerNo { get; set; }//Card number
+        public string ptsFirstName { get; set; } //Card holder First Name
+        public string ptsLastName { get; set; } //Card holder Last Name
+        public string ptsUnitType { get; set; } // (P or D) – P for points, D for dollars
         public string ptsMode { get; set; }
-        public int ptsTotal { get; set; }
-        public double ptsValue { get; set; }
-        public double ptsDiscount { get; set; }
-        public string ptsLocation { get; set; }
+        public double ptsTotal { get; set; } //(decimal) Points 
+        public double ptsValue { get; set; } //(decimal) Dollar value
+        public double ptsValueRate { get; set; } //10 cents(decimal) Dollar value
+        public double ptsDiscount { get; set; } //(decimal) Dollar value
+        public double ptsDiscountRate { get; set; } //10 cents (decimal) Dollar value
+        public string ptsLocation { get; set; } // (integer) Massy Merchant Location ID
         public string ptsCashier { get; set; }
+        public int ptsMlid { get; set; } // (integer) Massy Merchant Location ID
+        public int ptsUnix { get; set; } // (integer) Unix timestamp
+        public int ptsPin { get; set; } // (integer)00000 5-digit user pin
+        public string ptsQsa { get; set; } // (string) The generated hash
     }
 
 
-    internal class TotalPoints
-    {
-
-    }
 }

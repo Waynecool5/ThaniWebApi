@@ -35,20 +35,28 @@ namespace ThaniWebApi.Controllers.Points
     {
         public int Points_id { get; set; }
         public int Document_id { get; set; }
-        public string ptsCustomerNo { get; set; }
-        public string ptsUnitType { get; set; }
-        public string ptsMode { get; set; }
-        public int ptsTotal { get; set; }
-        public float ptsValue { get; set; }
-        public float ptsDiscount { get; set; }
-        public string ptsLocation { get; set; }
+        public string ptsCustomerNo { get; set; }//Card number
+        public string ptsFirstName { get; set; } //Card holder First Name
+        public string ptsLastName { get; set; } //Card holder Last Name
+        public string ptsUnitType { get; set; } // (P or D) – P for points, D for dollars
+        public string ptsMode { get; set; }  // (P or R) Purchase or Redeem
+        public double ptsTotal { get; set; } //(decimal) Points 
+        public double ptsValue { get; set; } //(decimal) Dollar value
+        public double ptsValueRate { get; set; } //10 cents(decimal) Dollar value
+        public double ptsDiscount { get; set; } //(decimal) Dollar value
+        public double ptsDiscountRate { get; set; } //10 cents (decimal) Dollar value
+        public string ptsLocation { get; set; } // (integer) Massy Merchant Location ID
         public string ptsCashier { get; set; }
+        public int ptsMlid { get; set; } // (integer) Massy Merchant Location ID
+        public int ptsUnix { get; set; } // (integer) Unix timestamp
+        public int ptsPin { get; set; } // (integer)00000 5-digit user pin
+        public string ptsQsa { get; set; } // (string) The generated hash
     }
 
     public class MassyPoints
     {
         public string card { get; set; } //Card number
-        public float units { get; set; } //(decimal) Points or Dollar value
+        public double units { get; set; } //(decimal) Points or Dollar value
         public string unitType { get; set; } // (P or D) – P for points, D for dollars
         public int mlid { get; set; } // (integer) Massy Merchant Location ID
         public int ts { get; set; } // (integer) Unix timestamp
