@@ -22,13 +22,15 @@ namespace ThaniWebApi.Controllers.Points
     public class PointsDataAccess : IPointsRepository
     {
         public ICollection<Point> Points { get; set; }
-        public ICollection<Point> resultPts { get; set; }
+        public ICollection<Point> ResultPts { get; set; }
         public ICollection<Comp> CompData { get; set; }
+        public ICollection<MassyPoints> mPts { get; set; }
+        
 
         private HttpClient _client;
 
-        private readonly string conn = "Data Source=" + clsGlobal.SqlSource2 + "; Initial Catalog=" + clsGlobal.SqlCatalog + "; Persist Security Info=True;" +
-                          "User ID=" + clsGlobal.SqlUser + ";Password=" + clsGlobal.SqlPassword + "";
+        private readonly string conn = "Data Source=" + ClsGlobal.SqlSource2 + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
+                          "User ID=" + ClsGlobal.SqlUser + ";Password=" + ClsGlobal.SqlPassword + "";
 
         //private readonly string conn2 = "Data Source = OFFICE\\SQL2017;Initial Catalog = WebAsync; Persist Security Info=True;User ID = sa;Password=dedan!0987o;";
 
@@ -52,7 +54,7 @@ namespace ThaniWebApi.Controllers.Points
             {
                 await Sqlconn.OpenAsync();
                    
-                Parm parm = new Parm { ID = -1, xMode = 0 };
+                Parm parm = new Parm { ID = -1, XMode = 0 };
                 //Execute Storeprocedure for all Points
 
                 Points = Sqlconn.Query<Point>("GetCustomerPoints",  parm); //Parameters.Empty);//,
@@ -70,7 +72,7 @@ namespace ThaniWebApi.Controllers.Points
             {
                 await Sqlconn.OpenAsync();
 
-                Parm parm = new Parm { mode = "select" };
+                Parm parm = new Parm { Mode = "select" };
 
                 //var CompData = Sqlconn.Query("GetList", parm); //,
                 //var CompData = Sqlconn.Query<Comp>("GetList", new { mode = "select" }); //,
@@ -89,7 +91,14 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<bool> InsertPointsAsync(Point Points)
+        public async Task<bool> doPointsAsync(Point Points)
+        {
+            MassyPoints mPts = await InsertPointsAsync(Points);
+            return await InsertMassyApiPoints(mPts);
+        }
+
+
+        public async Task<MassyPoints> InsertPointsAsync(Point Points)
         {
             var strVal = new StringBuilder();
 
@@ -99,12 +108,12 @@ namespace ThaniWebApi.Controllers.Points
             {
                 await Sqlconn.OpenAsync();
 
-                Parm parm = new Parm { document = strVal.ToString() };
+                Parm parm = new Parm { Document = strVal.ToString() };
 
                 //return point object for submission to MassyAPI
-                resultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
+                ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
 
-                if (resultPts.Count > 0)
+                if (ResultPts.Count > 0)
                 {
                     //submit to massyapi
                     //HTTP GET Request sent to the below URL for massy points
@@ -112,78 +121,67 @@ namespace ThaniWebApi.Controllers.Points
                     //card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=
                     //LOCATIONID &ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
 
-                    dynamic mPts = resultPts.Select(x => new MassyPoints()
+                    dynamic mPts = ResultPts.Select(x => new MassyPoints()
                     {
-                        card = x.ptsCustomerNo,
-                        units = x.ptsTotal,
-                        unitType = x.ptsUnitType,
-                        mlid = x.ptsMlid,
-                        ts = x.ptsUnix,
-                        pin = x.ptsPin,
-                        qsa = x.ptsQsa
+                        Card = x.PtsCustomerNo,
+                        Units = x.PtsTotal,
+                        UnitType = x.PtsUnitType,
+                        Mlid = x.PtsMlid,
+                        Ts = x.PtsUnix,
+                        Pin = x.PtsPin,
+                        Qsa = x.PtsQsa
                     });
 
                     //Send to MassyApi
-                    bool complete = await InsertMassyApiPoints(mPts);
+                    //this.InsertMassyApiPoints(mPts);
                 }
             }
 
-            var results = 1;
+            //var results = 1;
             strVal.Clear();
 
-
-            return Convert.ToBoolean(results);
+            return mPts; // Convert.ToBoolean(results);
         }
 
-        public async Task<bool> InsertMassyApiPoints(MassyPoints mPts)
+      public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
         {
+            dynamic model;
+            HttpClient _clientMassy = new HttpClient();
 
-            _client.BaseAddress = new Uri(clsGlobal.MassyAPIver134);
-            _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+            try
+            {
+                _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
+                _clientMassy.DefaultRequestHeaders.Accept.Clear();
+                _clientMassy.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
 
-            var queryString = mPts.GetQueryString("earn");
+                var queryString = mPts.GetQueryString("earn");
 
-            //Get date Massy API "/api/catalog/list"
-            var strPath = clsGlobal.MassyAPIver134 + "" + queryString.ToString();
+                //Get date Massy API "/api/catalog/list"
+                var strPath = ClsGlobal.MassyAPIver134 + "" + queryString.ToString();
 
-            var response = await _client.GetAsync("MassyAPI");
+                var response = await _clientMassy.GetAsync("MassyAPI");
 
-            response.EnsureSuccessStatusCode();
+                response.EnsureSuccessStatusCode();
 
-            var stringResponse = await response.Content.ReadAsStringAsync();
+                var stringResponse = await response.Content.ReadAsStringAsync();
 
-            //var model = JsonConvert.DeserializeObject<>(stringResponse);
+                model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
 
-            return true;
-            //ReturnsFirst10CatalogItems
-            // Assert.Equal(10, model.CatalogItems.Count());
+                return model;
+                //ReturnsFirst10CatalogItems
+                // Assert.Equal(10, model.CatalogItems.Count());
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine( ex.Message);
+                return ex.Message;
+            }
+    
+            
         }
 
-        //public async Task UpdatePointsAsync(Point request)
-        //{
-        //    using (var stream = await Request.Content.ReadAsStreamAsync())
-        //    {
-        //        var data = JsonConvert.DeserializeObject<ICollection<Point>>(stream);
 
-        //        var strVal = new StringBuilder();
-
-        //        strVal.Append(JsonConvert.SerializeObject(data));
-
-
-        //        using (var Sqlconn = new SqlConnection(conn))
-        //        {
-        //            await Sqlconn.OpenAsync();
-
-
-        //            Parm parm = new Parm { document = "" + strVal.ToString() };
-
-        //            var results = Sqlconn.Query("InsertDocuments", parm);
-
-        //        }
-        //    }
-        //}
 
         //public async Task<IEnumerable<Point>> GetSomeJsonAsync()
         //{
@@ -267,47 +265,47 @@ namespace ThaniWebApi.Controllers.Points
 
         // Application transferring a large Text File to SQL Server in .Net 4.5  
 
-        public async Task StreamTextToServer()
-        {
-            using (SqlConnection SQLconn = new SqlConnection(conn))
-            {
-                await SQLconn.OpenAsync();
+        //public async Task StreamTextToServer()
+        //{
+        //    using (SqlConnection SQLconn = new SqlConnection(conn))
+        //    {
+        //        await SQLconn.OpenAsync();
 
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO [TextStreams] (textdata) VALUES (@textdata)", SQLconn))
-                {
-                    using (StreamReader file = File.OpenText("textdata.txt"))
-                    {
+        //        using (SqlCommand cmd = new SqlCommand("INSERT INTO [TextStreams] (textdata) VALUES (@textdata)", SQLconn))
+        //        {
+        //            using (StreamReader file = File.OpenText("textdata.txt"))
+        //            {
 
-                        // Add a parameter which uses the StreamReader we just opened  
-                        // Size is set to -1 to indicate "MAX"  
-                        cmd.Parameters.Add("@textdata", SqlDbType.NVarChar, -1).Value = file;
+        //                // Add a parameter which uses the StreamReader we just opened  
+        //                // Size is set to -1 to indicate "MAX"  
+        //                cmd.Parameters.Add("@textdata", SqlDbType.NVarChar, -1).Value = file;
 
-                        // Send the data to the server asynchronously  
-                        await cmd.ExecuteNonQueryAsync();
-                    }
-                }
-            }
-        }
+        //                // Send the data to the server asynchronously  
+        //                await cmd.ExecuteNonQueryAsync();
+        //            }
+        //        }
+        //    }
+        //}
 
-        
-        public async Task<Stream> GetDataPoints(string name)
-        { //Return Stream Data
-            var urlBlob = string.Empty;
-            switch (name)
-            {
-                case "earth":
-                    urlBlob = "https://anthonygiretti.blob.core.windows.net/videos/earth.mp4";
-                    break;
-                case "nature1":
-                    urlBlob = "https://anthonygiretti.blob.core.windows.net/videos/nature1.mp4";
-                    break;
-                case "nature2":
-                default:
-                    urlBlob = "https://anthonygiretti.blob.core.windows.net/videos/nature2.mp4";
-                    break;
-            }
-            return await _client.GetStreamAsync(urlBlob);
-        }
+
+        //public async Task<Stream> GetDataPoints(string name)
+        //{ //Return Stream Data
+        //    var urlBlob = string.Empty;
+        //    switch (name)
+        //    {
+        //        case "earth":
+        //            urlBlob = "https://anthonygiretti.blob.core.windows.net/videos/earth.mp4";
+        //            break;
+        //        case "nature1":
+        //            urlBlob = "https://anthonygiretti.blob.core.windows.net/videos/nature1.mp4";
+        //            break;
+        //        case "nature2":
+        //        default:
+        //            urlBlob = "https://anthonygiretti.blob.core.windows.net/videos/nature2.mp4";
+        //            break;
+        //    }
+        //    return await _client.GetStreamAsync(urlBlob);
+        //}
 
         // Application transferring a large Text File from SQL Server in .NET 4.5  
         //public async Task<Stream> PrintTextValues()
@@ -415,7 +413,7 @@ namespace ThaniWebApi.Controllers.Points
 
             //return new ObjectResult(obj);
 
-            return jsonResult;                       
+            return jsonResult;
         }
 
     }
@@ -423,10 +421,10 @@ namespace ThaniWebApi.Controllers.Points
     internal class Parm
     {
         
-        public string mode { get; set; }
-        public string document { get; set; }
+        public string Mode { get; set; }
+        public string Document { get; set; }
         public int ID { get; set; }
-        public int xMode { get; set; }
+        public int XMode { get; set; }
         
     }
 }

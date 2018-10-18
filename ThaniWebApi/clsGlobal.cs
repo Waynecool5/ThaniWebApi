@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ThaniWebApi
 {
-    public class clsGlobal
+    public class ClsGlobal
     {
         public const Int32 BUFFER_SIZE = 10; // Unmodifiable
         public static String FILE_NAME = "Output.txt"; // Modifiable

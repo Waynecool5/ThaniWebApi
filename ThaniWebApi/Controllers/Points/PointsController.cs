@@ -16,7 +16,6 @@ namespace ThaniWebApi.Controllers.Points
     [ApiController]
     public class PointsController : ControllerBase
     {
-        private HttpClient _client;
 
         //private IPointsDataProvider PointsDataProvider;
         private IPointsRepository PointsRepository;
@@ -46,6 +45,7 @@ namespace ThaniWebApi.Controllers.Points
         [Route("GetPointsAsync")]
         public async Task<IEnumerable<Point>> GetPointsAsync()
         {
+
             return await this.PointsRepository.GetPointsAsync();
         }
 
@@ -53,9 +53,9 @@ namespace ThaniWebApi.Controllers.Points
 
         [HttpPost]
         [Route("InsertPointsAsync")]
-        public async Task<bool> InsertPointsAsync(Point Points)
+        public async Task<bool> doPointsAsync(Point Points)
         {
-            return await this.PointsRepository.InsertPointsAsync(Points);
+            return await this.PointsRepository.doPointsAsync(Points);
         }
 
 

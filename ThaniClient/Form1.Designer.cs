@@ -81,7 +81,7 @@
             this.btnRedeem.TabIndex = 0;
             this.btnRedeem.Text = "Save/Redeem";
             this.btnRedeem.UseVisualStyleBackColor = true;
-            this.btnRedeem.Click += new System.EventHandler(this.button1_ClickAsync);
+            this.btnRedeem.Click += new System.EventHandler(this.btnRedeem_ClickAsync);
             // 
             // btnClose
             // 
