@@ -91,9 +91,10 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<bool> doPointsAsync(Point Points)
+        public async Task<dynamic> DoPointsAsync(Point Points)
         {
-            MassyPoints mPts = await InsertPointsAsync(Points);
+           
+            //MassyPoints mPts = await InsertPointsAsync(Points);
             return await InsertMassyApiPoints(mPts);
         }
 
@@ -132,17 +133,28 @@ namespace ThaniWebApi.Controllers.Points
                         Qsa = x.PtsQsa
                     });
 
+                    string str = JsonConvert.SerializeObject(mPts);
+
+                    return JsonConvert.DeserializeObject< ICollection<MassyPoints>>(str.ToString()); // Convert.ToBoolean(results);
+       
                     //Send to MassyApi
                     //this.InsertMassyApiPoints(mPts);
+                }
+                else
+                {
+                    return null;
                 }
             }
 
             //var results = 1;
-            strVal.Clear();
+            //strVal.Clear();
 
-            return mPts; // Convert.ToBoolean(results);
         }
 
+        private Task<dynamic> InsertMassyApiPoints(ICollection<MassyPoints> mPts)
+        {
+            throw new NotImplementedException();
+        }
       public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
         {
             dynamic model;

@@ -11,7 +11,7 @@ namespace ThaniWebApi.Controllers.Points
         Task<IEnumerable<Point>> GetPointsAsync();
         Task<IEnumerable<Comp>> GetSomeJsonAsync();
 
-        Task<bool> doPointsAsync(Point Points);
+        Task<dynamic> DoPointsAsync(Point Points);
         Task<MassyPoints> InsertPointsAsync(Point Points);
         Task<dynamic> InsertMassyApiPoints(MassyPoints mPts);
 
