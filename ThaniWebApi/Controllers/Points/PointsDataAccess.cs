@@ -14,6 +14,8 @@ using Insight.Database.Reliable;
 using Insight.Database.Providers;
 using System.Collections;
 using System.Net.Http.Headers;
+using ThaniWebApi.Controllers.Massy;
+
 
 namespace ThaniWebApi.Controllers.Points
 {
@@ -91,15 +93,24 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<dynamic> DoPointsAsync(Point Points)
+        public async Task<IEnumerable<MassyResponse>> DoPointsAsync(Point Points)
         {
-           
-            //MassyPoints mPts = await InsertPointsAsync(Points);
-            return await InsertMassyApiPoints(mPts);
+            try
+            {
+                ICollection<MassyPoints> mPts = await this.InsertPointsAsync(Points);
+
+                //MassyPoints mPts = await InsertPointsAsync(Points);
+                return await MassyController.InsertMassyApiPoints(mPts);
+              }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
 
-        public async Task<MassyPoints> InsertPointsAsync(Point Points)
+        public async Task<ICollection<MassyPoints>> InsertPointsAsync(Point Points)
         {
             var strVal = new StringBuilder();
 
@@ -109,34 +120,54 @@ namespace ThaniWebApi.Controllers.Points
             {
                 await Sqlconn.OpenAsync();
 
+                // the structure object is for remapping results to Massypoints
+                var structure = new OneToOne<MassyPoints>(
+                    // if you don't override a column, the default rules are used 
+                     new ColumnOverride<MassyPoints>("ptsCustomerNo", "card"),
+                     new ColumnOverride<MassyPoints>("ptsTotal", "units"),
+                     new ColumnOverride<MassyPoints>("ptsUnitType", "unitType"),
+                     new ColumnOverride<MassyPoints>("ptsMlid", "mlid"),
+                     new ColumnOverride<MassyPoints>("ptsUnix", "ts"),
+                     new ColumnOverride<MassyPoints>("ptsPin", "pin"),
+                     new ColumnOverride<MassyPoints>("ptsQsa", "qsa")
+                );
+
                 Parm parm = new Parm { Document = strVal.ToString() };
 
                 //return point object for submission to MassyAPI
-                ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
+                //ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
 
-                if (ResultPts.Count > 0)
+                 mPts = Sqlconn.Query("InsertDocuments", parm, Query.Returns(structure));
+
+                if (mPts.Count > 0)
                 {
-                    //submit to massyapi
-                    //HTTP GET Request sent to the below URL for massy points
-                    //http://beta.massycard.com/loyalty/massy/api/rest2/earn?
-                    //card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=
-                    //LOCATIONID &ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                    return mPts;
+                    
 
-                    dynamic mPts = ResultPts.Select(x => new MassyPoints()
-                    {
-                        Card = x.PtsCustomerNo,
-                        Units = x.PtsTotal,
-                        UnitType = x.PtsUnitType,
-                        Mlid = x.PtsMlid,
-                        Ts = x.PtsUnix,
-                        Pin = x.PtsPin,
-                        Qsa = x.PtsQsa
-                    });
+                    // //ICollection<MassyPoints> mp = IMapper.Map(ResultPts);
+                    //dynamic mp = ResultPts.Select(x => new MassyPoints()
+                    // {
+                    //     card = x.ptsCustomerNo,
+                    //     units = x.ptsTotal,
+                    //     unitType = x.ptsUnitType,
+                    //     mlid = x.ptsMlid,
+                    //     ts = x.ptsUnix,
+                    //     pin = x.ptsPin,
+                    //     qsa = x.ptsQsa
+                    // });
 
-                    string str = JsonConvert.SerializeObject(mPts);
 
-                    return JsonConvert.DeserializeObject< ICollection<MassyPoints>>(str.ToString()); // Convert.ToBoolean(results);
-       
+                    ////convert to string
+                    //String json = JsonConvert.SerializeObject(mp, Formatting.None);
+                    // String jsonStr =  json.Replace("\",\"","");
+
+
+                    //convert to MassyPoints Object
+                    //mPts = JsonConvert.DeserializeObject<ICollection<MassyPoints>>(jsonStr); // (JsonConvert.SerializeObject(mPts, Formatting.None));
+
+                    //return mPts;
+                    //return JsonConvert.DeserializeObject<MassyPoints>(str.ToString()); // Convert.ToBoolean(results);
+
                     //Send to MassyApi
                     //this.InsertMassyApiPoints(mPts);
                 }
@@ -151,47 +182,45 @@ namespace ThaniWebApi.Controllers.Points
 
         }
 
-        private Task<dynamic> InsertMassyApiPoints(ICollection<MassyPoints> mPts)
-        {
-            throw new NotImplementedException();
-        }
-      public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
-        {
-            dynamic model;
-            HttpClient _clientMassy = new HttpClient();
+ 
 
-            try
-            {
-                _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
-                _clientMassy.DefaultRequestHeaders.Accept.Clear();
-                _clientMassy.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/json"));
+      //public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
+      //  {
+      //      dynamic model;
+      //      HttpClient _clientMassy = new HttpClient();
 
-                var queryString = mPts.GetQueryString("earn");
+      //      try
+      //      {
+      //          _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
+      //          _clientMassy.DefaultRequestHeaders.Accept.Clear();
+      //          _clientMassy.DefaultRequestHeaders.Accept.Add(
+      //              new MediaTypeWithQualityHeaderValue("application/json"));
 
-                //Get date Massy API "/api/catalog/list"
-                var strPath = ClsGlobal.MassyAPIver134 + "" + queryString.ToString();
+      //          var queryString = mPts.GetQueryString("earn");
 
-                var response = await _clientMassy.GetAsync("MassyAPI");
+      //          //Get date Massy API "/api/catalog/list"
+      //          var strPath = ClsGlobal.MassyAPIver134 + "" + queryString.ToString();
 
-                response.EnsureSuccessStatusCode();
+      //          var response = await _clientMassy.GetAsync("MassyAPI");
 
-                var stringResponse = await response.Content.ReadAsStringAsync();
+      //          response.EnsureSuccessStatusCode();
 
-                model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
+      //          var stringResponse = await response.Content.ReadAsStringAsync();
 
-                return model;
-                //ReturnsFirst10CatalogItems
-                // Assert.Equal(10, model.CatalogItems.Count());
-            }
-            catch (Exception ex)
-            {
-                //Console.WriteLine( ex.Message);
-                return ex.Message;
-            }
+      //          model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
+
+      //          return model;
+      //          //ReturnsFirst10CatalogItems
+      //          // Assert.Equal(10, model.CatalogItems.Count());
+      //      }
+      //      catch (Exception ex)
+      //      {
+      //          //Console.WriteLine( ex.Message);
+      //          return ex.Message;
+      //      }
     
             
-        }
+      //  }
 
 
 
@@ -439,5 +468,17 @@ namespace ThaniWebApi.Controllers.Points
         public int XMode { get; set; }
         
     }
+
+    internal class MassyCard
+    {
+        public string card { get; set; } //Card number
+        public double units { get; set; } //(decimal) Points or Dollar value
+        public string unitType { get; set; } // (P or D) – P for points, D for dollars
+        public int mlid { get; set; } // (integer) Massy Merchant Location ID
+        public int ts { get; set; } // (integer) Unix timestamp
+        public int pin { get; set; } // (integer)00000 5-digit user pin
+        public string qsa { get; set; } // (string) The generated hash
+    }
 }
+
 

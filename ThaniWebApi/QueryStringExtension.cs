@@ -16,9 +16,13 @@ namespace ThaniWebApi
                 try
                 {
                     var vQueryString = (JsonConvert.SerializeObject(obj));
+                String v1 = vQueryString.Replace("[", "");
+                String v2 = v1.Replace("]", "");
+                var json = JsonConvert.DeserializeObject(v2);
 
-                    var jObj = (JObject)JsonConvert.DeserializeObject(vQueryString);
-                    query = String.Join("&",
+                var jObj = (JObject)JsonConvert.DeserializeObject(v2);
+
+                query = String.Join("&",
                        jObj.Children().Cast<JProperty>()
                        .Select(jp =>
                        {
@@ -39,7 +43,8 @@ namespace ThaniWebApi
                 }
                 catch (Exception ex)
                 {
-                    return ex.Message;
+                Console.WriteLine(ex.Message);
+                return "";
                 }
                 return query;
             }

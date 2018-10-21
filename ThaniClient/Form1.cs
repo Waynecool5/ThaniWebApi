@@ -61,18 +61,18 @@ namespace ThaniClient
                 {
                     Points_id = -1,
                     Document_id = -1,
-                    PtsCustomerNo = "7678976890222",
-                    PtsFirstName = "Test",
-                    PtsLastName = "Testers",
-                    PtsUnitType = "P",
-                    PtsMode = "P",
-                    PtsTotal = 60,
-                    PtsValue = 600.00,
-                    PtsValueRate = .10,
-                    PtsDiscount = 6.00,
-                    PtsDiscountRate = .10,
-                    PtsLocation = "SS",
-                    PtsCashier = "Wayne"
+                    ptsCustomerNo = "7678976890222",
+                    ptsFirstName = "Test",
+                    ptsLastName = "Testers",
+                    ptsUnitType = "P",
+                    ptsMode = "P",
+                    ptsTotal = 60,
+                    ptsValue = 600.00,
+                    ptsValueRate = .10,
+                    ptsDiscount = 6.00,
+                    ptsDiscountRate = .10,
+                    ptsLocation = "SS",
+                    ptsCashier = "Wayne"
                 };
 
 
@@ -81,14 +81,14 @@ namespace ThaniClient
 
                 if (complete == true)
                 {
-                    this.txtCus = Tpoints.PtsCustomerNo;
+                    this.txtCus = Tpoints.ptsCustomerNo;
                     this.txtFname.Text = "";
                     this.txtLname.Text = "";
-                    this.txtSales.Text = Tpoints.PtsTotal;
-                    this.txtPoints.Text = Tpoints.PtsValue;
-                    this.txtDiscount.Text = Tpoints.PtsDiscount;
-                    this.txtLoca.Text = Tpoints.PtsLocation;
-                    this.txtCashier.Text = Tpoints.PtsCashier;
+                    this.txtSales.Text = Tpoints.ptsTotal;
+                    this.txtPoints.Text = Tpoints.ptsValue;
+                    this.txtDiscount.Text = Tpoints.ptsDiscount;
+                    this.txtLoca.Text = Tpoints.ptsLocation;
+                    this.txtCashier.Text = Tpoints.ptsCashier;
 
                     this.btnRedeem.Text = "Redeem Points";
                 }
@@ -106,7 +106,7 @@ namespace ThaniClient
         static async Task<bool> CreatePointAsync(Point Points)
         {
             
-            HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/InsertPointsAsync", Points);
+            HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points);
             response.EnsureSuccessStatusCode();
 
             if (response.IsSuccessStatusCode)
@@ -127,22 +127,22 @@ namespace ThaniClient
     {
         public int Points_id { get; set; }
         public int Document_id { get; set; }
-        public string PtsCustomerNo { get; set; }//Card number
-        public string PtsFirstName { get; set; } //Card holder First Name
-        public string PtsLastName { get; set; } //Card holder Last Name
-        public string PtsUnitType { get; set; } // (P or D) – P for points, D for dollars
-        public string PtsMode { get; set; }
-        public double PtsTotal { get; set; } //(decimal) Points 
-        public double PtsValue { get; set; } //(decimal) Dollar value
-        public double PtsValueRate { get; set; } //10 cents(decimal) Dollar value
-        public double PtsDiscount { get; set; } //(decimal) Dollar value
-        public double PtsDiscountRate { get; set; } //10 cents (decimal) Dollar value
-        public string PtsLocation { get; set; } // (integer) Massy Merchant Location ID
-        public string PtsCashier { get; set; }
-        public int PtsMlid { get; set; } // (integer) Massy Merchant Location ID
-        public int PtsUnix { get; set; } // (integer) Unix timestamp
-        public int PtsPin { get; set; } // (integer)00000 5-digit user pin
-        public string PtsQsa { get; set; } // (string) The generated hash
+        public string ptsCustomerNo { get; set; }//Card number
+        public string ptsFirstName { get; set; } //Card holder First Name
+        public string ptsLastName { get; set; } //Card holder Last Name
+        public string ptsUnitType { get; set; } // (P or D) – P for points, D for dollars
+        public string ptsMode { get; set; }
+        public double ptsTotal { get; set; } //(decimal) Points 
+        public double ptsValue { get; set; } //(decimal) Dollar value
+        public double ptsValueRate { get; set; } //10 cents(decimal) Dollar value
+        public double ptsDiscount { get; set; } //(decimal) Dollar value
+        public double ptsDiscountRate { get; set; } //10 cents (decimal) Dollar value
+        public string ptsLocation { get; set; } // (integer) Massy Merchant Location ID
+        public string ptsCashier { get; set; }
+        public int ptsMlid { get; set; } // (integer) Massy Merchant Location ID
+        public int ptsUnix { get; set; } // (integer) Unix timestamp
+        public int ptsPin { get; set; } // (integer)00000 5-digit user pin
+        public string ptsQsa { get; set; } // (string) The generated hash
     }
 
 
