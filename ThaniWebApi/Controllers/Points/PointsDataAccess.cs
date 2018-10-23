@@ -14,6 +14,11 @@ using Insight.Database.Reliable;
 using Insight.Database.Providers;
 using System.Collections;
 using System.Net.Http.Headers;
+using ThaniWebApi.Controllers.Massy;
+using System.Security.Cryptography;
+using Newtonsoft.Json.Linq;
+using NaturalSort.Extension;
+using System.Reflection;
 
 namespace ThaniWebApi.Controllers.Points
 {
@@ -91,16 +96,28 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<bool> doPointsAsync(Point Points)
+        public async Task<MassyResponse> DoPointsAsync(Point Points)
         {
-            MassyPoints mPts = await InsertPointsAsync(Points);
-            return await InsertMassyApiPoints(mPts);
+            try
+            {
+                ICollection<MassyPoints> mPts = await this.InsertPointsAsync(Points);
+
+                //MassyPoints mPts = await InsertPointsAsync(Points);
+                return await MassyController.InsertMassyApiPoints(mPts);
+              }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
         }
 
 
-        public async Task<MassyPoints> InsertPointsAsync(Point Points)
+        public async Task<ICollection<MassyPoints>> InsertPointsAsync(Point Points)
         {
             var strVal = new StringBuilder();
+            int i = 0;
+            string [] vs= new string[] {""};
 
             strVal.Append(JsonConvert.SerializeObject(Points));
 
@@ -108,78 +125,140 @@ namespace ThaniWebApi.Controllers.Points
             {
                 await Sqlconn.OpenAsync();
 
+                // the structure object is for remapping results to Massypoints
+                var structure = new OneToOne<MassyPoints>(
+                    // if you don't override a column, the default rules are used 
+                     new ColumnOverride<MassyPoints>("ptsCustomerNo", "card"),
+                     new ColumnOverride<MassyPoints>("ptsTotal", "units"),
+                     new ColumnOverride<MassyPoints>("ptsUnitType", "unitType"),
+                     new ColumnOverride<MassyPoints>("ptsMlid", "mlid"),
+                     new ColumnOverride<MassyPoints>("ptsUnix", "ts"),
+                     new ColumnOverride<MassyPoints>("ptsPin", "pin"),
+                     new ColumnOverride<MassyPoints>("ptsQsa", "qsa"),
+                     new ColumnOverride<MassyPoints>("ptsSecret", "ptsSecret")
+                );
+
                 Parm parm = new Parm { Document = strVal.ToString() };
 
                 //return point object for submission to MassyAPI
-                ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
+                //ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
 
-                if (ResultPts.Count > 0)
+                 mPts = Sqlconn.Query("InsertDocuments", parm, Query.Returns(structure));
+
+                if (mPts.Count > 0)
                 {
-                    //submit to massyapi
-                    //HTTP GET Request sent to the below URL for massy points
-                    //http://beta.massycard.com/loyalty/massy/api/rest2/earn?
-                    //card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=
-                    //LOCATIONID &ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                    //card,units,unitType,mlid,ts,pin
+                   var tmp = mPts.SelectMany(element => element.ToString());
 
-                    dynamic mPts = ResultPts.Select(x => new MassyPoints()
-                    {
-                        Card = x.PtsCustomerNo,
-                        Units = x.PtsTotal,
-                        UnitType = x.PtsUnitType,
-                        Mlid = x.PtsMlid,
-                        Ts = x.PtsUnix,
-                        Pin = x.PtsPin,
-                        Qsa = x.PtsQsa
-                    });
+
+                    IEnumerable<string> tmps = from mPt in mPts
+                                            where mPt.ts > 0
+                                            select new { card = mPt.card, units = mPt.units }; //, mPt.unitType, mPt.mlid, mPt.ts, mPt.pin };
+                           
+
+
+
+                    string[] cmp = (from o in mPts
+                                    select o.card + "::" + o.units + "::" + o.unitType + "::" + o.mlid + "::" + o.ts + "::" + o.pin).ToArray();
+
+                    //https://github.com/tompazourek/NaturalSort.Extension
+                    //PM: Install-Package NaturalSort.Extension
+                    var ordered = cmp.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+
+                    string[] array = new string[mPts.Count];
+                    array.CopyTo(array, 0);
+                    IList<string> s = ordered as List<string>;
+                    //Gernerate Hash
+
+                    string qsa = ordered.GetHmacSHA256(s.ToString());
+
+                    var vQueryString = (JsonConvert.SerializeObject(mPts));
+                    String v1 = vQueryString.Replace("[", "");
+                    String v2 = v1.Replace("]", "");
+                    var json = JsonConvert.DeserializeObject(v2);
+
+                    var jObj = (JObject)JsonConvert.DeserializeObject(v2);
+
+                    return mPts;
+                    
+
+                    // //ICollection<MassyPoints> mp = IMapper.Map(ResultPts);
+                    //dynamic mp = ResultPts.Select(x => new MassyPoints()
+                    // {
+                    //     card = x.ptsCustomerNo,
+                    //     units = x.ptsTotal,
+                    //     unitType = x.ptsUnitType,
+                    //     mlid = x.ptsMlid,
+                    //     ts = x.ptsUnix,
+                    //     pin = x.ptsPin,
+                    //     qsa = x.ptsQsa
+                    // });
+
+
+                    ////convert to string
+                    //String json = JsonConvert.SerializeObject(mp, Formatting.None);
+                    // String jsonStr =  json.Replace("\",\"","");
+
+
+                    //convert to MassyPoints Object
+                    //mPts = JsonConvert.DeserializeObject<ICollection<MassyPoints>>(jsonStr); // (JsonConvert.SerializeObject(mPts, Formatting.None));
+
+                    //return mPts;
+                    //return JsonConvert.DeserializeObject<MassyPoints>(str.ToString()); // Convert.ToBoolean(results);
 
                     //Send to MassyApi
                     //this.InsertMassyApiPoints(mPts);
                 }
+                else
+                {
+                    return null;
+                }
             }
 
             //var results = 1;
-            strVal.Clear();
+            //strVal.Clear();
 
-            return mPts; // Convert.ToBoolean(results);
         }
 
-      public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
-        {
-            dynamic model;
-            HttpClient _clientMassy = new HttpClient();
 
-            try
-            {
-                _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
-                _clientMassy.DefaultRequestHeaders.Accept.Clear();
-                _clientMassy.DefaultRequestHeaders.Accept.Add(
-                    new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var queryString = mPts.GetQueryString("earn");
+        //public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
+        //  {
+        //      dynamic model;
+        //      HttpClient _clientMassy = new HttpClient();
 
-                //Get date Massy API "/api/catalog/list"
-                var strPath = ClsGlobal.MassyAPIver134 + "" + queryString.ToString();
+        //      try
+        //      {
+        //          _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
+        //          _clientMassy.DefaultRequestHeaders.Accept.Clear();
+        //          _clientMassy.DefaultRequestHeaders.Accept.Add(
+        //              new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var response = await _clientMassy.GetAsync("MassyAPI");
+        //          var queryString = mPts.GetQueryString("earn");
 
-                response.EnsureSuccessStatusCode();
+        //          //Get date Massy API "/api/catalog/list"
+        //          var strPath = ClsGlobal.MassyAPIver134 + "" + queryString.ToString();
 
-                var stringResponse = await response.Content.ReadAsStringAsync();
+        //          var response = await _clientMassy.GetAsync("MassyAPI");
 
-                model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
+        //          response.EnsureSuccessStatusCode();
 
-                return model;
-                //ReturnsFirst10CatalogItems
-                // Assert.Equal(10, model.CatalogItems.Count());
-            }
-            catch (Exception ex)
-            {
-                //Console.WriteLine( ex.Message);
-                return ex.Message;
-            }
-    
-            
-        }
+        //          var stringResponse = await response.Content.ReadAsStringAsync();
+
+        //          model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
+
+        //          return model;
+        //          //ReturnsFirst10CatalogItems
+        //          // Assert.Equal(10, model.CatalogItems.Count());
+        //      }
+        //      catch (Exception ex)
+        //      {
+        //          //Console.WriteLine( ex.Message);
+        //          return ex.Message;
+        //      }
+
+
+        //  }
 
 
 
@@ -427,5 +506,17 @@ namespace ThaniWebApi.Controllers.Points
         public int XMode { get; set; }
         
     }
+
+    internal class MassyCard
+    {
+        public string card { get; set; } //Card number
+        public double units { get; set; } //(decimal) Points or Dollar value
+        public string unitType { get; set; } // (P or D) – P for points, D for dollars
+        public int mlid { get; set; } // (integer) Massy Merchant Location ID
+        public int ts { get; set; } // (integer) Unix timestamp
+        public int pin { get; set; } // (integer)00000 5-digit user pin
+        public string qsa { get; set; } // (string) The generated hash
+    }
 }
+
 

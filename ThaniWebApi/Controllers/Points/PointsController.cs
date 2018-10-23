@@ -10,6 +10,7 @@ using System.Net.Http;
 using Microsoft.Extensions.Hosting.Internal;
 using System.IO;
 
+
 namespace ThaniWebApi.Controllers.Points
 {
     [Route("api/[controller]")]
@@ -52,14 +53,22 @@ namespace ThaniWebApi.Controllers.Points
         //----------------------------------------------
 
         [HttpPost]
-        [Route("InsertPointsAsync")]
-        public async Task<bool> doPointsAsync(Point Points)
+        [Route("DoPointsAsync")]
+        public async Task<MassyResponse> DoPointsAsync(Point Points)
         {
-            return await this.PointsRepository.doPointsAsync(Points);
-        }
 
+            return await this.PointsRepository.DoPointsAsync(Points);
+            
+         }
 
-    
+        //[HttpPost]
+        //[Route("InsertMassyApiPoints")]
+        //public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
+        //{
+        //    return await this.InsertMassyApiPoints(mPts);
+
+        //}
+
 
         //[HttpGet]
         //public HttpResponseMessage StreamContent(int id)

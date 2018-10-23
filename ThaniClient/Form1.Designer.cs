@@ -44,7 +44,7 @@
             this.txtLname = new System.Windows.Forms.TextBox();
             this.txtSales = new System.Windows.Forms.TextBox();
             this.txtPoints = new System.Windows.Forms.TextBox();
-            this.txtDiscount = new System.Windows.Forms.TextBox();
+            this.txtMDiscount = new System.Windows.Forms.TextBox();
             this.txtTPoints = new System.Windows.Forms.TextBox();
             this.txtLoca = new System.Windows.Forms.TextBox();
             this.txtCashier = new System.Windows.Forms.TextBox();
@@ -55,9 +55,9 @@
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.label11 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.txtMPoints = new System.Windows.Forms.TextBox();
             this.label13 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtMValues = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
             this.label15 = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
@@ -66,6 +66,7 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
+            this.LblExpire = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -79,7 +80,7 @@
             this.btnRedeem.Name = "btnRedeem";
             this.btnRedeem.Size = new System.Drawing.Size(182, 38);
             this.btnRedeem.TabIndex = 0;
-            this.btnRedeem.Text = "Save/Redeem";
+            this.btnRedeem.Text = "Send/Redeem";
             this.btnRedeem.UseVisualStyleBackColor = true;
             this.btnRedeem.Click += new System.EventHandler(this.btnRedeem_ClickAsync);
             // 
@@ -239,13 +240,13 @@
             this.txtPoints.Size = new System.Drawing.Size(161, 23);
             this.txtPoints.TabIndex = 15;
             // 
-            // txtDiscount
+            // txtMDiscount
             // 
-            this.txtDiscount.Location = new System.Drawing.Point(471, 329);
-            this.txtDiscount.Margin = new System.Windows.Forms.Padding(4);
-            this.txtDiscount.Name = "txtDiscount";
-            this.txtDiscount.Size = new System.Drawing.Size(205, 23);
-            this.txtDiscount.TabIndex = 16;
+            this.txtMDiscount.Location = new System.Drawing.Point(471, 329);
+            this.txtMDiscount.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMDiscount.Name = "txtMDiscount";
+            this.txtMDiscount.Size = new System.Drawing.Size(205, 23);
+            this.txtMDiscount.TabIndex = 16;
             // 
             // txtTPoints
             // 
@@ -353,13 +354,13 @@
             this.label12.TabIndex = 26;
             this.label12.Text = "Massy Intl. System Points:";
             // 
-            // textBox1
+            // txtMPoints
             // 
-            this.textBox1.Location = new System.Drawing.Point(471, 239);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(205, 23);
-            this.textBox1.TabIndex = 28;
+            this.txtMPoints.Location = new System.Drawing.Point(471, 239);
+            this.txtMPoints.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMPoints.Name = "txtMPoints";
+            this.txtMPoints.Size = new System.Drawing.Size(205, 23);
+            this.txtMPoints.TabIndex = 28;
             // 
             // label13
             // 
@@ -372,13 +373,13 @@
             this.label13.TabIndex = 27;
             this.label13.Text = "System Point:";
             // 
-            // textBox2
+            // txtMValues
             // 
-            this.textBox2.Location = new System.Drawing.Point(471, 284);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(205, 23);
-            this.textBox2.TabIndex = 30;
+            this.txtMValues.Location = new System.Drawing.Point(471, 284);
+            this.txtMValues.Margin = new System.Windows.Forms.Padding(4);
+            this.txtMValues.Name = "txtMValues";
+            this.txtMValues.Size = new System.Drawing.Size(205, 23);
+            this.txtMValues.TabIndex = 30;
             // 
             // label14
             // 
@@ -395,7 +396,7 @@
             // 
             this.label15.AutoSize = true;
             this.label15.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(127, 371);
+            this.label15.Location = new System.Drawing.Point(107, 371);
             this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(140, 25);
@@ -406,7 +407,7 @@
             // 
             this.label16.AutoSize = true;
             this.label16.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(30, 371);
+            this.label16.Location = new System.Drawing.Point(4, 371);
             this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(95, 25);
@@ -417,7 +418,7 @@
             // 
             this.label17.AutoSize = true;
             this.label17.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(370, 371);
+            this.label17.Location = new System.Drawing.Point(258, 358);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(93, 25);
@@ -428,7 +429,7 @@
             // 
             this.label18.AutoSize = true;
             this.label18.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(483, 371);
+            this.label18.Location = new System.Drawing.Point(258, 383);
             this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(151, 25);
@@ -471,19 +472,31 @@
             this.label19.TabIndex = 35;
             this.label19.Text = "Sales Transaction #";
             // 
+            // LblExpire
+            // 
+            this.LblExpire.AutoSize = true;
+            this.LblExpire.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LblExpire.Location = new System.Drawing.Point(460, 371);
+            this.LblExpire.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.LblExpire.Name = "LblExpire";
+            this.LblExpire.Size = new System.Drawing.Size(193, 25);
+            this.LblExpire.TabIndex = 36;
+            this.LblExpire.Text = "Point Expiring On";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(696, 477);
+            this.Controls.Add(this.LblExpire);
             this.Controls.Add(this.label18);
             this.Controls.Add(this.label17);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.label15);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.txtMValues);
             this.Controls.Add(this.label14);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtMPoints);
             this.Controls.Add(this.label13);
             this.Controls.Add(this.label12);
             this.Controls.Add(this.label11);
@@ -494,7 +507,7 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.txtCashier);
             this.Controls.Add(this.txtTPoints);
-            this.Controls.Add(this.txtDiscount);
+            this.Controls.Add(this.txtMDiscount);
             this.Controls.Add(this.txtPoints);
             this.Controls.Add(this.txtSales);
             this.Controls.Add(this.txtLname);
@@ -542,7 +555,7 @@
         private System.Windows.Forms.TextBox txtLname;
         private System.Windows.Forms.TextBox txtSales;
         private System.Windows.Forms.TextBox txtPoints;
-        private System.Windows.Forms.TextBox txtDiscount;
+        private System.Windows.Forms.TextBox txtMDiscount;
         private System.Windows.Forms.TextBox txtTPoints;
         private System.Windows.Forms.TextBox txtLoca;
         private System.Windows.Forms.TextBox txtCashier;
@@ -553,9 +566,9 @@
         private System.Windows.Forms.RadioButton radioButton3;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox txtMPoints;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtMValues;
         private System.Windows.Forms.Label label14;
         private System.Windows.Forms.Label label15;
         private System.Windows.Forms.Label label16;
@@ -564,6 +577,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label LblExpire;
     }
 }
 
