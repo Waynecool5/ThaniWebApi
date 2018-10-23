@@ -87,8 +87,11 @@ namespace ThaniWebApi
 
 
             app.UseCors(builder =>
+
             builder.WithOrigins("http://localhost:54574")
                    .AllowAnyHeader()
+                   //.AllowAnyMethod()
+                  // .AllowCredentials()
             );
 
             app.UseResponseCompression();
