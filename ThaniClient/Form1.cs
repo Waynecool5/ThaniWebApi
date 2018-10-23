@@ -19,7 +19,7 @@ namespace ThaniClient
     {
         static HttpClient _client = new HttpClient();
         //static ICollection<TotalPoints> Tpoints { get; set; }
-        static dynamic Tpoints = null;
+        static MassyResponse Tpoints = null;
 
         public Form1()
         {
@@ -29,15 +29,16 @@ namespace ThaniClient
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.btnRedeem.Text = "Save Points";
+            this.btnRedeem.Text = "Send Points";
         }
 
         private void btnRedeem_ClickAsync(object sender, EventArgs e)
         {
 
-            if (this.btnRedeem.Text == "Save Points")
+            if (this.btnRedeem.Text == "Send Points")
             {
                 this.AddSalesPoints();
+
                }
             else if (this.btnRedeem.Text == "Redeem Points")
             {
@@ -81,14 +82,18 @@ namespace ThaniClient
 
                 if (complete == true)
                 {
-                    this.txtCus = Tpoints.ptsCustomerNo;
-                    this.txtFname.Text = "";
-                    this.txtLname.Text = "";
-                    this.txtSales.Text = Tpoints.ptsTotal;
-                    this.txtPoints.Text = Tpoints.ptsValue;
-                    this.txtDiscount.Text = Tpoints.ptsDiscount;
-                    this.txtLoca.Text = Tpoints.ptsLocation;
-                    this.txtCashier.Text = Tpoints.ptsCashier;
+                    this.txtCus.Text = points.ptsCustomerNo;// "7678976890222";
+                    this.txtFname.Text = points.ptsFirstName; //"Test";
+                    this.txtLname.Text = points.ptsLastName; // "Testers";
+                    this.txtSales.Text = points.ptsTotal.ToString();
+                    this.txtPoints.Text = points.ptsValue.ToString();
+                    this.txtLoca.Text = points.ptsLocation;
+                    this.txtCashier.Text = points.ptsCashier;
+
+                    //Reponse from Web Api services
+                    this.txtMPoints.Text = Tpoints.response.balance.p.ToString();
+                    this.txtMValues.Text = Tpoints.response.balance.d.ToString();
+                    this.txtMDiscount.Text = (Tpoints.response.balance.p * .10).ToString();
 
                     this.btnRedeem.Text = "Redeem Points";
                 }
@@ -111,7 +116,7 @@ namespace ThaniClient
 
             if (response.IsSuccessStatusCode)
             {
-                Tpoints = await response.Content.ReadAsAsync<dynamic>();
+                Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
             }
             // return URI of the created resource.
             //return response.Headers.Location;
@@ -143,7 +148,35 @@ namespace ThaniClient
         public int ptsUnix { get; set; } // (integer) Unix timestamp
         public int ptsPin { get; set; } // (integer)00000 5-digit user pin
         public string ptsQsa { get; set; } // (string) The generated hash
+        public string ptsSecret { get; set; } // (string) The Secret for the selected store
     }
+
+    //{"response":{"balance":{"p": "POINTS","d": "DOLLARS"},"expiry": {"pts": "POINTS","dat": "EXPIRYDATE"},"footer":["Footer Line 1 Text","Footer Line 2 Text"]}}
+    internal class MassyResponse
+    {
+        public Response response { get; set; }
+    }
+
+    internal class Response
+    {
+        public Balance balance { get; set; }
+        public Expiry expiry { get; set; }
+        public string[] footer { get; set; }
+    }
+
+    internal class Balance
+    {
+        public double p { get; set; }
+        public double d { get; set; }
+    }
+
+    internal class Expiry
+    {
+        public double pts { get; set; }
+        public string dat { get; set; }
+    }
+
+
 
 
 }

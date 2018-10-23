@@ -10,12 +10,12 @@ namespace ThaniWebApi
 {
     public static class QueryStringExtension
     {
-            public static string GetQueryString(this object obj, string prefix = "")
+        public static string GetQueryString(this object obj, string prefix = "")
+        {
+            var query = "";
+            try
             {
-                var query = "";
-                try
-                {
-                    var vQueryString = (JsonConvert.SerializeObject(obj));
+                var vQueryString = (JsonConvert.SerializeObject(obj));
                 String v1 = vQueryString.Replace("[", "");
                 String v2 = v1.Replace("]", "");
                 var json = JsonConvert.DeserializeObject(v2);
@@ -40,13 +40,14 @@ namespace ThaniWebApi
                                return (prefix.Length > 0 ? prefix + HttpUtility.UrlEncode("[") + jp.Name + HttpUtility.UrlEncode("]") : jp.Name) + "=" + HttpUtility.UrlEncode(jp.Value.ToString());
                        }
                        )) ?? "";
-                }
-                catch (Exception ex)
-                {
+            }
+            catch (Exception ex)
+            {
                 Console.WriteLine(ex.Message);
                 return "";
-                }
-                return query;
             }
+            return query;
         }
     }
+}
+

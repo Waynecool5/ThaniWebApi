@@ -12,7 +12,7 @@ namespace ThaniWebApi.Controllers.Points
 
         Task<IEnumerable<Point>> GetPointsAsync();
 
-        Task<IEnumerable<MassyResponse>> DoPointsAsync(Point Points);
+        Task<MassyResponse> DoPointsAsync(Point Points);
         //Task<MassyPoints> InsertPointsAsync(Point Points);
         //Task<dynamic> MassyController.InsertMassyApiPoints(MassyPoints mPts);
 

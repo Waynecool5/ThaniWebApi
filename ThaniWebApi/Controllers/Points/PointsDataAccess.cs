@@ -15,7 +15,10 @@ using Insight.Database.Providers;
 using System.Collections;
 using System.Net.Http.Headers;
 using ThaniWebApi.Controllers.Massy;
-
+using System.Security.Cryptography;
+using Newtonsoft.Json.Linq;
+using NaturalSort.Extension;
+using System.Reflection;
 
 namespace ThaniWebApi.Controllers.Points
 {
@@ -93,7 +96,7 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<IEnumerable<MassyResponse>> DoPointsAsync(Point Points)
+        public async Task<MassyResponse> DoPointsAsync(Point Points)
         {
             try
             {
@@ -113,6 +116,8 @@ namespace ThaniWebApi.Controllers.Points
         public async Task<ICollection<MassyPoints>> InsertPointsAsync(Point Points)
         {
             var strVal = new StringBuilder();
+            int i = 0;
+            string [] vs= new string[] {""};
 
             strVal.Append(JsonConvert.SerializeObject(Points));
 
@@ -129,7 +134,8 @@ namespace ThaniWebApi.Controllers.Points
                      new ColumnOverride<MassyPoints>("ptsMlid", "mlid"),
                      new ColumnOverride<MassyPoints>("ptsUnix", "ts"),
                      new ColumnOverride<MassyPoints>("ptsPin", "pin"),
-                     new ColumnOverride<MassyPoints>("ptsQsa", "qsa")
+                     new ColumnOverride<MassyPoints>("ptsQsa", "qsa"),
+                     new ColumnOverride<MassyPoints>("ptsSecret", "ptsSecret")
                 );
 
                 Parm parm = new Parm { Document = strVal.ToString() };
@@ -141,6 +147,38 @@ namespace ThaniWebApi.Controllers.Points
 
                 if (mPts.Count > 0)
                 {
+                    //card,units,unitType,mlid,ts,pin
+                   var tmp = mPts.SelectMany(element => element.ToString());
+
+
+                    IEnumerable<string> tmps = from mPt in mPts
+                                            where mPt.ts > 0
+                                            select new { card = mPt.card, units = mPt.units }; //, mPt.unitType, mPt.mlid, mPt.ts, mPt.pin };
+                           
+
+
+
+                    string[] cmp = (from o in mPts
+                                    select o.card + "::" + o.units + "::" + o.unitType + "::" + o.mlid + "::" + o.ts + "::" + o.pin).ToArray();
+
+                    //https://github.com/tompazourek/NaturalSort.Extension
+                    //PM: Install-Package NaturalSort.Extension
+                    var ordered = cmp.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+
+                    string[] array = new string[mPts.Count];
+                    array.CopyTo(array, 0);
+                    IList<string> s = ordered as List<string>;
+                    //Gernerate Hash
+
+                    string qsa = ordered.GetHmacSHA256(s.ToString());
+
+                    var vQueryString = (JsonConvert.SerializeObject(mPts));
+                    String v1 = vQueryString.Replace("[", "");
+                    String v2 = v1.Replace("]", "");
+                    var json = JsonConvert.DeserializeObject(v2);
+
+                    var jObj = (JObject)JsonConvert.DeserializeObject(v2);
+
                     return mPts;
                     
 
@@ -182,45 +220,45 @@ namespace ThaniWebApi.Controllers.Points
 
         }
 
- 
 
-      //public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
-      //  {
-      //      dynamic model;
-      //      HttpClient _clientMassy = new HttpClient();
 
-      //      try
-      //      {
-      //          _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
-      //          _clientMassy.DefaultRequestHeaders.Accept.Clear();
-      //          _clientMassy.DefaultRequestHeaders.Accept.Add(
-      //              new MediaTypeWithQualityHeaderValue("application/json"));
+        //public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
+        //  {
+        //      dynamic model;
+        //      HttpClient _clientMassy = new HttpClient();
 
-      //          var queryString = mPts.GetQueryString("earn");
+        //      try
+        //      {
+        //          _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
+        //          _clientMassy.DefaultRequestHeaders.Accept.Clear();
+        //          _clientMassy.DefaultRequestHeaders.Accept.Add(
+        //              new MediaTypeWithQualityHeaderValue("application/json"));
 
-      //          //Get date Massy API "/api/catalog/list"
-      //          var strPath = ClsGlobal.MassyAPIver134 + "" + queryString.ToString();
+        //          var queryString = mPts.GetQueryString("earn");
 
-      //          var response = await _clientMassy.GetAsync("MassyAPI");
+        //          //Get date Massy API "/api/catalog/list"
+        //          var strPath = ClsGlobal.MassyAPIver134 + "" + queryString.ToString();
 
-      //          response.EnsureSuccessStatusCode();
+        //          var response = await _clientMassy.GetAsync("MassyAPI");
 
-      //          var stringResponse = await response.Content.ReadAsStringAsync();
+        //          response.EnsureSuccessStatusCode();
 
-      //          model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
+        //          var stringResponse = await response.Content.ReadAsStringAsync();
 
-      //          return model;
-      //          //ReturnsFirst10CatalogItems
-      //          // Assert.Equal(10, model.CatalogItems.Count());
-      //      }
-      //      catch (Exception ex)
-      //      {
-      //          //Console.WriteLine( ex.Message);
-      //          return ex.Message;
-      //      }
-    
-            
-      //  }
+        //          model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
+
+        //          return model;
+        //          //ReturnsFirst10CatalogItems
+        //          // Assert.Equal(10, model.CatalogItems.Count());
+        //      }
+        //      catch (Exception ex)
+        //      {
+        //          //Console.WriteLine( ex.Message);
+        //          return ex.Message;
+        //      }
+
+
+        //  }
 
 
 

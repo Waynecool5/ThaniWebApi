@@ -51,6 +51,7 @@ namespace ThaniWebApi.Controllers.Points
         public int ptsUnix { get; set; } // (integer) Unix timestamp
         public string ptsPin { get; set; } // (integer)00000 5-digit user pin
         public string ptsQsa { get; set; } // (string) The generated hash
+        public string ptsSecret { get; set; } // (string) The Secret for the selected store
     }
 
     public class MassyPoints
@@ -62,11 +63,35 @@ namespace ThaniWebApi.Controllers.Points
         public int ts { get; set; } // (integer) Unix timestamp
         public string pin { get; set; } // (integer)00000 5-digit user pin
         public string qsa { get; set; } // (string) The generated hash
+        public string ptsSecret { get; set; } // (string) The Secret for the selected store
     }
 
+    //{"response":{"balance":{"p": "POINTS","d": "DOLLARS"},"expiry": {"pts": "POINTS","dat": "EXPIRYDATE"},"footer":["Footer Line 1 Text","Footer Line 2 Text"]}}
     public class MassyResponse
     {
-        public string card { get; set; } //Card number
+        public Response response { get; set; }
     }
 
+    public class Response
+    {
+        public Balance balance { get; set; }
+        public Expiry expiry { get; set; }
+        public string[] footer { get; set; }
+    }
+
+    public class Balance
+    {
+        public double p { get; set; }
+        public double d { get; set; }
+    }
+
+    public class Expiry
+    {
+        public double pts { get; set; }
+        public string dat { get; set; }
+    }
+
+
+
 }
+
