@@ -37,7 +37,10 @@ namespace ThaniWebApi.Controllers.Massy
             return await addMassyApiPoints(mPts);
 
         }
-//
+
+
+
+
         private static async Task<MassyResponse> addMassyApiPoints(ICollection<MassyPoints> mPts)
         {
             //dynamic model;
@@ -50,81 +53,46 @@ namespace ThaniWebApi.Controllers.Massy
                 _clientMassy.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
 
-                //----------------------------------------------------
-                // -- Make Certificate for qsa value
-                //------------------------------------------------
-              
-                //Convert to json string
-                string jsonString = JsonConvert.SerializeObject(mPts,Formatting.None,new JsonSerializerSettings()
-                    { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore});
 
-                //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
-                string[] sd = new String[7];
-                int i = 0;
+                string strPath = MakeQueryString(mPts);
 
-                JArray jsonX= JArray.Parse(jsonString);
-
-                var list = from t in jsonX[0]
-                           select t;
-
-                foreach (string s in list)
+                if (strPath == "")
                 {
-                    sd[i] = s;
-                    i++;
+                    string json = @"{ ""response"" : { ""balance"" : { ""p"" : ""60"", ""d"" : ""6.00"" }, ""expiry"" : { ""pts"" : ""2"", ""dat"" : ""10/10/2019""}, ""footer"": [""Footer Line 1 Text"",""Footer Line 2 Text""] } }";
+
+                    MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(json);
+
+                    return ResponseData;
                 }
+                else
+                {
 
-                //card,units,unitType,mlid,ts,pin
-                var sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] }; //, sd[6] };
-                
-                //Secret
-                string key = sd[6].ToString();
+                    var response = await _clientMassy.GetAsync(strPath);
 
-                //https://github.com/tompazourek/NaturalSort.Extension
-                //PM: Install-Package NaturalSort.Extension
-                // Sort array to natsort standard
-                var ordered = sequence.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+                    response.EnsureSuccessStatusCode();
 
-                ////place :: to separate values
-                var HashString = string.Join("::", ordered);
+                    var stringResponse = await response.Content.ReadAsStringAsync();
 
-                ////Create hash certificate
-                string qsa = HashString.GetHmacSHA256(key);
+                    //model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
+
+                    //return model;
 
 
-                ////card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
-                //Create string form submission
-                string queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType=" 
-                                                  + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
-               
-                var strPath = ClsGlobal.MassyAPIver134 + "earn?" + queryString2 + "&qsa=" + qsa.ToString();
-                
+                    string json = @"{ ""response"" : { ""balance"" : { ""p"" : ""60"", ""d"" : ""6.00"" }, ""expiry"" : { ""pts"" : ""2"", ""dat"" : ""10/10/2019""}, ""footer"": [""Footer Line 1 Text"",""Footer Line 2 Text""] } }";
 
-                var response = await _clientMassy.GetAsync(strPath);
+                    MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(json);
 
-                response.EnsureSuccessStatusCode();
+                    //IEnumerable<MassyResponse> ResponseData = new MassyResponse 
 
-                var stringResponse = await response.Content.ReadAsStringAsync();
-
-                //model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
-
-                //return model;
-
-
-                string json = @"{ ""response"" : { ""balance"" : { ""p"" : ""60"", ""d"" : ""6.00"" }, ""expiry"" : { ""pts"" : ""2"", ""dat"" : ""10/10/2019""}, ""footer"": [""Footer Line 1 Text"",""Footer Line 2 Text""] } }";
-
-                MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(json);
-
-                //IEnumerable<MassyResponse> ResponseData = new MassyResponse 
-
-                return ResponseData;
-
+                    return ResponseData;
+                }
 
                 ////ReturnsFirst10CatalogItems
                 //// Assert.Equal(10, model.CatalogItems.Count());
             }
             catch (Exception ex)
             {
-               Console.WriteLine( ex.Message);
+                Console.WriteLine(ex.Message);
                 //return null;
                 //{"response":{"balance":{"p": "POINTS","d": "DOLLARS"},"expiry": {"pts": "POINTS","dat": "EXPIRYDATE"},"footer":["Footer Line 1 Text","Footer Line 2 Text"]}}
                 string json = @"{ ""response"" : { ""balance"" : { ""p"" : ""60"", ""d"" : ""6.00"" }, ""expiry"" : { ""pts"" : ""2"", ""dat"" : ""10/10/2019""}, ""footer"": [""Footer Line 1 Text"",""Footer Line 2 Text""] } }";
@@ -137,10 +105,86 @@ namespace ThaniWebApi.Controllers.Massy
 
 
         }
-        
-        //private static string makeHash(ICollection<MassyPoints> mPts)
+
+
+        private static String MakeQueryString(ICollection<MassyPoints> mPts)
+        {
+            //----------------------------------------------------
+            // -- Make Certificate for qsa value
+            //------------------------------------------------
+
+            try
+            {
+                //Convert to json string
+                string jsonString = JsonConvert.SerializeObject(mPts, Formatting.None, new JsonSerializerSettings()
+                                    { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore });
+
+                //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
+                string[] sd = new String[7];
+                int i = 0;
+
+                JArray jsonX = JArray.Parse(jsonString);
+
+                var list = from t in jsonX[0]
+                           select t;
+
+                foreach (string s in list)
+                {
+                    sd[i] = s;
+                    i++;
+                }
+
+                //------------------------------------------------
+                //card,units,unitType,mlid,ts,pin
+                //------------------------------------------------
+                var sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] }; //, sd[6] };
+
+                //Secret
+                string key = sd[6].ToString();
+
+                //https://github.com/tompazourek/NaturalSort.Extension
+                //PM: Install-Package NaturalSort.Extension
+                // Sort array to natsort standard
+                var ordered = sequence.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+
+
+                //------------------------------------------------
+                //place :: to separate values
+                //------------------------------------------------
+                var HashString = string.Join("::", ordered);
+
+
+                //------------------------------------------------
+                //Create hash certificate
+                //------------------------------------------------
+                string qsa = HashString.GetHmacSHA256(key);
+
+
+                //------------------------------------------------
+                ////card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                //Create string form submission
+                //------------------------------------------------
+                string queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
+                                                  + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+
+
+                var strPath = ClsGlobal.MassyAPIver134 + "earn?" + queryString2 + "&qsa=" + qsa.ToString();
+
+
+                return strPath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "";
+
+            }
+
+        }
+
 
     }
+
 
     internal class Points
     {
