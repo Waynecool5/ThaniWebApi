@@ -53,30 +53,44 @@ namespace ThaniWebApi.Controllers.Massy
                 //----------------------------------------------------
                 // -- Make Certificate for qsa value
                 //------------------------------------------------
-                              
+              
                 //Convert to json string
                 string jsonString = JsonConvert.SerializeObject(mPts,Formatting.None,new JsonSerializerSettings()
                     { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore});
 
                 //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
+                string[] sd = new String[8];
+                int i = 0;
 
                 JArray jsonX= JArray.Parse(jsonString);
+
+                var list = from t in jsonX[0]
+                           select t;
+
+                foreach (string s in list)
+                {
+                    sd[i] = s;
+                    i++;
+                }
+
+                //card,units,unitType,mlid,ts,pin
+                var sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5], sd[6] };
                 //Convert to Array for sorting
-               // Points[] arr = JObject.Parse(jsonString)["subjects"].ToObject<Points[]>();
-                var xx = jsonX[0].Values();
-                string[] sd = new String[7];
+                // Points[] arr = JObject.Parse(jsonString)["subjects"].ToObject<Points[]>();
+               // var xx = jsonX[0].Values();
+                
 
                 //sd[0] = jsonX.Values()
 
                 ////https://github.com/tompazourek/NaturalSort.Extension
                 ////PM: Install-Package NaturalSort.Extension
-                //var ordered = jsonX[0].Values().OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+                var ordered = sequence.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
 
                 ////place :: to separate values
                 //var queryString = ordered.GetQueryString("");
 
                 ////Create hash certificate
-                //string qsa = ordered.GetHmacSHA256(queryString.ToString(), arr[7].ToString());
+                string qsa = ordered.GetHmacSHA256( ordered,sd[7].ToString());
 
                 //-----------------------------------
 
@@ -155,7 +169,7 @@ namespace ThaniWebApi.Controllers.Massy
         [JsonProperty("Points_qsa")]
         public string qsa { get; set; }
         [JsonProperty("Points_Secret")]
-        public string ptsSecret { get; set; } // (string) The Secret for the selected store
+        public string secret { get; set; } // (string) The Secret for the selected store
 
     }
 }
