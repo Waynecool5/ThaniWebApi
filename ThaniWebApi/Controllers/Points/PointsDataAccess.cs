@@ -134,7 +134,7 @@ namespace ThaniWebApi.Controllers.Points
                      new ColumnOverride<MassyPoints>("ptsMlid", "mlid"),
                      new ColumnOverride<MassyPoints>("ptsUnix", "ts"),
                      new ColumnOverride<MassyPoints>("ptsPin", "pin"),
-                     new ColumnOverride<MassyPoints>("ptsQsa", "qsa"),
+                    // new ColumnOverride<MassyPoints>("ptsQsa", "qsa"),
                      new ColumnOverride<MassyPoints>("ptsSecret", "secret")
                 );
 

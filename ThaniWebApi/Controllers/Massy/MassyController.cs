@@ -59,7 +59,7 @@ namespace ThaniWebApi.Controllers.Massy
                     { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore});
 
                 //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
-                string[] sd = new String[8];
+                string[] sd = new String[7];
                 int i = 0;
 
                 JArray jsonX= JArray.Parse(jsonString);
@@ -74,39 +74,29 @@ namespace ThaniWebApi.Controllers.Massy
                 }
 
                 //card,units,unitType,mlid,ts,pin
-                var sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5], sd[6] };
-                //Convert to Array for sorting
-                // Points[] arr = JObject.Parse(jsonString)["subjects"].ToObject<Points[]>();
-               // var xx = jsonX[0].Values();
+                var sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] }; //, sd[6] };
                 
+                //Secret
+                string key = sd[6].ToString();
 
-                //sd[0] = jsonX.Values()
-
-                ////https://github.com/tompazourek/NaturalSort.Extension
-                ////PM: Install-Package NaturalSort.Extension
+                //https://github.com/tompazourek/NaturalSort.Extension
+                //PM: Install-Package NaturalSort.Extension
+                // Sort array to natsort standard
                 var ordered = sequence.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
 
                 ////place :: to separate values
-                //var queryString = ordered.GetQueryString("");
+                var HashString = string.Join("::", ordered);
 
                 ////Create hash certificate
-                string qsa = ordered.GetHmacSHA256( ordered,sd[7].ToString());
+                string qsa = HashString.GetHmacSHA256(key);
 
-                //-----------------------------------
 
-                ////Get date Massy API "/api/catalog/list"
-                ////submit to massyapi
-                ////HTTP GET Request sent to the below URL for massy points
-                ////http://beta.massycard.com/loyalty/massy/api/rest2/earn?
                 ////card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
-
-
-                //string[] cmp
-
-                var queryString  = (from o in mPts
-                                select o.card + "::" + o.units + "::" + o.unitType + "::" + o.mlid + "::" + o.ts + "::" + o.pin).ToString();
-
-                var strPath = ClsGlobal.MassyAPIver134 + "earn?" + queryString.ToString(); //+ "::" + qsa.ToString();
+                //Create string form submission
+                string queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType=" 
+                                                  + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+               
+                var strPath = ClsGlobal.MassyAPIver134 + "earn?" + queryString2 + "&qsa=" + qsa.ToString();
                 
 
                 var response = await _clientMassy.GetAsync(strPath);

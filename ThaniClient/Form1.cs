@@ -24,6 +24,12 @@ namespace ThaniClient
         public Form1()
         {
             InitializeComponent();
+
+            //Call Thani's Web Api
+            _client.BaseAddress = new Uri("http://localhost:54574/");
+            _client.DefaultRequestHeaders.Accept.Clear();
+            _client.DefaultRequestHeaders.Accept.Add(
+                new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
 
@@ -49,11 +55,6 @@ namespace ThaniClient
 
         private async void AddSalesPoints()
         {
-            //Call Thani's Web Api
-            _client.BaseAddress = new Uri("http://localhost:54574/");
-            _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
 
             try
             {
@@ -62,7 +63,7 @@ namespace ThaniClient
                 {
                     Points_id = -1,
                     Document_id = -1,
-                    ptsCustomerNo = "7678976890222",
+                    ptsCustomerNo = "42100999892",
                     ptsFirstName = "Test",
                     ptsLastName = "Testers",
                     ptsUnitType = "P",

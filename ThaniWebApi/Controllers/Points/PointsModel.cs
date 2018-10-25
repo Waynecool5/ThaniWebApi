@@ -62,7 +62,7 @@ namespace ThaniWebApi.Controllers.Points
         public int mlid { get; set; } // (integer) Massy Merchant Location ID
         public int ts { get; set; } // (integer) Unix timestamp
         public string pin { get; set; } // (integer)00000 5-digit user pin
-        public string qsa { get; set; } // (string) The generated hash
+        //public string qsa { get; set; } // (string) The generated hash
         public string secret { get; set; } // (string) The Secret for the selected store
     }
 
