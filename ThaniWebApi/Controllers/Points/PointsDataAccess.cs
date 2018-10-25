@@ -116,7 +116,7 @@ namespace ThaniWebApi.Controllers.Points
         public async Task<ICollection<MassyPoints>> InsertPointsAsync(Point Points)
         {
             var strVal = new StringBuilder();
-            int i = 0;
+            //int i = 0;
             string [] vs= new string[] {""};
 
             strVal.Append(JsonConvert.SerializeObject(Points));
@@ -135,7 +135,7 @@ namespace ThaniWebApi.Controllers.Points
                      new ColumnOverride<MassyPoints>("ptsUnix", "ts"),
                      new ColumnOverride<MassyPoints>("ptsPin", "pin"),
                      new ColumnOverride<MassyPoints>("ptsQsa", "qsa"),
-                     new ColumnOverride<MassyPoints>("ptsSecret", "ptsSecret")
+                     new ColumnOverride<MassyPoints>("ptsSecret", "secret")
                 );
 
                 Parm parm = new Parm { Document = strVal.ToString() };
@@ -148,37 +148,7 @@ namespace ThaniWebApi.Controllers.Points
                 if (mPts.Count > 0)
                 {
                     //card,units,unitType,mlid,ts,pin
-                   var tmp = mPts.SelectMany(element => element.ToString());
-
-
-                    IEnumerable<string> tmps = from mPt in mPts
-                                            where mPt.ts > 0
-                                            select new { card = mPt.card, units = mPt.units }; //, mPt.unitType, mPt.mlid, mPt.ts, mPt.pin };
-                           
-
-
-
-                    string[] cmp = (from o in mPts
-                                    select o.card + "::" + o.units + "::" + o.unitType + "::" + o.mlid + "::" + o.ts + "::" + o.pin).ToArray();
-
-                    //https://github.com/tompazourek/NaturalSort.Extension
-                    //PM: Install-Package NaturalSort.Extension
-                    var ordered = cmp.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
-
-                    string[] array = new string[mPts.Count];
-                    array.CopyTo(array, 0);
-                    IList<string> s = ordered as List<string>;
-                    //Gernerate Hash
-
-                    string qsa = ordered.GetHmacSHA256(s.ToString());
-
-                    var vQueryString = (JsonConvert.SerializeObject(mPts));
-                    String v1 = vQueryString.Replace("[", "");
-                    String v2 = v1.Replace("]", "");
-                    var json = JsonConvert.DeserializeObject(v2);
-
-                    var jObj = (JObject)JsonConvert.DeserializeObject(v2);
-
+  
                     return mPts;
                     
 

@@ -10,7 +10,8 @@ using System.Net.Http;
 using Microsoft.Extensions.Hosting.Internal;
 using System.IO;
 using System.Net.Http.Headers;
-
+using Newtonsoft.Json.Linq;
+using NaturalSort.Extension;
 
 namespace ThaniWebApi.Controllers.Massy
 {
@@ -49,7 +50,35 @@ namespace ThaniWebApi.Controllers.Massy
                 _clientMassy.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
 
-                var queryString =  mPts.GetQueryString("");
+                //----------------------------------------------------
+                // -- Make Certificate for qsa value
+                //------------------------------------------------
+                              
+                //Convert to json string
+                string jsonString = JsonConvert.SerializeObject(mPts,Formatting.None,new JsonSerializerSettings()
+                    { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore});
+
+                //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
+
+                JArray jsonX= JArray.Parse(jsonString);
+                //Convert to Array for sorting
+               // Points[] arr = JObject.Parse(jsonString)["subjects"].ToObject<Points[]>();
+                var xx = jsonX[0].Values();
+                string[] sd = new String[7];
+
+                //sd[0] = jsonX.Values()
+
+                ////https://github.com/tompazourek/NaturalSort.Extension
+                ////PM: Install-Package NaturalSort.Extension
+                //var ordered = jsonX[0].Values().OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+
+                ////place :: to separate values
+                //var queryString = ordered.GetQueryString("");
+
+                ////Create hash certificate
+                //string qsa = ordered.GetHmacSHA256(queryString.ToString(), arr[7].ToString());
+
+                //-----------------------------------
 
                 ////Get date Massy API "/api/catalog/list"
                 ////submit to massyapi
@@ -57,9 +86,14 @@ namespace ThaniWebApi.Controllers.Massy
                 ////http://beta.massycard.com/loyalty/massy/api/rest2/earn?
                 ////card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
 
-                var strPath = ClsGlobal.MassyAPIver134 + "earn?" + queryString.ToString();
 
+                //string[] cmp
 
+                var queryString  = (from o in mPts
+                                select o.card + "::" + o.units + "::" + o.unitType + "::" + o.mlid + "::" + o.ts + "::" + o.pin).ToString();
+
+                var strPath = ClsGlobal.MassyAPIver134 + "earn?" + queryString.ToString(); //+ "::" + qsa.ToString();
+                
 
                 var response = await _clientMassy.GetAsync(strPath);
 
@@ -104,4 +138,55 @@ namespace ThaniWebApi.Controllers.Massy
 
     }
 
+    internal class Points
+    {
+        [JsonProperty("Points_card")]
+        public string card { get; set; } //Card number
+        [JsonProperty("Points_units")]
+        public double units { get; set; } //(decimal) Points or Dollar value
+        [JsonProperty("Points_unitType")]
+        public string unitType { get; set; } // (P or D) – P for points, D for dollars
+        [JsonProperty("Points_mlid")]
+        public int mlid { get; set; } // (integer) Massy Merchant Location ID
+        [JsonProperty("Points_ts")]
+        public int ts { get; set; } // (integer) Unix timestamp
+        [JsonProperty("Points_pin")]
+        public string pin { get; set; } // (integer)00000 5-digit user pin
+        [JsonProperty("Points_qsa")]
+        public string qsa { get; set; }
+        [JsonProperty("Points_Secret")]
+        public string ptsSecret { get; set; } // (string) The Secret for the selected store
+
+    }
 }
+
+
+
+
+//var tmp = mPts.SelectMany(element => element.ToString());
+
+
+//IEnumerable<string> tmps = from mPt in mPts
+//                           where mPt.ts > 0
+//                           select new { card = mPt.card, units = mPt.units }; //, mPt.unitType, mPt.mlid, mPt.ts, mPt.pin };
+
+
+
+
+//string[] cmp = (from o in mPts
+//                select o.card + "::" + o.units + "::" + o.unitType + "::" + o.mlid + "::" + o.ts + "::" + o.pin).ToArray();
+
+
+//string[] array = new string[mPts.Count];
+//array.CopyTo(array, 0);
+//                    IList<string> s = ordered as List<string>;
+////Gernerate Hash
+
+//string qsa = ordered.GetHmacSHA256(s.ToString());
+
+//var vQueryString = (JsonConvert.SerializeObject(mPts));
+//String v1 = vQueryString.Replace("[", "");
+//String v2 = v1.Replace("]", "");
+//var json = JsonConvert.DeserializeObject(v2);
+
+//var jObj = (JObject)JsonConvert.DeserializeObject(v2);
