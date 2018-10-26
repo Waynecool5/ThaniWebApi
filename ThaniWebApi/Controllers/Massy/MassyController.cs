@@ -12,6 +12,7 @@ using System.IO;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using NaturalSort.Extension;
+using System.Text;
 
 namespace ThaniWebApi.Controllers.Massy
 {
@@ -47,13 +48,14 @@ namespace ThaniWebApi.Controllers.Massy
             HttpClient _clientMassy = new HttpClient();
 
             try
-            {
+            {   
+
                 _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
                 _clientMassy.DefaultRequestHeaders.Accept.Clear();
                 _clientMassy.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
 
-
+                                
                 string strPath = MakeQueryString(mPts);
 
                 if (strPath == "")

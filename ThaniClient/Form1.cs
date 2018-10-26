@@ -18,6 +18,7 @@ namespace ThaniClient
     public partial class Form1 : Form
     {
         static HttpClient _client = new HttpClient();
+
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
 
@@ -66,8 +67,8 @@ namespace ThaniClient
                     ptsCustomerNo = "42100999892",
                     ptsFirstName = "Test",
                     ptsLastName = "Testers",
-                    ptsUnitType = "P",
-                    ptsMode = "P",
+                    ptsUnitType = "D",
+                    ptsMode = "D",
                     ptsTotal = 60,
                     ptsValue = 600.00,
                     ptsValueRate = .10,
