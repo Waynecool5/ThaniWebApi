@@ -9,10 +9,11 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using Microsoft.Extensions.Hosting.Internal;
 using System.IO;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace ThaniWebApi.Controllers.Points
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class PointsController : ControllerBase

@@ -13,9 +13,13 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using NaturalSort.Extension;
 using System.Text;
+using System.Security.Principal;
+using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ThaniWebApi.Controllers.Massy
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class MassyController : ControllerBase
@@ -44,8 +48,14 @@ namespace ThaniWebApi.Controllers.Massy
 
         private static async Task<MassyResponse> addMassyApiPoints(ICollection<MassyPoints> mPts)
         {
-            //dynamic model;
-            HttpClient _clientMassy = new HttpClient();
+            ////dynamic model;
+            //var credentials = new NetworkCredential("Wayneo", "dedan");
+            //var handler = new HttpClientHandler { Credentials = credentials };
+
+            HttpClient _clientMassy = new HttpClient(); // handler);
+          //  HttpResponseMessage response = null;
+
+            //var identity = WindowsIdentity.GetCurrent();
 
             try
             {   
@@ -68,17 +78,27 @@ namespace ThaniWebApi.Controllers.Massy
                 }
                 else
                 {
-
+                    //if (identity is WindowsIdentity windowsIdentity)
+                    //{
+                    //    await WindowsIdentity.RunImpersonated(windowsIdentity.AccessToken, async () =>
+                    //    {
+                    // var request = new HttpRequestMessage(HttpMethod.Get, strPath);
+                    // byteArray is username:password for the server
+                    //var byteArray = Encoding.ASCII.GetBytes("Administrator:dedan");
+                    //_clientMassy.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
+                    //string uri = "http://myServer/api/people";
                     var response = await _clientMassy.GetAsync(strPath);
 
-                    response.EnsureSuccessStatusCode();
+                            response.EnsureSuccessStatusCode();
 
-                    var stringResponse = await response.Content.ReadAsStringAsync();
+                            var stringResponse = await response.Content.ReadAsStringAsync();
 
-                    //model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
+                            //model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
 
-                    //return model;
+                            //return model;
 
+                    //    });
+                    //}
 
                     string json = @"{ ""response"" : { ""balance"" : { ""p"" : ""60"", ""d"" : ""6.00"" }, ""expiry"" : { ""pts"" : ""2"", ""dat"" : ""10/10/2019""}, ""footer"": [""Footer Line 1 Text"",""Footer Line 2 Text""] } }";
 

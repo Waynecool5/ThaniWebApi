@@ -15,6 +15,7 @@ using Swashbuckle.AspNetCore.Swagger;
 using ThaniWebApi.Controllers.Points;
 using Insight.Database;
 using Insight.Database.Json;
+using Microsoft.AspNetCore.Server.IISIntegration;
 
 namespace ThaniWebApi
 {
@@ -29,7 +30,15 @@ namespace ThaniWebApi
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {   
+        {
+            // IIServer Defaults requires the following import:
+            // using Microsoft.AspNetCore.Server.IISIntegration;
+            services.AddAuthentication(IISDefaults.AuthenticationScheme);
+
+            //Kestral Server: HttpSysDefaults requires the following import:
+            // using Microsoft.AspNetCore.Server.HttpSys;
+           // services.AddAuthentication(HttpSysDefaults.AuthenticationScheme);
+
             //-----------------------------------------------------------------
             //Declare all interface for WebApi and their dataAcess pairing
             //-----------------------------------------------------------------
