@@ -9,6 +9,8 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
+using Insight.Database;
 
 
 namespace ThaniClient
@@ -21,6 +23,11 @@ namespace ThaniClient
 
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
+
+        public ICollection<POSSale> PosSale { get; set; }
+
+        private readonly string conn = "Data Source=" + ClsGlobal.SqlSource + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
+                  "User ID=" + ClsGlobal.SqlUser + ";Password=" + ClsGlobal.SqlPassword + "";
 
         public Form1()
         {
@@ -37,6 +44,7 @@ namespace ThaniClient
         private void Form1_Load(object sender, EventArgs e)
         {
             this.btnRedeem.Text = "Send Points";
+            GetSale1();
         }
 
         private void btnRedeem_ClickAsync(object sender, EventArgs e)
@@ -53,8 +61,113 @@ namespace ThaniClient
                 }
         }
 
+        internal class Parm
+        {
 
-        private async void AddSalesPoints()
+            public int StoreID { get; set; }
+            //public int Transaction { get; set; }
+
+        }
+
+        private async void GetSale()
+        {
+
+
+            using (var Sqlconn = new SqlConnection(conn))
+            {
+                await Sqlconn.OpenAsync();
+
+                Parm parm = new Parm { StoreID = 1 };
+                //Execute Storeprocedure for all Points
+                try { 
+                    PosSale = Sqlconn.Query<POSSale>("UBPOSGetLoyaltyTransactions", parm); //Parameters.Empty);//,
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+            }
+
+
+        }
+
+        private async void GetSale1()
+        {
+
+            SqlDataReader reader = null;
+
+            using (var SQLconn = new SqlConnection(conn))
+            {
+                await SQLconn.OpenAsync();
+                // using (SqlCommand cmd = new SqlCommand("dbo.GetList", SQLconn)) //"SELECT FROM... FOR JSON PATH", SQLconn)
+                SqlCommand cmd = SQLconn.CreateCommand();
+
+                cmd.CommandText = "UBPOSGetLoyaltyTransactions";
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                cmd.Parameters.Clear();
+
+                SqlParameter StoreID = new SqlParameter("@StoreID", SqlDbType.Int, 10);
+                StoreID.Direction = ParameterDirection.Input;
+                StoreID.Value = 1;
+                cmd.Parameters.Add(StoreID);
+
+
+                try
+                {
+
+                    using (reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            if (!reader.HasRows)
+                            {
+
+                            }
+                            else
+                            {
+                                radioButton1.Select();
+                                //label19.Text = reader.GetValue(0).ToString();
+                                label19.Text = reader.GetValue(1).ToString();
+                                txtCus.Text = reader.GetValue(9).ToString(); //card number
+                                label20.Text = Convert.ToDateTime(reader.GetValue(3).ToString()).ToShortDateString(); //Date
+                                // txtCus.Text = reader.GetValue(4).ToString();
+                                //txtCus.Text = reader.GetValue(5).ToString();
+                                txtSales.Text = reader.GetValue(6).ToString(); //Total Sales
+                                decimal p = Convert.ToDecimal((Convert.ToDecimal(reader.GetValue(6).ToString()) / 10).ToString());
+                                txtTPoints.Text = Math.Floor(p).ToString();
+                                //txtCus.Text = reader.GetValue(7).ToString();
+
+                                string[] n = reader.GetValue(8).ToString().Split(' ');
+                                if (n.Length > 0)
+                                { txtFname.Text = n[0]; }
+                                if (n.Length > 1)
+                                { txtLname.Text = n[1]; }
+                                //txtCus.Text = reader.GetValue(9).ToString();
+                                // txtFname.Text = reader.GetValue(10).ToString();
+                                txtLoca.Text = reader.GetValue(11).ToString();
+                                txtCashier.Text = reader.GetValue(12).ToString();
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                finally {
+                    SQLconn.Close();
+                }
+
+
+            }
+
+
+        }
+
+
+    private async void AddSalesPoints()
         {
 
             try
@@ -129,6 +242,22 @@ namespace ThaniClient
   
     }
 
+    public class POSSale
+    {
+        public int StoreID { get; set; }
+        public int TransactionNumber { get; set; }
+        public int BatchNumber { get; set; }
+        public DateTime Time { get; set; } 
+        public int CustomerID { get; set; } 
+        public int CashierID { get; set; } 
+        public double Total { get; set; }
+        public double SalesTax { get; set; } 
+        public string Comment { get; set; } 
+        public string ReferenceNumber { get; set; } 
+        public string CompName { get; set; } 
+        public string Name { get; set; } 
+        public string Cashier { get; set; } 
+    }
 
     internal class Point
     {
