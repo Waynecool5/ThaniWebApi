@@ -172,7 +172,27 @@ namespace ThaniClient
 
             try
             {
+
                 // Create a new product
+
+                //var points = new Point
+                //{
+                //    Points_id = -1,
+                //    Document_id = -1,
+                //    ptsCustomerNo = txtCus.Text,
+                //    ptsFirstName = txtFname.Text,
+                //    ptsLastName = txtLname.Text,
+                //    ptsUnitType = "D",
+                //    ptsMode = "D",
+                //    ptsTotal = Convert.ToDouble(txtPoints.Text),
+                //    ptsValue = Convert.ToDouble(txtPoints.Text) * 10,
+                //    ptsValueRate = .10,
+                //    ptsDiscount = 6.00,
+                //    ptsDiscountRate = .10,
+                //    ptsLocation = txtLname.Text,
+                //    ptsCashier = txtCashier.Text
+                //};
+                
                 var points = new Point
                 {
                     Points_id = -1,
@@ -190,6 +210,9 @@ namespace ThaniClient
                     ptsLocation = "SS",
                     ptsCashier = "Wayne"
                 };
+
+
+
 
 
                 //var url = CreatePointAsync(points);
