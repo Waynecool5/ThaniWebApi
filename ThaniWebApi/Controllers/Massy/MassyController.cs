@@ -16,6 +16,8 @@ using System.Text;
 using System.Security.Principal;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
+using ThaniWebApi.Attributes;
+using Microsoft.Net.Http.Headers;
 
 namespace ThaniWebApi.Controllers.Massy
 {
@@ -34,6 +36,7 @@ namespace ThaniWebApi.Controllers.Massy
 
         //----------------------------------------------
 
+        //[BasicAuthorize("http://beta.massycard.com")]
         [HttpPost]
         [Route("InsertMassyApiPoints")]
         public static async Task<MassyResponse> InsertMassyApiPoints(ICollection<MassyPoints> mPts)
@@ -65,7 +68,8 @@ namespace ThaniWebApi.Controllers.Massy
                 _clientMassy.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
 
-                                
+
+
                 string strPath = MakeQueryString(mPts);
 
                 if (strPath == "")
@@ -87,6 +91,10 @@ namespace ThaniWebApi.Controllers.Massy
                     //var byteArray = Encoding.ASCII.GetBytes("Administrator:dedan");
                     //_clientMassy.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                     //string uri = "http://myServer/api/people";
+
+                    // Arrange
+                    _clientMassy.DefaultRequestHeaders.Add(HeaderNames.Authorization, AuthorizationHeaderHelper.GetBasic());
+
                     var response = await _clientMassy.GetAsync(strPath);
 
                             response.EnsureSuccessStatusCode();

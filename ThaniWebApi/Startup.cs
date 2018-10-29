@@ -16,6 +16,10 @@ using ThaniWebApi.Controllers.Points;
 using Insight.Database;
 using Insight.Database.Json;
 using Microsoft.AspNetCore.Server.IISIntegration;
+using ZNetCS.AspNetCore.Authentication.Basic;
+using ZNetCS.AspNetCore.Authentication.Basic.Events;
+using System.Security.Claims;
+using ThaniWebApi.Attributes;
 
 namespace ThaniWebApi
 {
@@ -31,13 +35,28 @@ namespace ThaniWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Basic Authentication  --https://github.com/msmolka/ZNetCS.AspNetCore.Authentication.Basic
+            //Install - Package ZNetCS.AspNetCore.Authentication.Basic
+            services.AddScoped<AuthenticationEvents>();
+
+            services
+                .AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+                .AddBasicAuthentication(
+                    options =>
+                    {
+                        options.Realm = "ThaniWebApi"; //"My Application";
+                        options.EventsType = typeof(AuthenticationEvents);
+        
+                    });
+
+
             // IIServer Defaults requires the following import:
             // using Microsoft.AspNetCore.Server.IISIntegration;
-            services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            // services.AddAuthentication(IISDefaults.AuthenticationScheme);
 
             //Kestral Server: HttpSysDefaults requires the following import:
             // using Microsoft.AspNetCore.Server.HttpSys;
-           // services.AddAuthentication(HttpSysDefaults.AuthenticationScheme);
+            // services.AddAuthentication(HttpSysDefaults.AuthenticationScheme);
 
             //-----------------------------------------------------------------
             //Declare all interface for WebApi and their dataAcess pairing
@@ -67,7 +86,7 @@ namespace ThaniWebApi
                 c.SwaggerDoc("v1", new Info { Title = "ThaniPointsAPI", Version = "v1" });
             });
 
-            // at some point in application startup Insight.Database...
+            // at some point in application startup Insight.Database... --https://github.com/jonwagner/Insight.Database/wiki/Executing-SQL-Commands
             //PM: Install-Package Insight.Database
             SqlInsightDbProvider.RegisterProvider();
             JsonNetObjectSerializer.Initialize(); //Insight.Database.Json Class[Column(SerializationMode=SerializationMode.Json)]
@@ -95,20 +114,28 @@ namespace ThaniWebApi
             });
 
 
-            app.UseCors(builder =>
+            // global cors policy
+            app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials());
 
-            builder.WithOrigins("http://localhost:54574")
-                   .AllowAnyHeader()
-                   //.AllowAnyMethod()
-                  // .AllowCredentials()
-            );
+            //app.UseCors(builder =>
+            //       builder.WithOrigins("http://localhost:54574")
+            //       .AllowAnyHeader()
+            //       //.AllowAnyMethod()
+            //      // .AllowCredentials()
+            //);
 
             app.UseResponseCompression();
             app.UseDefaultFiles();
             app.UseStaticFiles();
             app.UseHttpsRedirection();
 
-            
+            // default authentication initialization
+            app.UseAuthentication();
+
 
             //app.UseMvc();
             app.UseMvc(routes =>
