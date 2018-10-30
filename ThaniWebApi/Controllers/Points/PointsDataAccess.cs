@@ -192,46 +192,7 @@ namespace ThaniWebApi.Controllers.Points
 
 
 
-        //public async Task<dynamic> InsertMassyApiPoints(MassyPoints mPts)
-        //  {
-        //      dynamic model;
-        //      HttpClient _clientMassy = new HttpClient();
-
-        //      try
-        //      {
-        //          _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
-        //          _clientMassy.DefaultRequestHeaders.Accept.Clear();
-        //          _clientMassy.DefaultRequestHeaders.Accept.Add(
-        //              new MediaTypeWithQualityHeaderValue("application/json"));
-
-        //          var queryString = mPts.GetQueryString("earn");
-
-        //          //Get date Massy API "/api/catalog/list"
-        //          var strPath = ClsGlobal.MassyAPIver134 + "" + queryString.ToString();
-
-        //          var response = await _clientMassy.GetAsync("MassyAPI");
-
-        //          response.EnsureSuccessStatusCode();
-
-        //          var stringResponse = await response.Content.ReadAsStringAsync();
-
-        //          model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
-
-        //          return model;
-        //          //ReturnsFirst10CatalogItems
-        //          // Assert.Equal(10, model.CatalogItems.Count());
-        //      }
-        //      catch (Exception ex)
-        //      {
-        //          //Console.WriteLine( ex.Message);
-        //          return ex.Message;
-        //      }
-
-
-        //  }
-
-
-
+        
         //public async Task<IEnumerable<Point>> GetSomeJsonAsync()
         //{
         //    //var obj = new clsSqlJson();

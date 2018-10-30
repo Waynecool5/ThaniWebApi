@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 using Insight.Database;
-
+using Newtonsoft.Json.Linq;
 
 namespace ThaniClient
 {
@@ -19,12 +19,14 @@ namespace ThaniClient
 
     public partial class Form1 : Form
     {
+
+        public ICollection<POSSale> PosSale { get; set; }
+
         static HttpClient _client = new HttpClient();
 
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
 
-        public ICollection<POSSale> PosSale { get; set; }
 
         private readonly string conn = "Data Source=" + ClsGlobal.SqlSource + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
                   "User ID=" + ClsGlobal.SqlUser + ";Password=" + ClsGlobal.SqlPassword + "";
@@ -34,7 +36,7 @@ namespace ThaniClient
             InitializeComponent();
 
             //Call Thani's Web Api
-            _client.BaseAddress = new Uri("https://localhost:44305/"); // http://localhost:54574/");
+            _client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
@@ -44,6 +46,7 @@ namespace ThaniClient
         private void Form1_Load(object sender, EventArgs e)
         {
             this.btnRedeem.Text = "Send Points";
+           // GetSale();
             //GetSale1();
         }
 
@@ -71,16 +74,24 @@ namespace ThaniClient
 
         private async void GetSale()
         {
-
-
             using (var Sqlconn = new SqlConnection(conn))
             {
                 await Sqlconn.OpenAsync();
 
                 Parm parm = new Parm { StoreID = 1 };
+
                 //Execute Storeprocedure for all Points
                 try { 
                     PosSale = Sqlconn.Query<POSSale>("UBPOSGetLoyaltyTransactions", parm); //Parameters.Empty);//,
+
+                    ////Return data and place into 2 objects that are link by IList<>
+                    //PosSale = Sqlconn.Query("UBPOSGetLoyaltyTransactions", parm,
+                    //                Query.Returns(Some<Comp>.Records)
+                    //                 .ThenChildren(Some<CompList>.Records)); //, thrird object
+                    //                                                         //id: Comp => Comp.ID,
+                                                                             //into: (Comp, CompList) => beer.Glasses = CompList);
+
+
                 }
                 catch (Exception ex)
                 {
@@ -169,17 +180,28 @@ namespace ThaniClient
 
     private async void AddSalesPoints()
         {
+            ////Default error message from Massy
+            //string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+            //                         ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
 
             try
             {
-
-                // Create a new product
+                //dynamic mp = PosSale.Select(x => new MassyPoints()
+                // {
+                //     card = x.ptsCustomerNo,
+                //     units = x.ptsTotal,
+                //     unitType = x.ptsUnitType,
+                //     mlid = x.ptsMlid,
+                //     ts = x.ptsUnix,
+                //     pin = x.ptsPin,
+                //     qsa = x.ptsQsa
+                // });
 
                 //var points = new Point
                 //{
                 //    Points_id = -1,
                 //    Document_id = -1,
-                //    ptsCustomerNo = txtCus.Text,
+                //    ptsCustomerNo = PosSale. txtCus.Text,
                 //    ptsFirstName = txtFname.Text,
                 //    ptsLastName = txtLname.Text,
                 //    ptsUnitType = "D",
@@ -192,7 +214,7 @@ namespace ThaniClient
                 //    ptsLocation = txtLname.Text,
                 //    ptsCashier = txtCashier.Text
                 //};
-                
+
                 var points = new Point
                 {
                     Points_id = -1,
@@ -220,6 +242,7 @@ namespace ThaniClient
 
                 if (complete == true)
                 {
+    
                     this.txtCus.Text = points.ptsCustomerNo;// "7678976890222";
                     this.txtFname.Text = points.ptsFirstName; //"Test";
                     this.txtLname.Text = points.ptsLastName; // "Testers";
@@ -248,19 +271,28 @@ namespace ThaniClient
         //static async Task<Uri> CreatePointAsync(Point Points)
         static async Task<bool> CreatePointAsync(Point Points)
         {
-            
-            HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points);
-            response.EnsureSuccessStatusCode();
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
-            }
-            // return URI of the created resource.
-            //return response.Headers.Location;
 
-            return response.IsSuccessStatusCode;
-        }
+
+                HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points);
+                response.EnsureSuccessStatusCode();
+
+                if (response.IsSuccessStatusCode)
+                {
+                    Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+                }
+                // return URI of the created resource.
+                //return response.Headers.Location;
+
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+    }
 
   
     }
@@ -282,6 +314,7 @@ namespace ThaniClient
         public string Cashier { get; set; } 
     }
 
+   
     internal class Point
     {
         public int Points_id { get; set; }
@@ -305,31 +338,41 @@ namespace ThaniClient
         public string ptsSecret { get; set; } // (string) The Secret for the selected store
     }
 
-    //{"response":{"balance":{"p": "POINTS","d": "DOLLARS"},"expiry": {"pts": "POINTS","dat": "EXPIRYDATE"},"footer":["Footer Line 1 Text","Footer Line 2 Text"]}}
+    //----------------------------------------------------------------
+    // Massypoint response for display
+    //{"response":{"invoice":"510162","points":6,"userid":"TERMINAL",
+    // "balance":{"p":122,"d":"12.20"},
+    //"footer":["Earnings Footer Text"],
+    //"expiry":{"pts":107,"dat":"2018-10-31"}},"code":1,"HttpStatusCode":200}
+    //------------------------------------------------------
     internal class MassyResponse
     {
         public Response response { get; set; }
+        public int code { get; set; }
+        public int HttpStatusCode { get; set; }
     }
 
-    internal class Response
+    public class Response
     {
+        public string invoice { get; set; }
+        public int points { get; set; }
+        public string userid { get; set; }
         public Balance balance { get; set; }
-        public Expiry expiry { get; set; }
         public string[] footer { get; set; }
+        public Expiry expiry { get; set; }
     }
 
-    internal class Balance
+    public class Balance
     {
-        public double p { get; set; }
-        public double d { get; set; }
+        public int p { get; set; }
+        public string d { get; set; }
     }
 
-    internal class Expiry
+    public class Expiry
     {
-        public double pts { get; set; }
+        public int pts { get; set; }
         public string dat { get; set; }
     }
-
 
 
 

@@ -74,46 +74,28 @@ namespace ThaniWebApi.Controllers.Massy
 
                 if (strPath == "")
                 {
-                    string json = @"{ ""response"" : { ""balance"" : { ""p"" : ""60"", ""d"" : ""6.00"" }, ""expiry"" : { ""pts"" : ""2"", ""dat"" : ""10/10/2019""}, ""footer"": [""Footer Line 1 Text"",""Footer Line 2 Text""] } }";
-
+                    //Default error message from Massy
+                    string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                     ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+    
                     MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(json);
 
                     return ResponseData;
                 }
                 else
                 {
-                    //if (identity is WindowsIdentity windowsIdentity)
-                    //{
-                    //    await WindowsIdentity.RunImpersonated(windowsIdentity.AccessToken, async () =>
-                    //    {
-                    // var request = new HttpRequestMessage(HttpMethod.Get, strPath);
-                    // byteArray is username:password for the server
-                    //var byteArray = Encoding.ASCII.GetBytes("Administrator:dedan");
-                    //_clientMassy.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
-                    //string uri = "http://myServer/api/people";
 
-                    // Arrange
                     _clientMassy.DefaultRequestHeaders.Add(HeaderNames.Authorization, AuthorizationHeaderHelper.GetBasic());
 
                     var response = await _clientMassy.GetAsync(strPath);
 
-                            response.EnsureSuccessStatusCode();
+                    response.EnsureSuccessStatusCode();
 
-                            var stringResponse = await response.Content.ReadAsStringAsync();
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    
+                    MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(stringResponse);
 
-                            //model = JsonConvert.DeserializeObject<dynamic>(stringResponse);
-
-                            //return model;
-
-                    //    });
-                    //}
-
-                    string json = @"{ ""response"" : { ""balance"" : { ""p"" : ""60"", ""d"" : ""6.00"" }, ""expiry"" : { ""pts"" : ""2"", ""dat"" : ""10/10/2019""}, ""footer"": [""Footer Line 1 Text"",""Footer Line 2 Text""] } }";
-
-                    MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(json);
-
-                    //IEnumerable<MassyResponse> ResponseData = new MassyResponse 
-
+                    //Return Json results to Form1
                     return ResponseData;
                 }
 
@@ -123,9 +105,10 @@ namespace ThaniWebApi.Controllers.Massy
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                //return null;
-                //{"response":{"balance":{"p": "POINTS","d": "DOLLARS"},"expiry": {"pts": "POINTS","dat": "EXPIRYDATE"},"footer":["Footer Line 1 Text","Footer Line 2 Text"]}}
-                string json = @"{ ""response"" : { ""balance"" : { ""p"" : ""60"", ""d"" : ""6.00"" }, ""expiry"" : { ""pts"" : ""2"", ""dat"" : ""10/10/2019""}, ""footer"": [""Footer Line 1 Text"",""Footer Line 2 Text""] } }";
+
+                //Default error message from Massy
+                string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                     ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
 
                 MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(json);
 
@@ -183,10 +166,14 @@ namespace ThaniWebApi.Controllers.Massy
                 //------------------------------------------------
                 var HashString = string.Join("::", ordered);
 
-                var tp = "1::Test";
-                string qsa2 = tp.GetHmacSHA256("e5cc16024314d0bdc48e755fffc5e563");
-                //42792d6294eef612ba48419ba83b773fea72380be4fb11ff1dabfd6b5e983529
-                //------------------------------------------------
+                /*For test Massy Response
+                    var tp = "1::Test";
+                    string qsa2 = tp.GetHmacSHA256("e5cc16024314d0bdc48e755fffc5e563");
+                    must return this value 
+                    42792d6294eef612ba48419ba83b773fea72380be4fb11ff1dabfd6b5e983529
+                */
+                    
+                    //------------------------------------------------
                 //Create hash certificate
                 //------------------------------------------------
                 string qsa = HashString.GetHmacSHA256(key);

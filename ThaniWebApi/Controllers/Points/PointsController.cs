@@ -20,7 +20,7 @@ namespace ThaniWebApi.Controllers.Points
     {
 
         //private IPointsDataProvider PointsDataProvider;
-        private IPointsRepository PointsRepository;
+        private IPointsRepository _PointsRepository;
 
         //public PointsController(IPointsDataProvider PointsDataProvider)
         //{
@@ -29,7 +29,7 @@ namespace ThaniWebApi.Controllers.Points
 
         public PointsController(IPointsRepository PointsRepository)
         {
-            this.PointsRepository = PointsRepository;
+            _PointsRepository = PointsRepository;
         }
 
         //----------------------------------------------
@@ -38,7 +38,7 @@ namespace ThaniWebApi.Controllers.Points
         [Route("GetSomeJsonAsync")]
         public async Task<IEnumerable<Comp>> GetSomeJsonAsync()
         {
-            return await this.PointsRepository.GetSomeJsonAsync();
+            return await _PointsRepository.GetSomeJsonAsync();
             //return await this.PointsDataProvider.GetSomeJsonAsync();
         }
 
@@ -48,7 +48,7 @@ namespace ThaniWebApi.Controllers.Points
         public async Task<IEnumerable<Point>> GetPointsAsync()
         {
 
-            return await this.PointsRepository.GetPointsAsync();
+            return await _PointsRepository.GetPointsAsync();
         }
 
         //----------------------------------------------
@@ -58,7 +58,7 @@ namespace ThaniWebApi.Controllers.Points
         public async Task<MassyResponse> DoPointsAsync(Point Points)
         {
 
-            return await this.PointsRepository.DoPointsAsync(Points);
+            return await _PointsRepository.DoPointsAsync(Points);
             
          }
 

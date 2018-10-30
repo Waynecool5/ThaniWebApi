@@ -66,32 +66,45 @@ namespace ThaniWebApi.Controllers.Points
         public string secret { get; set; } // (string) The Secret for the selected store
     }
 
-    //{"response":{"balance":{"p": "POINTS","d": "DOLLARS"},"expiry": {"pts": "POINTS","dat": "EXPIRYDATE"},"footer":["Footer Line 1 Text","Footer Line 2 Text"]}}
+
+    //----------------------------------------------------------------
+    // Massypoint response for display
+    //{"response":{"invoice":"510162","points":6,"userid":"TERMINAL",
+    // "balance":{"p":122,"d":"12.20"},
+    //"footer":["Earnings Footer Text"],
+    //"expiry":{"pts":107,"dat":"2018-10-31"}},"code":1,"HttpStatusCode":200}
+    //------------------------------------------------------
     public class MassyResponse
     {
         public Response response { get; set; }
+        public int code { get; set; }
+        public int HttpStatusCode { get; set; }
     }
 
     public class Response
     {
+        public string invoice { get; set; }
+        public int points { get; set; }
+        public string userid { get; set; }
         public Balance balance { get; set; }
-        public Expiry expiry { get; set; }
         public string[] footer { get; set; }
+        public Expiry expiry { get; set; }
     }
 
     public class Balance
     {
-        public double p { get; set; }
-        public double d { get; set; }
+        public int p { get; set; }
+        public string d { get; set; }
     }
 
     public class Expiry
     {
-        public double pts { get; set; }
+        public int pts { get; set; }
         public string dat { get; set; }
     }
 
 
+    //-------------------------------------------------
 
 }
 

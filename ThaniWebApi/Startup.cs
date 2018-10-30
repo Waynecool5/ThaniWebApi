@@ -12,14 +12,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Swagger;
-using ThaniWebApi.Controllers.Points;
 using Insight.Database;
 using Insight.Database.Json;
-using Microsoft.AspNetCore.Server.IISIntegration;
-using ZNetCS.AspNetCore.Authentication.Basic;
-using ZNetCS.AspNetCore.Authentication.Basic.Events;
-using System.Security.Claims;
-using ThaniWebApi.Attributes;
+using ThaniWebApi.Controllers.Points;
+using ThaniWebApi.Controllers.Security;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+
+//using Microsoft.AspNetCore.Server.IISIntegration;
+//using ZNetCS.AspNetCore.Authentication.Basic;
+//using ZNetCS.AspNetCore.Authentication.Basic.Events;
+//using System.Security.Claims;
+//using ThaniWebApi.Attributes;
 
 namespace ThaniWebApi
 {
@@ -46,7 +51,7 @@ namespace ThaniWebApi
             //        {
             //            options.Realm = "ThaniWebApi"; //"My Application";
             //            options.EventsType = typeof(AuthenticationEvents);
-        
+
             //        });
 
 
@@ -58,11 +63,12 @@ namespace ThaniWebApi
             // using Microsoft.AspNetCore.Server.HttpSys;
             // services.AddAuthentication(HttpSysDefaults.AuthenticationScheme);
 
-            //-----------------------------------------------------------------
+           //-----------------------------------------------------------------
             //Declare all interface for WebApi and their dataAcess pairing
             //-----------------------------------------------------------------
             //services.AddTransient<IPointsDataProvider, PointsDataAccess>();
             services.AddTransient<IPointsRepository, PointsDataAccess>();
+            //services.AddTransient< IUserService, UserService> ();
 
             //Set [ApiController] as default
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
@@ -90,6 +96,39 @@ namespace ThaniWebApi
             //PM: Install-Package Insight.Database
             SqlInsightDbProvider.RegisterProvider();
             JsonNetObjectSerializer.Initialize(); //Insight.Database.Json Class[Column(SerializationMode=SerializationMode.Json)]
+
+
+            //// configure strongly typed settings objects
+            //var appSettingsSection = Configuration.GetSection("AppSettings");
+            //services.Configure<AppSettings>(appSettingsSection);
+
+            //// configure jwt authentication
+            //var appSettings = appSettingsSection.Get<AppSettings>();
+            //var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(ClsGlobal.Secret);
+
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+
+                // configure DI for application services
+                services.AddScoped<IUserService, UserService>();
+            });
+
+ 
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -135,7 +174,6 @@ namespace ThaniWebApi
 
             // default authentication initialization
             app.UseAuthentication();
-
 
             //app.UseMvc();
             app.UseMvc(routes =>
