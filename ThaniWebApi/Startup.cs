@@ -37,17 +37,17 @@ namespace ThaniWebApi
         {
             //Basic Authentication  --https://github.com/msmolka/ZNetCS.AspNetCore.Authentication.Basic
             //Install - Package ZNetCS.AspNetCore.Authentication.Basic
-            services.AddScoped<AuthenticationEvents>();
+            //services.AddScoped<AuthenticationEvents>();
 
-            services
-                .AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
-                .AddBasicAuthentication(
-                    options =>
-                    {
-                        options.Realm = "ThaniWebApi"; //"My Application";
-                        options.EventsType = typeof(AuthenticationEvents);
+            //services
+            //    .AddAuthentication(BasicAuthenticationDefaults.AuthenticationScheme)
+            //    .AddBasicAuthentication(
+            //        options =>
+            //        {
+            //            options.Realm = "ThaniWebApi"; //"My Application";
+            //            options.EventsType = typeof(AuthenticationEvents);
         
-                    });
+            //        });
 
 
             // IIServer Defaults requires the following import:

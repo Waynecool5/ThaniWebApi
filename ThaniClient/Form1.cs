@@ -34,7 +34,7 @@ namespace ThaniClient
             InitializeComponent();
 
             //Call Thani's Web Api
-            _client.BaseAddress = new Uri("http://localhost:54574/");
+            _client.BaseAddress = new Uri("https://localhost:44305/"); // http://localhost:54574/");
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.DefaultRequestHeaders.Accept.Add(
                 new MediaTypeWithQualityHeaderValue("application/json"));
@@ -44,7 +44,7 @@ namespace ThaniClient
         private void Form1_Load(object sender, EventArgs e)
         {
             this.btnRedeem.Text = "Send Points";
-            GetSale1();
+            //GetSale1();
         }
 
         private void btnRedeem_ClickAsync(object sender, EventArgs e)

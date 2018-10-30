@@ -183,7 +183,9 @@ namespace ThaniWebApi.Controllers.Massy
                 //------------------------------------------------
                 var HashString = string.Join("::", ordered);
 
-
+                var tp = "1::Test";
+                string qsa2 = tp.GetHmacSHA256("e5cc16024314d0bdc48e755fffc5e563");
+                //42792d6294eef612ba48419ba83b773fea72380be4fb11ff1dabfd6b5e983529
                 //------------------------------------------------
                 //Create hash certificate
                 //------------------------------------------------
