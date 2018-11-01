@@ -12,18 +12,18 @@ using Microsoft.IdentityModel.Tokens;
 namespace ThaniWebApi.Controllers.Security
 {
 
-    public interface IUserService
-    {
-        UserModel Authenticate(string username, string password);
+    //public interface IUserService
+    //{
+    //    UserModel Authenticate(string username, string password);
 
-        IEnumerable<UserModel> GetAll();
-    }
+    //    IEnumerable<UserModel> GetAll();
+    //}
 
 
     //-------------------------------------------------------
 
 
-    public class UserService : IUserService
+    public class UserService : IUserRepository
     {
                
         // users hardcoded for simplicity, store in a db with hashed passwords in production applications

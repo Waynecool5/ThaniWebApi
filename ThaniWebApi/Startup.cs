@@ -63,40 +63,6 @@ namespace ThaniWebApi
             // using Microsoft.AspNetCore.Server.HttpSys;
             // services.AddAuthentication(HttpSysDefaults.AuthenticationScheme);
 
-           //-----------------------------------------------------------------
-            //Declare all interface for WebApi and their dataAcess pairing
-            //-----------------------------------------------------------------
-            //services.AddTransient<IPointsDataProvider, PointsDataAccess>();
-            services.AddTransient<IPointsRepository, PointsDataAccess>();
-            //services.AddTransient< IUserService, UserService> ();
-
-            //Set [ApiController] as default
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            //use conpression 
-            //PM: Install-Package Microsoft.AspNetCore.ResponseCompression -Version 2.1.1
-            services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
-            services.AddResponseCompression(options =>
-            {
-                options.EnableForHttps = true;
-            });
-
-            //CORS services 
-            //PM: Install-Package Microsoft.AspNetCore.Cors -Version 2.1.1
-            services.AddCors();
-
-
-            // Register the Swagger generator, defining 1 or more Swagger documents
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new Info { Title = "ThaniPointsAPI", Version = "v1" });
-            });
-
-            // at some point in application startup Insight.Database... --https://github.com/jonwagner/Insight.Database/wiki/Executing-SQL-Commands
-            //PM: Install-Package Insight.Database
-            SqlInsightDbProvider.RegisterProvider();
-            JsonNetObjectSerializer.Initialize(); //Insight.Database.Json Class[Column(SerializationMode=SerializationMode.Json)]
-
 
             //// configure strongly typed settings objects
             //var appSettingsSection = Configuration.GetSection("AppSettings");
@@ -124,9 +90,46 @@ namespace ThaniWebApi
                     ValidateAudience = false
                 };
 
-                // configure DI for application services
-                services.AddScoped<IUserService, UserService>();
+                // configure DI for application services 
+                //Call Scoped is a single instance for the duration of the scoped request, which means per HTTP request in ASP.NET.
+                //services.AddScoped<IUserService, UserService>();
+                //services.AddScoped<IUserRepository, UserService>();
             });
+
+            //-----------------------------------------------------------------
+            //Declare all interface for WebApi and their dataAcess pairing
+            // Transient is a single instance per code request.
+            //-----------------------------------------------------------------
+            //services.AddTransient<IPointsDataProvider, PointsDataAccess>();
+            services.AddTransient<IPointsRepository, PointsDataAccess>();
+            services.AddTransient<IUserRepository, UserService>();
+
+            //Set [ApiController] as default
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            //use conpression 
+            //PM: Install-Package Microsoft.AspNetCore.ResponseCompression -Version 2.1.1
+            services.Configure<GzipCompressionProviderOptions>(options => options.Level = System.IO.Compression.CompressionLevel.Optimal);
+            services.AddResponseCompression(options =>
+            {
+                options.EnableForHttps = true;
+            });
+
+            //CORS services 
+            //PM: Install-Package Microsoft.AspNetCore.Cors -Version 2.1.1
+            services.AddCors();
+
+
+            // Register the Swagger generator, defining 1 or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "ThaniPointsAPI", Version = "v1" });
+            });
+
+            // at some point in application startup Insight.Database... --https://github.com/jonwagner/Insight.Database/wiki/Executing-SQL-Commands
+            //PM: Install-Package Insight.Database
+            SqlInsightDbProvider.RegisterProvider();
+            JsonNetObjectSerializer.Initialize(); //Insight.Database.Json Class[Column(SerializationMode=SerializationMode.Json)]
 
  
         }

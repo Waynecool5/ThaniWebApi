@@ -12,6 +12,8 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using Insight.Database;
 using Newtonsoft.Json.Linq;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace ThaniClient
 {
@@ -26,7 +28,7 @@ namespace ThaniClient
 
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
-
+        static UserModel Token = null;
 
         private readonly string conn = "Data Source=" + ClsGlobal.SqlSource + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
                   "User ID=" + ClsGlobal.SqlUser + ";Password=" + ClsGlobal.SqlPassword + "";
@@ -35,11 +37,11 @@ namespace ThaniClient
         {
             InitializeComponent();
 
-            //Call Thani's Web Api
-            _client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
-            _client.DefaultRequestHeaders.Accept.Clear();
-            _client.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+            ////Call Thani's Web Api
+            //_client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+            //_client.DefaultRequestHeaders.Accept.Clear();
+            //_client.DefaultRequestHeaders.Accept.Add(
+            //    new MediaTypeWithQualityHeaderValue("application/json"));
         }
 
 
@@ -273,19 +275,62 @@ namespace ThaniClient
         {
             try
             {
+               // var userParam = new UserModel { Id = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test" };
+
+                var userParam = new List<KeyValuePair<string, string>>
+                    {
+                        new KeyValuePair<string, string>( "Id", "0"),
+                        new KeyValuePair<string, string>( "FirstName", "Test"),
+                        new KeyValuePair<string, string>( "LastName", "User"),
+                        new KeyValuePair<string, string>( "Username", "test"),
+                        new KeyValuePair<string, string>( "Password","test"),
+                        new KeyValuePair<string, string>( "Token","")
+                    };
+
+                var content = new FormUrlEncodedContent(userParam);
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
 
-                HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points);
-                response.EnsureSuccessStatusCode();
-
-                if (response.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
-                }
-                // return URI of the created resource.
-                //return response.Headers.Location;
+                    client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+                    client.DefaultRequestHeaders.Accept.Clear();
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                return response.IsSuccessStatusCode;
+                    HttpResponseMessage response1 = await client.PostAsync("api/User/authenticate", content); //.Result();
+                    if (response1.IsSuccessStatusCode)
+                    {
+                        Token =await response1.Content.ReadAsAsync<UserModel>();
+                    }
+                }
+
+                using (var _client = new HttpClient())
+                {
+                    //Call Thani's Web Api
+                    _client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+                    _client.DefaultRequestHeaders.Accept.Clear();
+                    _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    if (!string.IsNullOrWhiteSpace(Token.Token))
+                    {
+                        //var t = JsonConvert.DeserializeObject<Token>(token);
+
+                        _client.DefaultRequestHeaders.Clear();
+                        _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
+                    }
+
+                    HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points);
+                    response.EnsureSuccessStatusCode();
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+                    }
+                    // return URI of the created resource.
+                    //return response.Headers.Location;
+
+                    return response.IsSuccessStatusCode;
+                }
             }
             catch (Exception ex)
             {
@@ -296,6 +341,7 @@ namespace ThaniClient
 
   
     }
+
 
     public class POSSale
     {
@@ -374,6 +420,15 @@ namespace ThaniClient
         public string dat { get; set; }
     }
 
-
+    //-----------------------------------------------
+    public class UserModel
+    {
+        public int Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string Token { get; set; }
+    }
 
 }

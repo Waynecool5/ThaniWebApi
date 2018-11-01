@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-
 namespace ThaniWebApi.Controllers.Security
 {
     [Authorize]
@@ -14,20 +13,21 @@ namespace ThaniWebApi.Controllers.Security
     [ApiController]
     public class UserController : ControllerBase
     {
+        public UserModel user { get; set; }
+        private IUserRepository _UserRepository;
 
-        private IUserService _UserService;
-
-
-        public UserController(IUserService UserService)
+        public UserController(IUserRepository UserRepository)
         {
-            _UserService = UserService;
+            _UserRepository = UserRepository;
         }
 
+
         [AllowAnonymous]
-        [HttpPost("authenticate")]
+        [HttpPost]
+        [Route("authenticate")]
         public IActionResult Authenticate([FromBody]UserModel userParam)
         {
-            var user = _UserService.Authenticate(userParam.Username, userParam.Password);
+             user = _UserRepository.Authenticate(userParam.Username, userParam.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
@@ -35,10 +35,12 @@ namespace ThaniWebApi.Controllers.Security
             return Ok(user);
         }
 
+
+
         [HttpGet]
         public IActionResult GetAll()
         {
-            var users = _UserService.GetAll();
+            var users = _UserRepository.GetAll();
             return Ok(users);
         }
     }

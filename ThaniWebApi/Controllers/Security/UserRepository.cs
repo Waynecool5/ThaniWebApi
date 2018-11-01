@@ -9,6 +9,6 @@ namespace ThaniWebApi.Controllers.Security
     {
         UserModel Authenticate(string username, string password);
 
-         IEnumerable<UserModel> GetAll();
+        IEnumerable<UserModel> GetAll();
     }
 }

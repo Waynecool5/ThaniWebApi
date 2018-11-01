@@ -16,7 +16,6 @@ using System.Text;
 using System.Security.Principal;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
-using ThaniWebApi.Attributes;
 using Microsoft.Net.Http.Headers;
 
 namespace ThaniWebApi.Controllers.Massy
@@ -85,7 +84,7 @@ namespace ThaniWebApi.Controllers.Massy
                 else
                 {
 
-                    _clientMassy.DefaultRequestHeaders.Add(HeaderNames.Authorization, AuthorizationHeaderHelper.GetBasic());
+                    //_clientMassy.DefaultRequestHeaders.Add(HeaderNames.Authorization, AuthorizationHeaderHelper.GetBasic());
 
                     var response = await _clientMassy.GetAsync(strPath);
 
