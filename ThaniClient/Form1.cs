@@ -275,20 +275,28 @@ namespace ThaniClient
         {
             try
             {
-               // var userParam = new UserModel { Id = 1, FirstName = "Test", LastName = "User", Username = "test", Password = "test" };
+                var userParam = new UserModel
+                {
+                    Id = 1,
+                    FirstName = "Test",
+                    LastName = "User",
+                    Username = "test",
+                    Password = "test",
+                    Token = ""
+                };
 
-                var userParam = new List<KeyValuePair<string, string>>
-                    {
-                        new KeyValuePair<string, string>( "Id", "0"),
-                        new KeyValuePair<string, string>( "FirstName", "Test"),
-                        new KeyValuePair<string, string>( "LastName", "User"),
-                        new KeyValuePair<string, string>( "Username", "test"),
-                        new KeyValuePair<string, string>( "Password","test"),
-                        new KeyValuePair<string, string>( "Token","")
-                    };
+                //var userParam = new List<KeyValuePair<string, string>>
+                //    {
+                //        new KeyValuePair<string, string>( "Id", "0"),
+                //        new KeyValuePair<string, string>( "FirstName", "Test"),
+                //        new KeyValuePair<string, string>( "LastName", "User"),
+                //        new KeyValuePair<string, string>( "Username", "test"),
+                //        new KeyValuePair<string, string>( "Password","test"),
+                //        new KeyValuePair<string, string>( "Token","")
+                //    };
 
-                var content = new FormUrlEncodedContent(userParam);
-                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
+
+                //ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
 
 
                 using (var client = new HttpClient())
@@ -297,7 +305,10 @@ namespace ThaniClient
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    HttpResponseMessage response1 = await client.PostAsync("api/User/authenticate", content); //.Result();
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(userParam), Encoding.UTF8, "application/json");
+
+                    // HTTP POST to get token
+                    HttpResponseMessage response1 = await client.PostAsync("api/User/authenticate", content); // content); //.Result();
                     if (response1.IsSuccessStatusCode)
                     {
                         Token =await response1.Content.ReadAsAsync<UserModel>();
