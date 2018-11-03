@@ -26,6 +26,8 @@ namespace ThaniClient
 
         static HttpClient _client = new HttpClient();
 
+        static clsWinGlobal wcls = new clsWinGlobal();
+
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
         static UserModel Token = null;
@@ -275,29 +277,19 @@ namespace ThaniClient
         {
             try
             {
+                // for testing in Postman; Passed in as json parammeter
+                //{"Id":1,"FirstName":"Test1","LastName":"User1","Username":"test1","Password":"test1","Token":""}
+
+                //Thani Loacation values
                 var userParam = new UserModel
                 {
                     Id = 1,
-                    FirstName = "Test",
-                    LastName = "User",
-                    Username = "test",
-                    Password = "test",
+                    FirstName = "Test1",
+                    LastName = "User1",
+                    Username = "test1",
+                    Password = "test1",
                     Token = ""
                 };
-
-                //var userParam = new List<KeyValuePair<string, string>>
-                //    {
-                //        new KeyValuePair<string, string>( "Id", "0"),
-                //        new KeyValuePair<string, string>( "FirstName", "Test"),
-                //        new KeyValuePair<string, string>( "LastName", "User"),
-                //        new KeyValuePair<string, string>( "Username", "test"),
-                //        new KeyValuePair<string, string>( "Password","test"),
-                //        new KeyValuePair<string, string>( "Token","")
-                //    };
-
-
-                //ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) => true;
-
 
                 using (var client = new HttpClient())
                 {
@@ -305,15 +297,16 @@ namespace ThaniClient
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(userParam), Encoding.UTF8, "application/json");
+                    //StringContent content = new StringContent(JsonConvert.SerializeObject(userParam), Encoding.UTF8, "application/json");
 
                     // HTTP POST to get token
-                    HttpResponseMessage response1 = await client.PostAsync("api/User/authenticate", content); // content); //.Result();
+                    HttpResponseMessage response1 = await client.PostAsync("api/User/authenticate", clsWinGlobal.GetStringContent_UTF8(userParam)); // content); //.Result();
                     if (response1.IsSuccessStatusCode)
                     {
                         Token =await response1.Content.ReadAsAsync<UserModel>();
                     }
                 }
+
 
                 using (var _client = new HttpClient())
                 {
@@ -328,19 +321,33 @@ namespace ThaniClient
 
                         _client.DefaultRequestHeaders.Clear();
                         _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
+   
+
+                        HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points);
+                        response.EnsureSuccessStatusCode();
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+
+                            return true;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                        // return URI of the created resource.
+                        //return response.Headers.Location;
+
+                        //return response.IsSuccessStatusCode;
+                        
                     }
-
-                    HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points);
-                    response.EnsureSuccessStatusCode();
-
-                    if (response.IsSuccessStatusCode)
+                    else
                     {
-                        Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+                        return false;
                     }
-                    // return URI of the created resource.
-                    //return response.Headers.Location;
 
-                    return response.IsSuccessStatusCode;
+
                 }
             }
             catch (Exception ex)

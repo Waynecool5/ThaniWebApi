@@ -86,6 +86,7 @@ namespace ThaniWebApi.Controllers.Massy
 
                     //_clientMassy.DefaultRequestHeaders.Add(HeaderNames.Authorization, AuthorizationHeaderHelper.GetBasic());
 
+                    //Massy using a querystring from MakeQueryString() to collect data.
                     var response = await _clientMassy.GetAsync(strPath);
 
                     response.EnsureSuccessStatusCode();

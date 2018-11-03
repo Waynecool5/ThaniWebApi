@@ -10,10 +10,12 @@ using System.Net.Http;
 using Microsoft.Extensions.Hosting.Internal;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace ThaniWebApi.Controllers.Points
 {
-    [AllowAnonymous]
+    
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class PointsController : ControllerBase
@@ -33,7 +35,7 @@ namespace ThaniWebApi.Controllers.Points
         }
 
         //----------------------------------------------
-
+        [AllowAnonymous]
         [HttpGet]
         [Route("GetSomeJsonAsync")]
         public async Task<IEnumerable<Comp>> GetSomeJsonAsync()
