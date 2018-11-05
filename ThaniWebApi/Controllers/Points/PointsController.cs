@@ -57,10 +57,10 @@ namespace ThaniWebApi.Controllers.Points
 
         [HttpPost]
         [Route("DoPointsAsync")]
-        public async Task<MassyResponse> DoPointsAsync(Point Points, string apiType)
+        public async Task<MassyResponse> DoPointsAsync( string apiType,[FromBody] Point Points)
         {
 
-            return await _PointsRepository.DoPointsAsync(Points, apiType);
+            return await _PointsRepository.DoPointsAsync(apiType, Points);
             
          }
 

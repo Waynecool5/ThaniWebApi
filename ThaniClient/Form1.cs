@@ -31,6 +31,7 @@ namespace ThaniClient
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
         static UserModel Token = null;
+        float storeDiscountRate = 0.10F;
 
         private readonly string conn = "Data Source=" + ClsGlobal.SqlSource + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
                   "User ID=" + ClsGlobal.SqlUser + ";Password=" + ClsGlobal.SqlPassword + "";
@@ -50,7 +51,7 @@ namespace ThaniClient
         private void Form1_Load(object sender, EventArgs e)
         {
             this.btnRedeem.Text = "Send Points";
-           // GetSale();
+            // GetSale();
             //GetSale1();
         }
 
@@ -61,11 +62,11 @@ namespace ThaniClient
             {
                 this.AddSalesPoints("earn");
 
-               }
+            }
             else if (this.btnRedeem.Text == "Redeem Points")
             {
 
-                }
+            }
         }
 
         internal class Parm
@@ -85,7 +86,8 @@ namespace ThaniClient
                 Parm parm = new Parm { StoreID = 1 };
 
                 //Execute Storeprocedure for all Points
-                try { 
+                try
+                {
                     PosSale = Sqlconn.Query<POSSale>("UBPOSGetLoyaltyTransactions", parm); //Parameters.Empty);//,
 
                     ////Return data and place into 2 objects that are link by IList<>
@@ -93,7 +95,7 @@ namespace ThaniClient
                     //                Query.Returns(Some<Comp>.Records)
                     //                 .ThenChildren(Some<CompList>.Records)); //, thrird object
                     //                                                         //id: Comp => Comp.ID,
-                                                                             //into: (Comp, CompList) => beer.Glasses = CompList);
+                    //into: (Comp, CompList) => beer.Glasses = CompList);
 
 
                 }
@@ -171,7 +173,8 @@ namespace ThaniClient
                 {
                     Console.WriteLine(ex.Message);
                 }
-                finally {
+                finally
+                {
                     SQLconn.Close();
                 }
 
@@ -182,7 +185,7 @@ namespace ThaniClient
         }
 
 
-    private async void AddSalesPoints(string apiType)
+        private async void AddSalesPoints(string apiType)
         {
             ////Default error message from Massy
             //string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
@@ -234,7 +237,10 @@ namespace ThaniClient
                     ptsDiscount = 6.00,
                     ptsDiscountRate = .10,
                     ptsLocation = "SS",
-                    ptsCashier = "Wayne"
+                    ptsCashier = "Wayne",
+                    ptsInvoice ="",
+                    ptsLimit = "",
+                    ptsfcn=""
                 };
 
 
@@ -242,11 +248,11 @@ namespace ThaniClient
 
 
                 //var url = CreatePointAsync(points);
-                bool complete = await CreatePointAsync(points,apiType);
+                bool complete = await CreatePointAsync(points, apiType);
 
                 if (complete == true)
                 {
-    
+
                     this.txtCus.Text = points.ptsCustomerNo;// "7678976890222";
                     this.txtFname.Text = points.ptsFirstName; //"Test";
                     this.txtLname.Text = points.ptsLastName; // "Testers";
@@ -258,7 +264,7 @@ namespace ThaniClient
                     //Reponse from Web Api services
                     this.txtMPoints.Text = Tpoints.response.balance.p.ToString();
                     this.txtMValues.Text = Tpoints.response.balance.d.ToString();
-                    this.txtMDiscount.Text = (Tpoints.response.balance.p * .10).ToString();
+                    this.txtMDiscount.Text = (Tpoints.response.balance.p * storeDiscountRate).ToString();
 
                     this.btnRedeem.Text = "Redeem Points";
                 }
@@ -303,7 +309,7 @@ namespace ThaniClient
                     HttpResponseMessage response1 = await client.PostAsync("api/User/authenticate", clsWinGlobal.GetStringContent_UTF8(userParam)); // content); //.Result();
                     if (response1.IsSuccessStatusCode)
                     {
-                        Token =await response1.Content.ReadAsAsync<UserModel>();
+                        Token = await response1.Content.ReadAsAsync<UserModel>();
                     }
                 }
 
@@ -321,9 +327,26 @@ namespace ThaniClient
 
                         _client.DefaultRequestHeaders.Clear();
                         _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
-   
 
-                        HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points + "/" + apiType);
+                        //var api = new apiCall
+                        //{
+                        //    apiType = apiType.ToString()
+                        //};
+
+                        //string param0 = JsonConvert.SerializeObject(Points);
+                        //string param1 = JsonConvert.SerializeObject(api);
+
+                        //combine two objects
+                        //string jSoNToPost = string.Format("\"Points\": {0},\"apiType\":\"{1}\"", param0, param1);
+                        
+                        ////wrap it around in object container notation
+                        //jSoNToPost = string.Concat("{", jSoNToPost, "}");
+
+                        //var Content = clsWinGlobal.GetStringContent_UTF8(jSoNToPost);
+
+                        HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync?apiType=" + apiType.ToString(), Points );
+                       // HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Content);
+
                         response.EnsureSuccessStatusCode();
 
                         if (response.IsSuccessStatusCode)
@@ -340,7 +363,7 @@ namespace ThaniClient
                         //return response.Headers.Location;
 
                         //return response.IsSuccessStatusCode;
-                        
+
                     }
                     else
                     {
@@ -355,9 +378,9 @@ namespace ThaniClient
                 Console.WriteLine(ex.Message);
                 return false;
             }
-    }
+        }
 
-  
+
     }
 
 
@@ -366,19 +389,19 @@ namespace ThaniClient
         public int StoreID { get; set; }
         public int TransactionNumber { get; set; }
         public int BatchNumber { get; set; }
-        public DateTime Time { get; set; } 
-        public int CustomerID { get; set; } 
-        public int CashierID { get; set; } 
+        public DateTime Time { get; set; }
+        public int CustomerID { get; set; }
+        public int CashierID { get; set; }
         public double Total { get; set; }
-        public double SalesTax { get; set; } 
-        public string Comment { get; set; } 
-        public string ReferenceNumber { get; set; } 
-        public string CompName { get; set; } 
-        public string Name { get; set; } 
-        public string Cashier { get; set; } 
+        public double SalesTax { get; set; }
+        public string Comment { get; set; }
+        public string ReferenceNumber { get; set; }
+        public string CompName { get; set; }
+        public string Name { get; set; }
+        public string Cashier { get; set; }
     }
 
-   
+
     internal class Point
     {
         public int Points_id { get; set; }
@@ -400,6 +423,9 @@ namespace ThaniClient
         public int ptsPin { get; set; } // (integer)00000 5-digit user pin
         public string ptsQsa { get; set; } // (string) The generated hash
         public string ptsSecret { get; set; } // (string) The Secret for the selected store
+        public string ptsInvoice { get; set; } // (string) The invoice # of process
+        public string ptsLimit { get; set; } // (string) The limit to retreive data
+        public string ptsfcn { get; set; }
     }
 
     //----------------------------------------------------------------
@@ -447,6 +473,13 @@ namespace ThaniClient
         public string Username { get; set; }
         public string Password { get; set; }
         public string Token { get; set; }
+    }
+
+
+    //----------------------------------
+    public class apiCall
+    {
+        public string apiType { get; set; }
     }
 
 }

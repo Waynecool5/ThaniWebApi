@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Converters;
 using System.IO;
 using System.Net.Http;
@@ -16,7 +17,6 @@ using System.Collections;
 using System.Net.Http.Headers;
 using ThaniWebApi.Controllers.Massy;
 using System.Security.Cryptography;
-using Newtonsoft.Json.Linq;
 using NaturalSort.Extension;
 using System.Reflection;
 
@@ -96,11 +96,11 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<MassyResponse> DoPointsAsync(Point Points,string apiType)
+        public async Task<MassyResponse> DoPointsAsync(string apiType,Point Points)
         {
             try
             {
-                ICollection<MassyPoints> mPts = await this.InsertPointsAsync(Points);
+                ICollection<MassyPoints> mPts = await this.InsertPointsAsync(apiType, Points);
 
                 switch (apiType)
                 {
@@ -142,7 +142,7 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<ICollection<MassyPoints>> InsertPointsAsync(Point Points)
+        public async Task<ICollection<MassyPoints>> InsertPointsAsync(string apiType, Point Points)
         {
             var strVal = new StringBuilder();
             //int i = 0;
@@ -154,17 +154,22 @@ namespace ThaniWebApi.Controllers.Points
             {
                 await Sqlconn.OpenAsync();
 
-                // the structure object is for remapping results to Massypoints
+                // the structure object is for remapping results from SQL to Massypoints Class Object
+               // var structure = getStucture(apiType);
+
                 var structure = new OneToOne<MassyPoints>(
-                    // if you don't override a column, the default rules are used 
+                     // if you don't override a column, the default rules are used 
                      new ColumnOverride<MassyPoints>("ptsCustomerNo", "card"),
                      new ColumnOverride<MassyPoints>("ptsTotal", "units"),
                      new ColumnOverride<MassyPoints>("ptsUnitType", "unitType"),
                      new ColumnOverride<MassyPoints>("ptsMlid", "mlid"),
                      new ColumnOverride<MassyPoints>("ptsUnix", "ts"),
                      new ColumnOverride<MassyPoints>("ptsPin", "pin"),
-                    // new ColumnOverride<MassyPoints>("ptsQsa", "qsa"),
-                     new ColumnOverride<MassyPoints>("ptsSecret", "secret")
+                     // new ColumnOverride<MassyPoints>("ptsQsa", "qsa"),
+                     new ColumnOverride<MassyPoints>("ptsSecret", "secret"),
+                     new ColumnOverride<MassyPoints>("ptsInvoice", "invoice"),
+                     new ColumnOverride<MassyPoints>("ptsLimit", "limit"),
+                     new ColumnOverride<MassyPoints>("ptsfcn", "fcn")
                 );
 
                 Parm parm = new Parm { Document = strVal.ToString() };
@@ -214,14 +219,12 @@ namespace ThaniWebApi.Controllers.Points
                 }
             }
 
-            //var results = 1;
-            //strVal.Clear();
+
 
         }
 
 
 
-        
         //public async Task<IEnumerable<Point>> GetSomeJsonAsync()
         //{
         //    //var obj = new clsSqlJson();

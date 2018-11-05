@@ -16,8 +16,8 @@ namespace ThaniWebApi
         public static String SqlUser = "sa"; // Modifiable
         public static String SqlPassword = "dedan!0987o"; // Modifiable
         public static String SqlCatalog = "WebAsync";
-        public static String SqlSource2 = "LAPTOPHP\\SQLEXP2017"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
-       // public static String SqlSource2 = "OFFICE\\SQL2017"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
+        //public static String SqlSource2 = "LAPTOPHP\\SQLEXP2017"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
+        public static String SqlSource2 = "OFFICE\\SQL2017"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
         public static String MassyAPIver134 = "http://beta.massycard.com/loyalty/massy/api/rest2/";
         public static readonly string Secret = "weg24*792#9Fe8PO87u56f122@b=ksJ3ou80";
         //Install-Package System.Data.Common -Version 4.3.0

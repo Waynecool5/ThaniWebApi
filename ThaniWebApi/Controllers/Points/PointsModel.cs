@@ -52,6 +52,9 @@ namespace ThaniWebApi.Controllers.Points
         public string ptsPin { get; set; } // (integer)00000 5-digit user pin
         public string ptsQsa { get; set; } // (string) The generated hash
         public string ptsSecret { get; set; } // (string) The Secret for the selected store
+        public string ptsInvoice { get; set; } // (string) The invoice # of process
+        public string ptsLimit { get; set; } // (string) The limit to retreive data
+        public string ptsfcn { get; set; }
     }
 
     public class MassyPoints
@@ -64,6 +67,9 @@ namespace ThaniWebApi.Controllers.Points
         public string pin { get; set; } // (integer)00000 5-digit user pin
         //public string qsa { get; set; } // (string) The generated hash
         public string secret { get; set; } // (string) The Secret for the selected store
+        public string invoice { get; set; } // (string) The invoice # of process
+        public string limit { get; set; } // (string) The limit to retreive data
+        public string fcn { get; set; } // (string) The fcn
     }
 
 

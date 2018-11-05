@@ -153,7 +153,7 @@ namespace ThaniWebApi.Controllers.Massy
         }
 
 
-        private static String MakeQueryString(ICollection<MassyPoints> mPts,string ApiType, int arrlen)
+        private static String MakeQueryString(ICollection<MassyPoints> mPts,string apiType, int arrlen)
         {
             //----------------------------------------------------
             // -- Make Certificate for qsa value
@@ -166,7 +166,11 @@ namespace ThaniWebApi.Controllers.Massy
                                     { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore });
 
                 //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
-                string[] sd = new String[arrlen];
+                string[] sd = new String[10];
+
+                ////Resize array sequence
+                //Array.Resize<string>(ref sd, 7);
+            
                 int i = 0;
 
                 JArray jsonX = JArray.Parse(jsonString);
@@ -183,7 +187,47 @@ namespace ThaniWebApi.Controllers.Massy
                 //------------------------------------------------
                 //card,units,unitType,mlid,ts,pin
                 //------------------------------------------------
-                var sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] }; //, sd[6] };
+                string[] sequence= new string[0];
+
+                switch (apiType)
+                {   //------------------------------------------
+                    //        prepare for arraysorting
+                    //---------------------------------------
+                    //card=0 :units=1 : unitType=2 : mlid=3 : ts=4 : 
+                    //pin=5 : secret=6 : invoice=7 : limit=8 : fcn=9
+
+                    case "earn":
+                        sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] }; //, sd[6] };
+                        break;
+                    case "redeem":
+                        //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                        sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] }; 
+                        break;
+                    case "customerProfile":
+                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        sequence = new[] { sd[0], sd[3], sd[4] }; //, sd[6] };
+                        break;
+                    case "pinverify":
+                        //pinverify?mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&fcn=FCN&qsa=GENERATEDHASH
+                        sequence = new[] { sd[3], sd[4], sd[5], sd[5], sd[9]};
+                        break; ;
+                    case "history":
+                        //history?card=CARD&mlid=LOCATIONID&limit=NUMBEROFRECORDSTORETURN&qsa=GENERATEDHASH
+                        sequence = new[] { sd[0], sd[3], sd[8] };
+                        break;
+                    case "void":
+                        //void?invoice=INVOICE#&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        sequence = new[] { sd[7], sd[3], sd[4], sd[5] };
+                        break;
+                    case "refund":
+                        //refund?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] };
+                        break;
+                    case "balance":
+                        //balance?card=CARD&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        sequence = new[] { sd[0], sd[3], sd[4] };
+                        break;
+                }
 
                 //Secret
                 string key = sd[6].ToString();
@@ -216,11 +260,49 @@ namespace ThaniWebApi.Controllers.Massy
                 ////card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
                 //Create string form submission
                 //------------------------------------------------
-                string queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
-                                                  + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+                string queryString2 = "";
 
+                switch (apiType)
+                {
+                    case "earn":
+                        //earn?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                         queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
+                                                                         + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+                         break;
+                    case "redeem":
+                        //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                        queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
+                                                                         + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+                        break;
+                    case "customerProfile":
+                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&mlid=" + o.mlid + "&ts=" + o.ts ));
+                        break;
+                    case "pinverify":
+                        //pinverify?mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&fcn=FCN&qsa=GENERATEDHASH
+                        queryString2 = String.Concat(mPts.Select(o => "mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+                        break; ;
+                    case "history":
+                        //history?card=CARD&mlid=LOCATIONID&limit=NUMBEROFRECORDSTORETURN&qsa=GENERATEDHASH
+                        queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&mlid=" + o.mlid + "&limit=" + o.limit));
+                        break;
+                    case "void":
+                        //void?invoice=INVOICE#&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        queryString2 = String.Concat(mPts.Select(o => "invoice=" + o.invoice + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+                        break;
+                    case "refund":
+                        //refund?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
+                                                                         + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+                        break;
+                    case "balance":
+                        //balance?card=CARD&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&mlid=" + o.mlid + "&ts=" + o.ts ));
+                        break;
+                }
+               
 
-                var strPath = ClsGlobal.MassyAPIver134 + ApiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
+                var strPath = ClsGlobal.MassyAPIver134 + apiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
 
 
 
