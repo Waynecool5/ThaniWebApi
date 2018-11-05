@@ -59,7 +59,7 @@ namespace ThaniClient
 
             if (this.btnRedeem.Text == "Send Points")
             {
-                this.AddSalesPoints();
+                this.AddSalesPoints("earn");
 
                }
             else if (this.btnRedeem.Text == "Redeem Points")
@@ -182,7 +182,7 @@ namespace ThaniClient
         }
 
 
-    private async void AddSalesPoints()
+    private async void AddSalesPoints(string apiType)
         {
             ////Default error message from Massy
             //string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
@@ -242,7 +242,7 @@ namespace ThaniClient
 
 
                 //var url = CreatePointAsync(points);
-                bool complete = await CreatePointAsync(points);
+                bool complete = await CreatePointAsync(points,apiType);
 
                 if (complete == true)
                 {
@@ -273,7 +273,7 @@ namespace ThaniClient
 
 
         //static async Task<Uri> CreatePointAsync(Point Points)
-        static async Task<bool> CreatePointAsync(Point Points)
+        static async Task<bool> CreatePointAsync(Point Points, string apiType)
         {
             try
             {
@@ -323,7 +323,7 @@ namespace ThaniClient
                         _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
    
 
-                        HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points);
+                        HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Points + "/" + apiType);
                         response.EnsureSuccessStatusCode();
 
                         if (response.IsSuccessStatusCode)

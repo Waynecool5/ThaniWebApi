@@ -38,26 +38,21 @@ namespace ThaniWebApi.Controllers.Massy
         //[BasicAuthorize("http://beta.massycard.com")]
         [HttpPost]
         [Route("InsertMassyApiPoints")]
-        public static async Task<MassyResponse> InsertMassyApiPoints(ICollection<MassyPoints> mPts)
+        public static async Task<MassyResponse> InsertMassyApiPoints(ICollection<MassyPoints> mPts, string apiType)
         {
             //
-            return await addMassyApiPoints(mPts);
+            return await doMassyApiPoints(mPts, apiType);
 
         }
 
 
 
 
-        private static async Task<MassyResponse> addMassyApiPoints(ICollection<MassyPoints> mPts)
+        private static async Task<MassyResponse> doMassyApiPoints(ICollection<MassyPoints> mPts,string apiType)
         {
-            ////dynamic model;
-            //var credentials = new NetworkCredential("Wayneo", "dedan");
-            //var handler = new HttpClientHandler { Credentials = credentials };
-
-            HttpClient _clientMassy = new HttpClient(); // handler);
-          //  HttpResponseMessage response = null;
-
-            //var identity = WindowsIdentity.GetCurrent();
+             HttpClient _clientMassy = new HttpClient(); // handler);
+            string strPath = "";
+            string json = "";
 
             try
             {   
@@ -67,16 +62,54 @@ namespace ThaniWebApi.Controllers.Massy
                 _clientMassy.DefaultRequestHeaders.Accept.Add(
                     new MediaTypeWithQualityHeaderValue("application/json"));
 
+                switch (apiType)
+                {   case "earn":
+                        //earn?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        strPath = MakeQueryString(mPts,"earn", 7);
+                        break;
+                    case "redeem":
+                        //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                        strPath = MakeQueryString(mPts, "redeem", 7);
+                        break;
+                    case "customerProfile":
+                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        strPath = MakeQueryString(mPts, "customerProfile", 4);
+                        break;
+                    case "pinverify":
+                        //pinverify?mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&fcn=FCN&qsa=GENERATEDHASH
+                        strPath = MakeQueryString(mPts, "pinverify", 4);
+                        break;
+                    case "history":
+                        //history?card=CARD&mlid=LOCATIONID&limit=NUMBEROFRECORDSTORETURN&qsa=GENERATEDHASH
+                        strPath = MakeQueryString(mPts, "history", 4);
+                        break;
+                    case "void":
+                        //void?invoice=INVOICE#&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        strPath = MakeQueryString(mPts, "void", 4);
+                        break;
+                    case "refund":
+                        //refund?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        strPath = MakeQueryString(mPts, "refund", 7);
+                        break;
+                    case "balance":
+                        //balance?card=CARD&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        strPath = MakeQueryString(mPts, "balance", 4);
+                        break;
+                }
 
 
-                string strPath = MakeQueryString(mPts);
 
                 if (strPath == "")
                 {
-                    //Default error message from Massy
-                    string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                    switch (apiType)
+                    {
+                        case "earn":
+                            //Default error message from Massy
+                            json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
                                      ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
-    
+                            break;
+                    }
+
                     MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(json);
 
                     return ResponseData;
@@ -107,7 +140,7 @@ namespace ThaniWebApi.Controllers.Massy
                 Console.WriteLine(ex.Message);
 
                 //Default error message from Massy
-                string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                 json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
                                      ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
 
                 MassyResponse ResponseData = JsonConvert.DeserializeObject<MassyResponse>(json);
@@ -120,7 +153,7 @@ namespace ThaniWebApi.Controllers.Massy
         }
 
 
-        private static String MakeQueryString(ICollection<MassyPoints> mPts)
+        private static String MakeQueryString(ICollection<MassyPoints> mPts,string ApiType, int arrlen)
         {
             //----------------------------------------------------
             // -- Make Certificate for qsa value
@@ -133,7 +166,7 @@ namespace ThaniWebApi.Controllers.Massy
                                     { ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore });
 
                 //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
-                string[] sd = new String[7];
+                string[] sd = new String[arrlen];
                 int i = 0;
 
                 JArray jsonX = JArray.Parse(jsonString);
@@ -187,7 +220,8 @@ namespace ThaniWebApi.Controllers.Massy
                                                   + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
 
 
-                var strPath = ClsGlobal.MassyAPIver134 + "earn?" + queryString2 + "&qsa=" + qsa.ToString();
+                var strPath = ClsGlobal.MassyAPIver134 + ApiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
+
 
 
                 return strPath;
@@ -202,6 +236,24 @@ namespace ThaniWebApi.Controllers.Massy
         }
 
 
+        //private getUserProfile()
+        //{
+        //    HttpClient _clientMassyProf = new HttpClient(); 
+
+        //    try
+        //    {
+
+        //        _clientMassyProf.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
+        //        _clientMassyProf.DefaultRequestHeaders.Accept.Clear();
+        //        _clientMassyProf.DefaultRequestHeaders.Accept.Add(
+        //            new MediaTypeWithQualityHeaderValue("application/json"));
+        //        //http://beta.massycard.com/loyalty/massy/api/rest2/
+        //        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+
+        //        string strPath = MakeQueryString(mPts,);
+
+        //        return names;
+        //    }
     }
 
 

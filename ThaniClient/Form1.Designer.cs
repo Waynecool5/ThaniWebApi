@@ -67,6 +67,8 @@
             this.label20 = new System.Windows.Forms.Label();
             this.label19 = new System.Windows.Forms.Label();
             this.LblExpire = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -78,7 +80,7 @@
             this.btnRedeem.Location = new System.Drawing.Point(44, 14);
             this.btnRedeem.Margin = new System.Windows.Forms.Padding(4);
             this.btnRedeem.Name = "btnRedeem";
-            this.btnRedeem.Size = new System.Drawing.Size(182, 38);
+            this.btnRedeem.Size = new System.Drawing.Size(112, 38);
             this.btnRedeem.TabIndex = 0;
             this.btnRedeem.Text = "Send/Redeem";
             this.btnRedeem.UseVisualStyleBackColor = true;
@@ -88,10 +90,10 @@
             // 
             this.btnClose.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClose.ForeColor = System.Drawing.Color.Maroon;
-            this.btnClose.Location = new System.Drawing.Point(471, 14);
+            this.btnClose.Location = new System.Drawing.Point(539, 14);
             this.btnClose.Margin = new System.Windows.Forms.Padding(4);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(182, 38);
+            this.btnClose.Size = new System.Drawing.Size(114, 38);
             this.btnClose.TabIndex = 1;
             this.btnClose.Text = "CloseOut";
             this.btnClose.UseVisualStyleBackColor = true;
@@ -275,6 +277,8 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.SteelBlue;
+            this.panel1.Controls.Add(this.button2);
+            this.panel1.Controls.Add(this.button1);
             this.panel1.Controls.Add(this.btnRedeem);
             this.panel1.Controls.Add(this.btnClose);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -483,6 +487,30 @@
             this.LblExpire.TabIndex = 36;
             this.LblExpire.Text = "Point Expiring On";
             // 
+            // button1
+            // 
+            this.button1.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.button1.Location = new System.Drawing.Point(183, 13);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(74, 39);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "Void";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // button2
+            // 
+            this.button2.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
+            this.button2.Location = new System.Drawing.Point(292, 13);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(112, 38);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "Send/Redeem";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -578,6 +606,8 @@
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label LblExpire;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
     }
 }
 

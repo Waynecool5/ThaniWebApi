@@ -96,15 +96,44 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<MassyResponse> DoPointsAsync(Point Points)
+        public async Task<MassyResponse> DoPointsAsync(Point Points,string apiType)
         {
             try
             {
                 ICollection<MassyPoints> mPts = await this.InsertPointsAsync(Points);
 
-                //MassyPoints mPts = await InsertPointsAsync(Points);
-                return await MassyController.InsertMassyApiPoints(mPts);
-              }
+                switch (apiType)
+                {
+                    case "earn":
+                        //earn?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        //MassyPoints mPts = await InsertPointsAsync(Points);
+                        return await MassyController.InsertMassyApiPoints(mPts, "earn");
+                    case "redeem":
+                        //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                        return await MassyController.InsertMassyApiPoints(mPts, "redeem");
+                    case "customerProfile":
+                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        return await MassyController.InsertMassyApiPoints(mPts, "customerProfile");
+                    case "pinverify":
+                        //pinverify?mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&fcn=FCN&qsa=GENERATEDHASH
+                        return await MassyController.InsertMassyApiPoints(mPts, "pinverify");
+                    case "history":
+                        //history?card=CARD&mlid=LOCATIONID&limit=NUMBEROFRECORDSTORETURN&qsa=GENERATEDHASH
+                        return await MassyController.InsertMassyApiPoints(mPts, "history");
+                    case "void":
+                        //void?invoice=INVOICE#&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        return await MassyController.InsertMassyApiPoints(mPts, "void");
+                    case "refund":
+                        //refund?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                        return await MassyController.InsertMassyApiPoints(mPts, "refund");
+                    case "balance":
+                        //balance?card=CARD&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        return await MassyController.InsertMassyApiPoints(mPts, "balance");
+                    default:
+                        return new MassyResponse();
+                }
+
+            }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
