@@ -72,6 +72,16 @@ namespace ThaniWebApi.Controllers.Points
         public string fcn { get; set; } // (string) The fcn
     }
 
+    public class MassyProfile
+    {
+        //public string ptsLocation { get; set; }
+        public string card { get; set; }
+        public string mlid { get; set; }
+        public string pin { get; set; }
+        public string secret { get; set; }
+        public string ts { get; set; }
+    }
+
 
     //----------------------------------------------------------------
     // Massypoint response for display
@@ -80,7 +90,7 @@ namespace ThaniWebApi.Controllers.Points
     //"footer":["Earnings Footer Text"],
     //"expiry":{"pts":107,"dat":"2018-10-31"}},"code":1,"HttpStatusCode":200}
     //------------------------------------------------------
-    public class MassyResponse
+    public class MassyRespEarn
     {
         public Response response { get; set; }
         public int code { get; set; }
@@ -111,6 +121,11 @@ namespace ThaniWebApi.Controllers.Points
 
 
     //-------------------------------------------------
+    public class MassyRespProfile
+    {
+
+    }
 
 }
+
 

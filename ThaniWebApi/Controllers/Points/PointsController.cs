@@ -55,14 +55,25 @@ namespace ThaniWebApi.Controllers.Points
 
         //----------------------------------------------
 
+        [HttpGet]
+        [Route("GetPointsAsync")]
+        public async Task<MassyRespProfile> GetCustProfile(string apiType,[FromBody] MassyProfile Loca)
+        {
+            return await _PointsRepository.GetCustProfile(apiType, Loca);
+        }
+
+        //----------------------------------------------
+
         [HttpPost]
         [Route("DoPointsAsync")]
-        public async Task<MassyResponse> DoPointsAsync( string apiType,[FromBody] Point Points)
+        public async Task<MassyRespEarn> DoPointsAsync( string apiType,[FromBody] Point Points)
         {
 
             return await _PointsRepository.DoPointsAsync(apiType, Points);
             
          }
+
+        
 
         //[HttpPost]
         //[Route("InsertMassyApiPoints")]

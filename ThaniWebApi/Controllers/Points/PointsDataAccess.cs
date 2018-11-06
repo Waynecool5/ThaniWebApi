@@ -30,7 +30,9 @@ namespace ThaniWebApi.Controllers.Points
         public ICollection<Point> ResultPts { get; set; }
         public ICollection<Comp> CompData { get; set; }
         public ICollection<MassyPoints> mPts { get; set; }
-        
+
+        public ICollection<MassyProfile> mProfile { get; set; }
+        public ICollection<MassyRespProfile> mResp { get; set; }
 
         private HttpClient _client;
 
@@ -96,7 +98,41 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<MassyResponse> DoPointsAsync(string apiType,Point Points)
+        public async Task<MassyRespProfile> GetCustProfile(string apiType, MassyProfile Loca)
+        {
+
+            using (var Sqlconn = new SqlConnection(conn))
+            {
+                await Sqlconn.OpenAsync();
+
+                var structure = new OneToOne<MassyProfile>(
+                                 // if you don't override a column, the default rules are used 
+                                 new ColumnOverride<MassyProfile>("ptsCustomerNo", "card"),
+                                 new ColumnOverride<MassyProfile>("ptsMlid", "mlid"),
+                                 new ColumnOverride<MassyProfile>("ptsUnix", "ts"),
+                                 new ColumnOverride<MassyProfile>("ptsPin", "pin"),
+                                 new ColumnOverride<MassyProfile>("ptsSecret", "secret")
+                            );
+
+                Parm parm = new Parm { Loc_ID = Loca.ptsLocation, Card = Loca.ptsCustomerNo };
+
+                //return point object for submission to MassyAPI
+                //ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
+
+                mProfile = Sqlconn.Query("GetPointsProfile", parm, Query.Returns(structure));
+
+                if (mProfile.Count > 0)
+                {
+                    //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                    mResp = await MassyController.GetMassyApiProfile(mProfile, apiType);
+                }
+
+            }
+
+            return MassyRespProfile;
+        }
+
+        public async Task<MassyRespEarn> DoPointsAsync(string apiType,Point Points)
         {
             try
             {
@@ -111,9 +147,9 @@ namespace ThaniWebApi.Controllers.Points
                     case "redeem":
                         //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
                         return await MassyController.InsertMassyApiPoints(mPts, "redeem");
-                    case "customerProfile":
-                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
-                        return await MassyController.InsertMassyApiPoints(mPts, "customerProfile");
+                    //case "customerProfile":
+                    //    //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                    //    return await MassyController.InsertMassyApiPoints(mPts, "customerProfile");
                     case "pinverify":
                         //pinverify?mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&fcn=FCN&qsa=GENERATEDHASH
                         return await MassyController.InsertMassyApiPoints(mPts, "pinverify");
@@ -130,7 +166,7 @@ namespace ThaniWebApi.Controllers.Points
                         //balance?card=CARD&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
                         return await MassyController.InsertMassyApiPoints(mPts, "balance");
                     default:
-                        return new MassyResponse();
+                        return new MassyRespEarn();
                 }
 
             }
@@ -467,7 +503,8 @@ namespace ThaniWebApi.Controllers.Points
         public string Document { get; set; }
         public int ID { get; set; }
         public int XMode { get; set; }
-        
+        public string Loc_ID { get; set; }
+        public string Card { get; set; }
     }
 
     internal class MassyCard

@@ -27,10 +27,11 @@ namespace ThaniClient
         static HttpClient _client = new HttpClient();
 
         static clsWinGlobal wcls = new clsWinGlobal();
+        static clsSecurity wSec = new clsSecurity();
 
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
-        static UserModel Token = null;
+        
         float storeDiscountRate = 0.10F;
 
         private readonly string conn = "Data Source=" + ClsGlobal.SqlSource + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
@@ -278,6 +279,65 @@ namespace ThaniClient
         }
 
 
+        static async Task<bool> GetCustomerProfile(string CardNo, UserModel userParam , string apiType)
+        {
+
+            UserModel Token = await wSec.GetSecurityToken("http://localhost:54574/", userParam);
+
+            var Loca = new Profile
+            {   ptsLocation = "SS",
+                ptsCustomerNo = "42100999892",
+                ptsMlid = "",
+                ptsPin = "00000",
+                ptsSecret = "",
+                ptsUnix = ""
+            };
+
+
+            if (!string.IsNullOrWhiteSpace(Token.Token))
+            {
+                using (var _client = new HttpClient())
+                {
+                    //Call Thani's Web Api
+                    _client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+                    _client.DefaultRequestHeaders.Accept.Clear();
+                    _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    //var t = JsonConvert.DeserializeObject<Token>(token);
+
+                    _client.DefaultRequestHeaders.Clear();
+                    _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
+
+                    HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/GetCustProfile?apiType=" + apiType.ToString(), Loca);
+
+                    response.EnsureSuccessStatusCode();
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    // return URI of the created resource.
+                    //return response.Headers.Location;
+
+                    //return response.IsSuccessStatusCode;
+
+
+
+
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         //static async Task<Uri> CreatePointAsync(Point Points)
         static async Task<bool> CreatePointAsync(Point Points, string apiType)
         {
@@ -297,55 +357,40 @@ namespace ThaniClient
                     Token = ""
                 };
 
-                using (var client = new HttpClient())
+                //using (var client = new HttpClient())
+                //{
+                //    client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+                //    client.DefaultRequestHeaders.Accept.Clear();
+                //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                //    //StringContent content = new StringContent(JsonConvert.SerializeObject(userParam), Encoding.UTF8, "application/json");
+
+                //    // HTTP POST to get token
+                //    HttpResponseMessage response1 = await client.PostAsync("api/User/authenticate", clsWinGlobal.GetStringContent_UTF8(userParam)); // content); //.Result();
+                //    if (response1.IsSuccessStatusCode)
+                //    {
+                //        Token = await response1.Content.ReadAsAsync<UserModel>();
+                //    }
+                //}
+
+                //get new token for access to webapi's
+                UserModel Token = await wSec.GetSecurityToken("http://localhost:54574/", userParam);
+
+                if (!string.IsNullOrWhiteSpace(Token.Token))
                 {
-                    client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
-                    client.DefaultRequestHeaders.Accept.Clear();
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    //StringContent content = new StringContent(JsonConvert.SerializeObject(userParam), Encoding.UTF8, "application/json");
-
-                    // HTTP POST to get token
-                    HttpResponseMessage response1 = await client.PostAsync("api/User/authenticate", clsWinGlobal.GetStringContent_UTF8(userParam)); // content); //.Result();
-                    if (response1.IsSuccessStatusCode)
+                    using (var _client = new HttpClient())
                     {
-                        Token = await response1.Content.ReadAsAsync<UserModel>();
-                    }
-                }
+                        //Call Thani's Web Api
+                        _client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+                        _client.DefaultRequestHeaders.Accept.Clear();
+                        _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-
-                using (var _client = new HttpClient())
-                {
-                    //Call Thani's Web Api
-                    _client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
-                    _client.DefaultRequestHeaders.Accept.Clear();
-                    _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-                    if (!string.IsNullOrWhiteSpace(Token.Token))
-                    {
                         //var t = JsonConvert.DeserializeObject<Token>(token);
 
                         _client.DefaultRequestHeaders.Clear();
                         _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
 
-                        //var api = new apiCall
-                        //{
-                        //    apiType = apiType.ToString()
-                        //};
-
-                        //string param0 = JsonConvert.SerializeObject(Points);
-                        //string param1 = JsonConvert.SerializeObject(api);
-
-                        //combine two objects
-                        //string jSoNToPost = string.Format("\"Points\": {0},\"apiType\":\"{1}\"", param0, param1);
-                        
-                        ////wrap it around in object container notation
-                        //jSoNToPost = string.Concat("{", jSoNToPost, "}");
-
-                        //var Content = clsWinGlobal.GetStringContent_UTF8(jSoNToPost);
-
-                        HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync?apiType=" + apiType.ToString(), Points );
-                       // HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync", Content);
+                        HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/DoPointsAsync?apiType=" + apiType.ToString(), Points);
 
                         response.EnsureSuccessStatusCode();
 
@@ -359,18 +404,20 @@ namespace ThaniClient
                         {
                             return false;
                         }
-                        // return URI of the created resource.
-                        //return response.Headers.Location;
+                            // return URI of the created resource.
+                            //return response.Headers.Location;
 
-                        //return response.IsSuccessStatusCode;
+                            //return response.IsSuccessStatusCode;
+
+                        
+
 
                     }
-                    else
-                    {
-                        return false;
-                    }
-
-
+                }
+                else
+                {
+                    Console.WriteLine("Secure access not granted.");
+                    return false;
                 }
             }
             catch (Exception ex)
