@@ -32,7 +32,7 @@ namespace ThaniWebApi.Controllers.Points
         public ICollection<MassyPoints> mPts { get; set; }
 
         public ICollection<MassyProfile> mProfile { get; set; }
-        public ICollection<MassyRespProfile> mResp { get; set; }
+     
 
         private HttpClient _client;
 
@@ -98,38 +98,69 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
-        public async Task<MassyRespProfile> GetCustProfile(string apiType, MassyProfile Loca)
+        public async Task<MassyRespProfile> GetCustProfile(string apiType, Point Points)
         {
+            string json = "";
 
-            using (var Sqlconn = new SqlConnection(conn))
+            try
             {
-                await Sqlconn.OpenAsync();
-
-                var structure = new OneToOne<MassyProfile>(
-                                 // if you don't override a column, the default rules are used 
-                                 new ColumnOverride<MassyProfile>("ptsCustomerNo", "card"),
-                                 new ColumnOverride<MassyProfile>("ptsMlid", "mlid"),
-                                 new ColumnOverride<MassyProfile>("ptsUnix", "ts"),
-                                 new ColumnOverride<MassyProfile>("ptsPin", "pin"),
-                                 new ColumnOverride<MassyProfile>("ptsSecret", "secret")
-                            );
-
-                Parm parm = new Parm { Loc_ID = Loca.ptsLocation, Card = Loca.ptsCustomerNo };
-
-                //return point object for submission to MassyAPI
-                //ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
-
-                mProfile = Sqlconn.Query("GetPointsProfile", parm, Query.Returns(structure));
-
-                if (mProfile.Count > 0)
+                using (var Sqlconn = new SqlConnection(conn))
                 {
-                    //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
-                    mResp = await MassyController.GetMassyApiProfile(mProfile, apiType);
+                    await Sqlconn.OpenAsync();
+
+                    var structure = new OneToOne<MassyProfile>(
+                                     // if you don't override a column, the default rules are used 
+                                     new ColumnOverride<MassyProfile>("ptsCustomerNo", "card"),
+                                     new ColumnOverride<MassyProfile>("ptsMlid", "mlid"),
+                                     new ColumnOverride<MassyProfile>("ptsUnix", "ts"),
+                                     new ColumnOverride<MassyProfile>("ptsPin", "pin"),
+                                     new ColumnOverride<MassyProfile>("ptsSecret", "secret")
+                                );
+
+                    Parm parm = new Parm { Loc_ID = Points.ptsLocation, Card = Points.ptsCustomerNo };
+
+                    //return point object for submission to MassyAPI
+                    //ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
+
+                    mProfile = Sqlconn.Query("GetPointsProfile", parm, Query.Returns(structure));
+
+                    if (mProfile.Count > 0)
+                    {
+                        //Call MassyAPI System
+
+                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        MassyRespProfile mResp = await MassyController.GetMassyApiProfile(mProfile, apiType);
+
+                        return mResp;
+                    }
+                    else
+                    {
+
+                        //Default error message from Massy
+                        json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                        ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+                        MassyRespProfile mResp = JsonConvert.DeserializeObject<MassyRespProfile>(json);
+
+                        return mResp;
+
+                    }
                 }
 
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
 
-            return MassyRespProfile;
+                //Default error message from Massy
+                    json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                        ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+                    MassyRespProfile mResp = JsonConvert.DeserializeObject<MassyRespProfile>(json);
+
+                return mResp;
+
+            }
         }
 
         public async Task<MassyRespEarn> DoPointsAsync(string apiType,Point Points)

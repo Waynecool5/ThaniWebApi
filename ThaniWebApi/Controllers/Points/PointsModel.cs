@@ -1,4 +1,6 @@
-﻿using Insight.Database;
+﻿//using Insight.Database;
+//using Newtonsoft.Json;
+//using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -121,9 +123,18 @@ namespace ThaniWebApi.Controllers.Points
 
 
     //-------------------------------------------------
+    //[JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
     public class MassyRespProfile
     {
+        public RespNames response { get; set; }
+        public int code { get; set; }
+        public int HttpStatusCode { get; set; }
+    }
 
+    public class RespNames
+    {
+        public string firstname { get; set; }
+        public string lastname { get; set; }
     }
 
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Net.Http;
@@ -9,8 +8,11 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data;
 using System.Data.SqlClient;
 using Insight.Database;
+using Insight.Database.Reliable;
+using Insight.Database.Providers;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using Newtonsoft.Json;
@@ -22,16 +24,18 @@ namespace ThaniClient
     public partial class Form1 : Form
     {
 
-        public ICollection<POSSale> PosSale { get; set; }
-
         static HttpClient _client = new HttpClient();
-
-        static clsWinGlobal wcls = new clsWinGlobal();
+        static bool FTime = true;
+        public static clsWinGlobal wcls = new clsWinGlobal();
         static clsSecurity wSec = new clsSecurity();
 
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
-        
+        static MassyRespProfile TProfile = null;
+        static UserModel userParam = null;
+        static ICollection<POSSale> PosSales { get; set; }
+        static UserModel Token = null;
+
         float storeDiscountRate = 0.10F;
 
         private readonly string conn = "Data Source=" + ClsGlobal.SqlSource + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
@@ -51,24 +55,182 @@ namespace ThaniClient
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //Thani Loacation values
+            userParam = new UserModel
+            {
+                Id = 1,
+                FirstName = "Test1",
+                LastName = "User1",
+                Username = "test1",
+                Password = "test1",
+                Token = ""
+            };
+
             this.btnRedeem.Text = "Send Points";
-            // GetSale();
-            //GetSale1();
+
         }
 
-        private void btnRedeem_ClickAsync(object sender, EventArgs e)
+
+        private async void Form1_ActivatedAsync(object sender, EventArgs e)
         {
-
-            if (this.btnRedeem.Text == "Send Points")
-            {
-                this.AddSalesPoints("earn");
-
-            }
-            else if (this.btnRedeem.Text == "Redeem Points")
+            if (FTime == true)
             {
 
+                //get Token Security Access to API
+                Token = await wSec.GetSecurityToken("http://localhost:54574/", userParam);
+
+
+                //get the transaction of Sale - LIVE
+                //ICollection<POSSale> pos = await GetSale();
+                //Get Card number from selection  - LIVE
+                //string CardNo = (from o in pos select o.ReferenceNumber).ToString();
+                //string Cashier = (from o in pos select o.CashierID).ToString();
+                //decimal Totalsales =  (from o in pos select o.Total).ToString();
+                //decimal TotalPoints = Totalsales * clsWinGlobal.gsMassyRate ;
+                //decimal PointValue = TotalPoints * clsWinGlobal.gsRate ;
+
+                //Testing
+                string CardNo = "42100999892";
+
+
+                //GetSale1();
+
+                //After card is swiped, get the Card holders Name from MassyAPI
+                bool complete = await GetCustomerProfile(CardNo, userParam, "CustomerProfile");
+
+                if (complete == true)
+                {
+                    this.txtCus.Text = CardNo;// "7678976890222";
+                    this.txtFname.Text = TProfile.response.firstname; //"Test";
+                    this.txtLname.Text = TProfile.response.lastname; // "Testers";
+                                                                     //this.txtCashier.Text = Cashier;
+                                                                     // this.txtLoca.Text = LocationName;
+                                                                     // this.txtSales.Text =  Totalsales;
+                                                                     // this.txtTPoints.Text = TotalPoints;
+                                                                     // this.txtPoints.Text =  PointValue;
+
+                    //SELECT TOP(1)  [Transaction].StoreID, TransactionNumber, BatchNumber, Time,  [Transaction].CustomerID, 
+                    //            CashierID, Total, SalesTax, Comment, ReferenceNumber, 
+
+
+                }
+
+                HideButtons(true);
+
+                FTime = false;
             }
+
         }
+
+        private void HideButtons(bool doChange)
+        {
+            this.btnRedeem.Visible = doChange;
+
+            if (!doChange) {
+                this.btnRedeem.Text = "Send";
+            }
+            else
+            {
+                this.btnRedeem.Text = "Redeem";
+            }
+
+
+            this.btnVoid.Visible = !doChange;
+            this.btnHistory.Visible = !doChange;
+            this.btnRefund.Visible = !doChange;
+            this.btnVerify.Visible = !doChange;
+            this.btnBalance.Visible = !doChange;
+        }
+
+       
+        #region Set rate options
+            private void radioButton1_CheckedChanged(object sender, EventArgs e)
+            {
+                clsWinGlobal.gsRate = clsWinGlobal.gsMassyRate;
+            }
+
+            private void radioButton2_CheckedChanged(object sender, EventArgs e)
+            {
+                clsWinGlobal.gsRate = clsWinGlobal.gsBarpRate;
+            }
+
+            private void radioButton3_CheckedChanged(object sender, EventArgs e)
+            {
+                clsWinGlobal.gsRate = clsWinGlobal.gsStaffRate;
+            }
+
+        #endregion
+
+        
+        #region Form events to call MassyApi
+
+            private async void btnVoid_Click(object sender, EventArgs e)
+            {
+                bool proceed = await CheckToken(Token);
+                if (proceed == true)
+                {
+
+                }
+
+            }
+
+            private async void btnHistory_Click(object sender, EventArgs e)
+            {
+                bool proceed = await CheckToken(Token);
+                if (proceed == true)
+                {
+
+                }
+            }
+
+            private async void btnVerify_Click(object sender, EventArgs e)
+            {
+                bool proceed = await CheckToken(Token);
+                if (proceed == true)
+                {
+
+
+                this.panDisplay.Visible = true;
+                }
+            }
+
+            private async void btnRefund_Click(object sender, EventArgs e)
+            {
+                bool proceed = await CheckToken(Token);
+                if (proceed == true)
+                {
+
+                }
+            }
+
+            private async void btnBalance_Click(object sender, EventArgs e)
+            {
+                bool proceed = await CheckToken(Token);
+                if (proceed == true)
+                {
+
+                }
+            }
+
+
+
+
+            private void btnRedeem_ClickAsync(object sender, EventArgs e)
+            {
+
+                if (this.btnRedeem.Text == "Send Points")
+                {
+                    this.AddSalesPoints("earn");
+
+                }
+                else if (this.btnRedeem.Text == "Redeem Points")
+                {
+
+                }
+            }
+
+        #endregion
+
 
         internal class Parm
         {
@@ -78,7 +240,7 @@ namespace ThaniClient
 
         }
 
-        private async void GetSale()
+        private async Task<ICollection<POSSale>> GetSale()
         {
             using (var Sqlconn = new SqlConnection(conn))
             {
@@ -89,7 +251,16 @@ namespace ThaniClient
                 //Execute Storeprocedure for all Points
                 try
                 {
-                    PosSale = Sqlconn.Query<POSSale>("UBPOSGetLoyaltyTransactions", parm); //Parameters.Empty);//,
+                    //SELECT TOP(1)  [Transaction].StoreID, TransactionNumber, BatchNumber, Time,  [Transaction].CustomerID, 
+                    //            CashierID, Total, SalesTax, Comment, ReferenceNumber,   
+                    //                                                                                              [Transaction].CompName, Store.Name, Cashier.FirstName Cashier
+                    //FROM[Transaction]
+                    //INNER JOIN Store on Store.ID = [Transaction].StoreID
+                    //INNER JOIN Cashier on Cashier.ID = CashierID
+                    //WHERE LEN(ReferenceNumber) > 0 and[Transaction].StoreID = @StoreID
+                    //ORDER BY TransactionNumber DESC
+
+                    PosSales = Sqlconn.Query<POSSale>("UBPOSGetLoyaltyTransactions", parm); //Parameters.Empty);//,
 
                     ////Return data and place into 2 objects that are link by IList<>
                     //PosSale = Sqlconn.Query("UBPOSGetLoyaltyTransactions", parm,
@@ -98,11 +269,13 @@ namespace ThaniClient
                     //                                                         //id: Comp => Comp.ID,
                     //into: (Comp, CompList) => beer.Glasses = CompList);
 
-
+                    return PosSales;
                 }
                 catch (Exception ex)
                 {
+
                     Console.WriteLine(ex.Message);
+                    return null;
                 }
 
             }
@@ -239,9 +412,9 @@ namespace ThaniClient
                     ptsDiscountRate = .10,
                     ptsLocation = "SS",
                     ptsCashier = "Wayne",
-                    ptsInvoice ="",
+                    ptsInvoice = "",
                     ptsLimit = "",
-                    ptsfcn=""
+                    ptsfcn = ""
                 };
 
 
@@ -279,18 +452,32 @@ namespace ThaniClient
         }
 
 
-        static async Task<bool> GetCustomerProfile(string CardNo, UserModel userParam , string apiType)
+        private async Task<bool> GetCustomerProfile(string CardNo, UserModel userParam, string apiType)
         {
 
-            UserModel Token = await wSec.GetSecurityToken("http://localhost:54574/", userParam);
-
-            var Loca = new Profile
-            {   ptsLocation = "SS",
+            //values only for getting CustomerProfile
+            var points = new Point
+            {
+                Points_id = -1,
+                Document_id = -1,
                 ptsCustomerNo = "42100999892",
-                ptsMlid = "",
-                ptsPin = "00000",
+                ptsFirstName = "",
+                ptsLastName = "",
+                ptsUnitType = "D",
+                ptsMode = "D",
+                ptsTotal = 0,
+                ptsValue = 0.00,
+                ptsValueRate = 0.00,
+                ptsDiscount = 0.00,
+                ptsDiscountRate = 0.00,
+                ptsLocation = "SS",
+                ptsCashier = "",
+                ptsPin = 0,
                 ptsSecret = "",
-                ptsUnix = ""
+                ptsUnix = 0,
+                ptsInvoice = "",
+                ptsLimit = "",
+                ptsfcn = ""
             };
 
 
@@ -308,13 +495,13 @@ namespace ThaniClient
                     _client.DefaultRequestHeaders.Clear();
                     _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
 
-                    HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/GetCustProfile?apiType=" + apiType.ToString(), Loca);
+                    HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/GetCustProfile?apiType=" + apiType.ToString(), points);
 
                     response.EnsureSuccessStatusCode();
 
                     if (response.IsSuccessStatusCode)
                     {
-                        Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+                        TProfile = await response.Content.ReadAsAsync<MassyRespProfile>();
 
                         return true;
                     }
@@ -338,7 +525,6 @@ namespace ThaniClient
             }
         }
 
-        //static async Task<Uri> CreatePointAsync(Point Points)
         static async Task<bool> CreatePointAsync(Point Points, string apiType)
         {
             try
@@ -404,12 +590,12 @@ namespace ThaniClient
                         {
                             return false;
                         }
-                            // return URI of the created resource.
-                            //return response.Headers.Location;
+                        // return URI of the created resource.
+                        //return response.Headers.Location;
 
-                            //return response.IsSuccessStatusCode;
+                        //return response.IsSuccessStatusCode;
 
-                        
+
 
 
                     }
@@ -427,8 +613,27 @@ namespace ThaniClient
             }
         }
 
+        private async Task<bool> CheckToken(UserModel Token)
+        {
+            if (!string.IsNullOrWhiteSpace(Token.Token))
+            {
+                return true;
+            }
+            else
+            {
+                //get Token Security Access to API
+                Token = await wSec.GetSecurityToken("http://localhost:54574/", userParam);
 
+                return true;
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            this.panDisplay.Visible = false;
+        }
     }
+
 
 
     public class POSSale
@@ -442,7 +647,7 @@ namespace ThaniClient
         public double Total { get; set; }
         public double SalesTax { get; set; }
         public string Comment { get; set; }
-        public string ReferenceNumber { get; set; }
+        public string ReferenceNumber { get; set; } // scan Card Number
         public string CompName { get; set; }
         public string Name { get; set; }
         public string Cashier { get; set; }

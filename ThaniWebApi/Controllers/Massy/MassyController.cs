@@ -71,6 +71,7 @@ namespace ThaniWebApi.Controllers.Massy
 
                     var stringResponse = await response.Content.ReadAsStringAsync();
 
+
                     MassyRespProfile ResponseData = JsonConvert.DeserializeObject<MassyRespProfile>(stringResponse);
 
                     return ResponseData;
@@ -207,7 +208,7 @@ namespace ThaniWebApi.Controllers.Massy
                     });
 
                     //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
-                    string[] sd = new String[5];
+                    string[] sd = new String[6];
 
                     ////Resize array sequence
                     //Array.Resize<string>(ref sd, 7);
@@ -238,11 +239,11 @@ namespace ThaniWebApi.Controllers.Massy
                     //pin=5 : secret=6 : invoice=7 : limit=8 : fcn=9
 
                     //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
-                    sequence = new[] { sd[0], sd[3], sd[4] }; //, sd[6] };
-                      
+                    sequence = new[] { sd[0], sd[1], sd[4] }; //, sd[6] };
+                    //sequence = new[] { sd[0], sd[3], sd[4] }; //, sd[6] };  
 
                     //Secret
-                    string key = sd[6].ToString();
+                    string key = sd[3].ToString();
 
                     //https://github.com/tompazourek/NaturalSort.Extension
                     //PM: Install-Package NaturalSort.Extension
@@ -276,8 +277,11 @@ namespace ThaniWebApi.Controllers.Massy
 
                     //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
                     queryString2 = String.Concat(mProfile.Select(o => "card=" + o.card + "&mlid=" + o.mlid + "&ts=" + o.ts));
-                 
-                    var strPath = ClsGlobal.MassyAPIver134 + apiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
+
+                //queryString2 = String.Concat(mPts.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
+                //                                           + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+
+                var strPath = ClsGlobal.MassyAPIver134 + apiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
 
                     return strPath;
                 }

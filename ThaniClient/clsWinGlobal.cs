@@ -10,6 +10,12 @@ namespace ThaniClient
 {
     public class clsWinGlobal
     {
+        public static decimal gsRate = 0.0M;
+        public static decimal gsMassyRate = 0.10M;
+        public static decimal gsValueRate = 0.10M;
+        public static decimal gsBarpRate = 0.15M;
+        public static decimal gsStaffRate = 0.20M;
+
         //--------------------------------------------------------------------
         //Convert C# object to json string object for web api transfer
         //--------------------------------------------------------------------
