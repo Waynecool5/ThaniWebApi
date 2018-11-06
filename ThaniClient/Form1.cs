@@ -16,6 +16,7 @@ using Insight.Database.Providers;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace ThaniClient
 {
@@ -55,6 +56,13 @@ namespace ThaniClient
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Create application domain setup information
+            var domaininfo = new AppDomainSetup();
+            domaininfo.ConfigurationFile = System.Environment.CurrentDirectory +
+                                           Path.DirectorySeparatorChar +
+                                           "ADSetup.exe.config";
+            domaininfo.ApplicationBase = System.Environment.CurrentDirectory;
+
             //Thani Loacation values
             userParam = new UserModel
             {
@@ -68,6 +76,7 @@ namespace ThaniClient
 
             this.btnRedeem.Text = "Send Points";
 
+             //oJson as Object = JsonConvert.DeserializeObject(File.ReadAllText(MyFilePath))
         }
 
 
@@ -103,11 +112,12 @@ namespace ThaniClient
                     this.txtCus.Text = CardNo;// "7678976890222";
                     this.txtFname.Text = TProfile.response.firstname; //"Test";
                     this.txtLname.Text = TProfile.response.lastname; // "Testers";
-                                                                     //this.txtCashier.Text = Cashier;
-                                                                     // this.txtLoca.Text = LocationName;
-                                                                     // this.txtSales.Text =  Totalsales;
-                                                                     // this.txtTPoints.Text = TotalPoints;
-                                                                     // this.txtPoints.Text =  PointValue;
+                    //this.txtCashier.Text = Cashier;
+                    // this.txtLoca.Text = LocationName;
+                    // this.txtSales.Text =  Totalsales;
+                    // this.txtTPoints.Text = TotalPoints;
+                    // this.txtPoints.Text =  PointValue;
+                    //this.lblLoca.Text =
 
                     //SELECT TOP(1)  [Transaction].StoreID, TransactionNumber, BatchNumber, Time,  [Transaction].CustomerID, 
                     //            CashierID, Total, SalesTax, Comment, ReferenceNumber, 
@@ -127,11 +137,11 @@ namespace ThaniClient
             this.btnRedeem.Visible = doChange;
 
             if (!doChange) {
-                this.btnRedeem.Text = "Send";
+                this.btnRedeem.Text = "Send Points";
             }
             else
             {
-                this.btnRedeem.Text = "Redeem";
+                this.btnRedeem.Text = "Redeem Points";
             }
 
 
@@ -382,17 +392,17 @@ namespace ThaniClient
                 //{
                 //    Points_id = -1,
                 //    Document_id = -1,
-                //    ptsCustomerNo = PosSale. txtCus.Text,
+                //    ptsCustomerNo = txtCus.Text,
                 //    ptsFirstName = txtFname.Text,
                 //    ptsLastName = txtLname.Text,
                 //    ptsUnitType = "D",
                 //    ptsMode = "D",
-                //    ptsTotal = Convert.ToDouble(txtPoints.Text),
-                //    ptsValue = Convert.ToDouble(txtPoints.Text) * 10,
-                //    ptsValueRate = .10,
-                //    ptsDiscount = 6.00,
-                //    ptsDiscountRate = .10,
-                //    ptsLocation = txtLname.Text,
+                //    ptsTotal = Convert.ToDouble(txtTPoints.Text),
+                //    ptsValue = Convert.ToDouble(txtPoints.Text), // * 10,
+                //    ptsValueRate = clsWinGlobal.gsRate,
+                //    ptsDiscount = 0.00,
+                //    ptsDiscountRate = 0.10,
+                //    ptsLocation = lblLoca.Text,
                 //    ptsCashier = txtCashier.Text
                 //};
 

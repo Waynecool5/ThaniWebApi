@@ -79,6 +79,7 @@
             this.label24 = new System.Windows.Forms.Label();
             this.label25 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.lblLoca = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panDisplay.SuspendLayout();
@@ -229,7 +230,7 @@
             // 
             // txtSales
             // 
-            this.txtSales.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.txtSales.BackColor = System.Drawing.Color.Green;
             this.txtSales.Font = new System.Drawing.Font("Verdana", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtSales.ForeColor = System.Drawing.Color.Lime;
             this.txtSales.Location = new System.Drawing.Point(112, 236);
@@ -242,7 +243,7 @@
             // 
             // txtPoints
             // 
-            this.txtPoints.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.txtPoints.BackColor = System.Drawing.Color.Green;
             this.txtPoints.Font = new System.Drawing.Font("Verdana", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtPoints.ForeColor = System.Drawing.Color.Lime;
             this.txtPoints.Location = new System.Drawing.Point(112, 342);
@@ -268,7 +269,7 @@
             // 
             // txtTPoints
             // 
-            this.txtTPoints.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.txtTPoints.BackColor = System.Drawing.Color.Green;
             this.txtTPoints.Font = new System.Drawing.Font("Verdana", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtTPoints.ForeColor = System.Drawing.Color.Lime;
             this.txtTPoints.Location = new System.Drawing.Point(112, 289);
@@ -511,6 +512,7 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.White;
+            this.panel2.Controls.Add(this.lblLoca);
             this.panel2.Controls.Add(this.label22);
             this.panel2.Controls.Add(this.label20);
             this.panel2.Controls.Add(this.txtLoca);
@@ -711,6 +713,21 @@
             this.button1.UseVisualStyleBackColor = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
+            // lblLoca
+            // 
+            this.lblLoca.AutoSize = true;
+            this.lblLoca.BackColor = System.Drawing.Color.Magenta;
+            this.lblLoca.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblLoca.ForeColor = System.Drawing.Color.Black;
+            this.lblLoca.Location = new System.Drawing.Point(430, 63);
+            this.lblLoca.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblLoca.MinimumSize = new System.Drawing.Size(105, 18);
+            this.lblLoca.Name = "lblLoca";
+            this.lblLoca.Size = new System.Drawing.Size(105, 18);
+            this.lblLoca.TabIndex = 38;
+            this.lblLoca.Text = "LocID: SS";
+            this.lblLoca.Visible = false;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -817,6 +834,7 @@
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label lblLoca;
     }
 }
 
