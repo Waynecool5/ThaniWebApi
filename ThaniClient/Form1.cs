@@ -63,6 +63,9 @@ namespace ThaniClient
                                            "ADSetup.exe.config";
             domaininfo.ApplicationBase = System.Environment.CurrentDirectory;
 
+            JObject o1 = JObject.Parse(File.ReadAllText(@"" + domaininfo.ApplicationBase + "store.json"));
+            
+
             //Thani Loacation values
             userParam = new UserModel
             {
@@ -76,7 +79,7 @@ namespace ThaniClient
 
             this.btnRedeem.Text = "Send Points";
 
-             //oJson as Object = JsonConvert.DeserializeObject(File.ReadAllText(MyFilePath))
+            //oJson as Object = JsonConvert.DeserializeObject(File.ReadAllText(MyFilePath))
         }
 
 
@@ -136,7 +139,8 @@ namespace ThaniClient
         {
             this.btnRedeem.Visible = doChange;
 
-            if (!doChange) {
+            if (!doChange)
+            {
                 this.btnRedeem.Text = "Send Points";
             }
             else
@@ -152,92 +156,92 @@ namespace ThaniClient
             this.btnBalance.Visible = !doChange;
         }
 
-       
+
         #region Set rate options
-            private void radioButton1_CheckedChanged(object sender, EventArgs e)
-            {
-                clsWinGlobal.gsRate = clsWinGlobal.gsMassyRate;
-            }
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            clsWinGlobal.gsRate = clsWinGlobal.gsMassyRate;
+        }
 
-            private void radioButton2_CheckedChanged(object sender, EventArgs e)
-            {
-                clsWinGlobal.gsRate = clsWinGlobal.gsBarpRate;
-            }
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            clsWinGlobal.gsRate = clsWinGlobal.gsBarpRate;
+        }
 
-            private void radioButton3_CheckedChanged(object sender, EventArgs e)
-            {
-                clsWinGlobal.gsRate = clsWinGlobal.gsStaffRate;
-            }
+        private void radioButton3_CheckedChanged(object sender, EventArgs e)
+        {
+            clsWinGlobal.gsRate = clsWinGlobal.gsStaffRate;
+        }
 
         #endregion
 
-        
+
         #region Form events to call MassyApi
 
-            private async void btnVoid_Click(object sender, EventArgs e)
+        private async void btnVoid_Click(object sender, EventArgs e)
+        {
+            bool proceed = await CheckToken(Token);
+            if (proceed == true)
             {
-                bool proceed = await CheckToken(Token);
-                if (proceed == true)
-                {
-
-                }
 
             }
 
-            private async void btnHistory_Click(object sender, EventArgs e)
-            {
-                bool proceed = await CheckToken(Token);
-                if (proceed == true)
-                {
+        }
 
-                }
+        private async void btnHistory_Click(object sender, EventArgs e)
+        {
+            bool proceed = await CheckToken(Token);
+            if (proceed == true)
+            {
+
             }
+        }
 
-            private async void btnVerify_Click(object sender, EventArgs e)
+        private async void btnVerify_Click(object sender, EventArgs e)
+        {
+            bool proceed = await CheckToken(Token);
+            if (proceed == true)
             {
-                bool proceed = await CheckToken(Token);
-                if (proceed == true)
-                {
 
 
                 this.panDisplay.Visible = true;
-                }
             }
+        }
 
-            private async void btnRefund_Click(object sender, EventArgs e)
-            {
-                bool proceed = await CheckToken(Token);
-                if (proceed == true)
-                {
-
-                }
-            }
-
-            private async void btnBalance_Click(object sender, EventArgs e)
-            {
-                bool proceed = await CheckToken(Token);
-                if (proceed == true)
-                {
-
-                }
-            }
-
-
-
-
-            private void btnRedeem_ClickAsync(object sender, EventArgs e)
+        private async void btnRefund_Click(object sender, EventArgs e)
+        {
+            bool proceed = await CheckToken(Token);
+            if (proceed == true)
             {
 
-                if (this.btnRedeem.Text == "Send Points")
-                {
-                    this.AddSalesPoints("earn");
-
-                }
-                else if (this.btnRedeem.Text == "Redeem Points")
-                {
-
-                }
             }
+        }
+
+        private async void btnBalance_Click(object sender, EventArgs e)
+        {
+            bool proceed = await CheckToken(Token);
+            if (proceed == true)
+            {
+
+            }
+        }
+
+
+
+
+        private void btnRedeem_ClickAsync(object sender, EventArgs e)
+        {
+
+            if (this.btnRedeem.Text == "Send Points")
+            {
+                this.AddSalesPoints("earn");
+
+            }
+            else if (this.btnRedeem.Text == "Redeem Points")
+            {
+
+            }
+        }
 
         #endregion
 
@@ -743,5 +747,13 @@ namespace ThaniClient
     {
         public string apiType { get; set; }
     }
+
+
+    public class AppStore
+    {
+        public string locID { get; set; }
+        public string LocationName { get; set; }
+    }
+
 
 }
