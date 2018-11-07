@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -38,5 +39,19 @@ namespace ThaniClient
         public static StringContent GetStringContent_Uni(object obj)
                 => new StringContent(JsonConvert.SerializeObject(obj), Encoding.Unicode, "application/json");
 
+
+        // Encrypt a file.
+        public static void AddEncryption(string FileName)
+        {
+
+            File.Encrypt(FileName);
+
+        }
+
+        // Decrypt a file.
+        public static void RemoveEncryption(string FileName)
+        {
+            File.Decrypt(FileName);
+        }
     }
 }
