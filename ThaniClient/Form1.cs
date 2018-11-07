@@ -36,6 +36,7 @@ namespace ThaniClient
         static UserModel userParam = null;
         static ICollection<POSSale> PosSales { get; set; }
         static UserModel Token = null;
+        static AppStore gsStore { get; set; }
 
         float storeDiscountRate = 0.10F;
 
@@ -56,29 +57,39 @@ namespace ThaniClient
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            // Create application domain setup information
-            var domaininfo = new AppDomainSetup();
-            domaininfo.ConfigurationFile = System.Environment.CurrentDirectory +
-                                           Path.DirectorySeparatorChar +
-                                           "ADSetup.exe.config";
-            domaininfo.ApplicationBase = System.Environment.CurrentDirectory;
-
-            JObject o1 = JObject.Parse(File.ReadAllText(@"" + domaininfo.ApplicationBase + "store.json"));
-            
-
-            //Thani Loacation values
-            userParam = new UserModel
+            try
             {
-                Id = 1,
-                FirstName = "Test1",
-                LastName = "User1",
-                Username = "test1",
-                Password = "test1",
-                Token = ""
-            };
 
-            this.btnRedeem.Text = "Send Points";
+                // Create application domain setup information
+                var domaininfo = new AppDomainSetup();
+                domaininfo.ConfigurationFile = System.Environment.CurrentDirectory +
+                                               Path.DirectorySeparatorChar +
+                                               "ADSetup.exe.config";
+                domaininfo.ApplicationBase = System.Environment.CurrentDirectory;
 
+                JObject o1 = JObject.Parse(File.ReadAllText(@"" + domaininfo.ApplicationBase + "\\store.json"));
+
+                gsStore = JsonConvert.DeserializeObject<AppStore>(o1.ToString());
+
+                //Thani Loacation values
+                userParam = new UserModel
+                {
+                    Id = 1,
+                    FirstName = "Test1",
+                    LastName = "User1",
+                    Username = "test1",
+                    Password = "test1",
+                    Token = ""
+                };
+
+                this.btnRedeem.Text = "Send Points";
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
             //oJson as Object = JsonConvert.DeserializeObject(File.ReadAllText(MyFilePath))
         }
 
@@ -103,8 +114,8 @@ namespace ThaniClient
 
                 //Testing
                 string CardNo = "42100999892";
-
-
+                this.lblLoca.Text = gsStore.locID;
+                this.txtLoca.Text = gsStore.LocationName;
                 //GetSale1();
 
                 //After card is swiped, get the Card holders Name from MassyAPI
@@ -116,7 +127,7 @@ namespace ThaniClient
                     this.txtFname.Text = TProfile.response.firstname; //"Test";
                     this.txtLname.Text = TProfile.response.lastname; // "Testers";
                     //this.txtCashier.Text = Cashier;
-                    // this.txtLoca.Text = LocationName;
+                    // this.txtLoca.Text = gsStore.LocationName;
                     // this.txtSales.Text =  Totalsales;
                     // this.txtTPoints.Text = TotalPoints;
                     // this.txtPoints.Text =  PointValue;
@@ -424,7 +435,7 @@ namespace ThaniClient
                     ptsValueRate = .10,
                     ptsDiscount = 6.00,
                     ptsDiscountRate = .10,
-                    ptsLocation = "SS",
+                    ptsLocation = gsStore.locID, //"SS",
                     ptsCashier = "Wayne",
                     ptsInvoice = "",
                     ptsLimit = "",
@@ -446,7 +457,7 @@ namespace ThaniClient
                     this.txtLname.Text = points.ptsLastName; // "Testers";
                     this.txtSales.Text = points.ptsTotal.ToString();
                     this.txtPoints.Text = points.ptsValue.ToString();
-                    this.txtLoca.Text = points.ptsLocation;
+                    this.txtLoca.Text = gsStore.LocationName; //points.ptsLocation;
                     this.txtCashier.Text = points.ptsCashier;
 
                     //Reponse from Web Api services
@@ -484,7 +495,7 @@ namespace ThaniClient
                 ptsValueRate = 0.00,
                 ptsDiscount = 0.00,
                 ptsDiscountRate = 0.00,
-                ptsLocation = "SS",
+                ptsLocation = gsStore.locID, //"SS",
                 ptsCashier = "",
                 ptsPin = 0,
                 ptsSecret = "",
