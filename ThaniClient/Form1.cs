@@ -40,8 +40,9 @@ namespace ThaniClient
 
         float storeDiscountRate = 0.10F;
 
-        private readonly string conn = "Data Source=" + ClsGlobal.SqlSource + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
-                  "User ID=" + ClsGlobal.SqlUser + ";Password=" + ClsGlobal.SqlPassword + "";
+        public static string conn = "";
+        //private readonly string conn = "Data Source=" + ClsGlobal.SqlSource + "; Initial Catalog=" + ClsGlobal.SqlCatalog + "; Persist Security Info=True;" +
+        //          "User ID=" + ClsGlobal.SqlUser + ";Password=" + ClsGlobal.SqlPassword + "";
 
         public Form1()
         {
@@ -59,7 +60,6 @@ namespace ThaniClient
         {
             try
             {
-
                 // Create application domain setup information
                 var domaininfo = new AppDomainSetup();
                 domaininfo.ConfigurationFile = System.Environment.CurrentDirectory +
@@ -67,9 +67,17 @@ namespace ThaniClient
                                                "ADSetup.exe.config";
                 domaininfo.ApplicationBase = System.Environment.CurrentDirectory;
 
-                JObject o1 = JObject.Parse(File.ReadAllText(@"" + domaininfo.ApplicationBase + "\\store.json"));
+                string xPath = domaininfo.ApplicationBase.ToString();
+                string AppPath = xPath.Substring(0, xPath.IndexOf("\\bin"));
+
+                JObject o1 = JObject.Parse(File.ReadAllText(@"" + AppPath + "\\store.json"));
 
                 gsStore = JsonConvert.DeserializeObject<AppStore>(o1.ToString());
+
+
+                //Create connection to sql
+                conn = "Data Source=tcp:" + gsStore.SqlSource + "; Initial Catalog=" + gsStore.SqlCatalog + "; Persist Security Info=True;" +
+                  "User ID=" + gsStore.SqlUser.ToString() + ";Password=" + gsStore.SqlPassword + "";
 
                 //Thani Loacation values
                 userParam = new UserModel
@@ -85,10 +93,10 @@ namespace ThaniClient
                 this.btnRedeem.Text = "Send Points";
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                Console.WriteLine(ex.Message);
+               //return null;
             }
             //oJson as Object = JsonConvert.DeserializeObject(File.ReadAllText(MyFilePath))
         }
@@ -759,12 +767,17 @@ namespace ThaniClient
         public string apiType { get; set; }
     }
 
-
     public class AppStore
     {
-        public string locID { get; set; }
+        public string LocID { get; set; }
         public string LocationName { get; set; }
+        public string SqlSource { get; set; }
+        public string SqlCatalog { get; set; }
+        public string SqlUser { get; set; }
+        public string SqlPassword { get; set; }
+        public string WebThaniApiPath { get; set; }
     }
+
 
 
 }

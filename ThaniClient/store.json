@@ -1,1 +1,21 @@
-{"locID": "SS", "LocationName":"Swan Street"}
+{
+  "locID": "SS",
+  "LocationName": "Swan Street",
+  "SqlSource": "LAPTOPHP\\SQLEXP2017",
+  "SqlCatalog": "WebAsync",
+  "SqlUser": "sa",
+  "SqlPassword": "dedan!0987o",
+  "WebThaniApiPath": "http://localhost:54574/"
+}
+
+//Live
+//{
+//  "locID": "SS",
+//  "LocationName": "Swan Street",
+//  "SqlSource": "162.249.5.100",
+//  "SqlCatalog": "ubritene_WebAsync",
+//  "SqlUser": "ubritene_sa",
+//  "SqlPassword": "dedan!0987o",
+//  "WebThaniApiPath": "http://localhost:54574/"
+//} 
+
