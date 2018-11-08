@@ -53,7 +53,6 @@ namespace ThaniWebApi.Controllers.Massy
 
             try
             {
-
                 _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
                 _clientMassy.DefaultRequestHeaders.Accept.Clear();
                 _clientMassy.DefaultRequestHeaders.Accept.Add(
