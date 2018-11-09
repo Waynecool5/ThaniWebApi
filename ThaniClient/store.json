@@ -1,14 +1,16 @@
 {
   "locID": "SS",
   "LocationName": "Swan Street",
-  "SqlSource": "LAPTOPHP\\SQLEXP2017",
-  "SqlCatalog": "WebAsync",
-  "SqlUser": "sa",
+  "SqlSource": "SQL5030.site4now.net",
+  "SqlCatalog": "DB_A428B0_WebAsync",
+  "SqlUser": "DB_A428B0_WebAsync_admin",
   "SqlPassword": "dedan!0987o",
-  "WebThaniApiPath": "http://localhost:54574/"
+  "WebThaniApiPath": "http://doneal-001-site1.ctempurl.com/"
 }
+// smartasp hosting
 
-//Live
+
+//Live a2hosting------------------
 //{
 //  "locID": "SS",
 //  "LocationName": "Swan Street",
@@ -17,5 +19,22 @@
 //  "SqlUser": "ubritene_sa",
 //  "SqlPassword": "dedan!0987o",
 //  "WebThaniApiPath": "http://localhost:54574/"
-//} 
+//}
+
+
+
+
+
+//Local Test
+//{
+//  "locID": "SS",
+//  "LocationName": "Swan Street",
+//  "SqlSource": "LAPTOPHP\\SQLEXP2017",
+//  "SqlCatalog": "WebAsync",
+//  "SqlUser": "sa",
+//  "SqlPassword": "dedan!0987o",
+//  "WebThaniApiPath": "http://localhost:54574/"
+//}
+
+
 

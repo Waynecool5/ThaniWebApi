@@ -49,7 +49,7 @@ namespace ThaniClient
             InitializeComponent();
 
             ////Call Thani's Web Api
-            //_client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+            //_client.BaseAddress = new Uri(gsStore.WebThaniApiPath);// https://localhost:44305/"); 
             //_client.DefaultRequestHeaders.Accept.Clear();
             //_client.DefaultRequestHeaders.Accept.Add(
             //    new MediaTypeWithQualityHeaderValue("application/json"));
@@ -108,7 +108,7 @@ namespace ThaniClient
             {
 
                 //get Token Security Access to API
-                Token = await wSec.GetSecurityToken("http://localhost:54574/", userParam);
+                Token = await wSec.GetSecurityToken(gsStore.WebThaniApiPath, userParam);
 
 
                 //get the transaction of Sale - LIVE
@@ -122,7 +122,7 @@ namespace ThaniClient
 
                 //Testing
                 string CardNo = "42100999892";
-                this.lblLoca.Text = gsStore.locID;
+                this.lblLoca.Text = gsStore.LocID;
                 this.txtLoca.Text = gsStore.LocationName;
                 //GetSale1();
 
@@ -136,10 +136,12 @@ namespace ThaniClient
                     this.txtLname.Text = TProfile.response.lastname; // "Testers";
                     //this.txtCashier.Text = Cashier;
                     // this.txtLoca.Text = gsStore.LocationName;
-                    // this.txtSales.Text =  Totalsales;
-                    // this.txtTPoints.Text = TotalPoints;
-                    // this.txtPoints.Text =  PointValue;
-                    //this.lblLoca.Text =
+                    //this.txtSales.Text = Totalsales;
+                    //this.txtTPoints.Text = TotalPoints;
+                    //this.txtPoints.Text = PointValue;
+                    this.txtMDiscount.Text = "";
+                    this.txtMPoints.Text = "";
+                    this.txtMValues.Text = "";
 
                     //SELECT TOP(1)  [Transaction].StoreID, TransactionNumber, BatchNumber, Time,  [Transaction].CustomerID, 
                     //            CashierID, Total, SalesTax, Comment, ReferenceNumber, 
@@ -160,11 +162,11 @@ namespace ThaniClient
 
             if (!doChange)
             {
-                this.btnRedeem.Text = "Send Points";
+                this.btnRedeem.Text ="Redeem Points" ;
             }
             else
             {
-                this.btnRedeem.Text = "Redeem Points";
+                this.btnRedeem.Text = "Send Points";
             }
 
 
@@ -176,7 +178,7 @@ namespace ThaniClient
         }
 
 
-        #region Set rate options
+ #region Set rate options
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             clsWinGlobal.gsRate = clsWinGlobal.gsMassyRate;
@@ -195,7 +197,7 @@ namespace ThaniClient
         #endregion
 
 
-        #region Form events to call MassyApi
+#region Form events to call MassyApi
 
         private async void btnVoid_Click(object sender, EventArgs e)
         {
@@ -411,44 +413,47 @@ namespace ThaniClient
                 //     qsa = x.ptsQsa
                 // });
 
-                //var points = new Point
-                //{
-                //    Points_id = -1,
-                //    Document_id = -1,
-                //    ptsCustomerNo = txtCus.Text,
-                //    ptsFirstName = txtFname.Text,
-                //    ptsLastName = txtLname.Text,
-                //    ptsUnitType = "D",
-                //    ptsMode = "D",
-                //    ptsTotal = Convert.ToDouble(txtTPoints.Text),
-                //    ptsValue = Convert.ToDouble(txtPoints.Text), // * 10,
-                //    ptsValueRate = clsWinGlobal.gsRate,
-                //    ptsDiscount = 0.00,
-                //    ptsDiscountRate = 0.10,
-                //    ptsLocation = lblLoca.Text,
-                //    ptsCashier = txtCashier.Text
-                //};
-
                 var points = new Point
                 {
                     Points_id = -1,
                     Document_id = -1,
-                    ptsCustomerNo = "42100999892",
-                    ptsFirstName = "Test",
-                    ptsLastName = "Testers",
+                    ptsCustomerNo = txtCus.Text,
+                    ptsFirstName = txtFname.Text,
+                    ptsLastName = txtLname.Text,
                     ptsUnitType = "D",
                     ptsMode = "D",
-                    ptsTotal = 60,
-                    ptsValue = 600.00,
-                    ptsValueRate = .10,
-                    ptsDiscount = 6.00,
-                    ptsDiscountRate = .10,
-                    ptsLocation = gsStore.locID, //"SS",
-                    ptsCashier = "Wayne",
+                    ptsTotal = Convert.ToDouble(txtTPoints.Text),
+                    ptsValue = Convert.ToDouble(txtPoints.Text), // * 10,
+                    ptsValueRate = clsWinGlobal.gsRate,
+                    ptsDiscount = 0.00,
+                    ptsDiscountRate = 0.10,
+                    ptsLocation = lblLoca.Text,
+                    ptsCashier = txtCashier.Text,
                     ptsInvoice = "",
                     ptsLimit = "",
                     ptsfcn = ""
                 };
+
+                //var points = new Point
+                //{
+                //    Points_id = -1,
+                //    Document_id = -1,
+                //    ptsCustomerNo = "42100999892",
+                //    ptsFirstName = "Test",
+                //    ptsLastName = "Testers",
+                //    ptsUnitType = "D",
+                //    ptsMode = "D",
+                //    ptsTotal = 60,
+                //    ptsValue = 600.00,
+                //    ptsValueRate = .10,
+                //    ptsDiscount = 6.00,
+                //    ptsDiscountRate = .10,
+                //    ptsLocation = gsStore.LocID, //"SS",
+                //    ptsCashier = "Wayne",
+                //    ptsInvoice = "",
+                //    ptsLimit = "",
+                //    ptsfcn = ""
+                //};
 
 
 
@@ -503,7 +508,7 @@ namespace ThaniClient
                 ptsValueRate = 0.00,
                 ptsDiscount = 0.00,
                 ptsDiscountRate = 0.00,
-                ptsLocation = gsStore.locID, //"SS",
+                ptsLocation = gsStore.LocID, //"SS",
                 ptsCashier = "",
                 ptsPin = 0,
                 ptsSecret = "",
@@ -519,7 +524,7 @@ namespace ThaniClient
                 using (var _client = new HttpClient())
                 {
                     //Call Thani's Web Api
-                    _client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+                    _client.BaseAddress = new Uri(gsStore.WebThaniApiPath);// https://localhost:44305/"); 
                     _client.DefaultRequestHeaders.Accept.Clear();
                     _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -578,7 +583,7 @@ namespace ThaniClient
 
                 //using (var client = new HttpClient())
                 //{
-                //    client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+                //    client.BaseAddress = new Uri(gsStore.WebThaniApiPath);// https://localhost:44305/"); 
                 //    client.DefaultRequestHeaders.Accept.Clear();
                 //    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -600,7 +605,7 @@ namespace ThaniClient
                     using (var _client = new HttpClient())
                     {
                         //Call Thani's Web Api
-                        _client.BaseAddress = new Uri("http://localhost:54574/");// https://localhost:44305/"); 
+                        _client.BaseAddress = new Uri(gsStore.WebThaniApiPath);// https://localhost:44305/"); 
                         _client.DefaultRequestHeaders.Accept.Clear();
                         _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
@@ -655,7 +660,7 @@ namespace ThaniClient
             else
             {
                 //get Token Security Access to API
-                Token = await wSec.GetSecurityToken("http://localhost:54574/", userParam);
+                Token = await wSec.GetSecurityToken(gsStore.WebThaniApiPath, userParam);
 
                 return true;
             }
