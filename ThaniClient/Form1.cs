@@ -424,7 +424,7 @@ namespace ThaniClient
                     ptsMode = "D",
                     ptsTotal = Convert.ToDouble(txtTPoints.Text),
                     ptsValue = Convert.ToDouble(txtPoints.Text), // * 10,
-                    ptsValueRate = clsWinGlobal.gsRate,
+                    ptsValueRate = Convert.ToDouble(clsWinGlobal.gsRate),
                     ptsDiscount = 0.00,
                     ptsDiscountRate = 0.10,
                     ptsLocation = lblLoca.Text,
