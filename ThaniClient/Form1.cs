@@ -27,9 +27,9 @@ namespace ThaniClient
 
         static HttpClient _client = new HttpClient();
         static bool FTime = true;
-        public static clsWinGlobal wcls = new clsWinGlobal();
+        //static clsWinGlobal wcls;
         static clsSecurity wSec = new clsSecurity();
-
+       
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
         static MassyRespProfile TProfile = null;
