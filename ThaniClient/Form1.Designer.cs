@@ -72,9 +72,9 @@
             this.label20 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
-            this.label19 = new System.Windows.Forms.Label();
+            this.lblTrans = new System.Windows.Forms.Label();
             this.LblExpire = new System.Windows.Forms.Label();
-            this.label21 = new System.Windows.Forms.Label();
+            this.lblInvoice = new System.Windows.Forms.Label();
             this.panDisplay = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.label25 = new System.Windows.Forms.Label();
@@ -626,17 +626,17 @@
             this.label9.TabIndex = 10;
             this.label9.Text = "Cashier:";
             // 
-            // label19
+            // lblTrans
             // 
-            this.label19.AutoSize = true;
-            this.label19.Font = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label19.ForeColor = System.Drawing.Color.Blue;
-            this.label19.Location = new System.Drawing.Point(169, 202);
-            this.label19.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(142, 23);
-            this.label19.TabIndex = 35;
-            this.label19.Text = "Transaction #";
+            this.lblTrans.AutoSize = true;
+            this.lblTrans.Font = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblTrans.ForeColor = System.Drawing.Color.Brown;
+            this.lblTrans.Location = new System.Drawing.Point(169, 202);
+            this.lblTrans.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblTrans.Name = "lblTrans";
+            this.lblTrans.Size = new System.Drawing.Size(160, 23);
+            this.lblTrans.TabIndex = 35;
+            this.lblTrans.Text = "Transaction #";
             // 
             // LblExpire
             // 
@@ -649,18 +649,17 @@
             this.LblExpire.TabIndex = 36;
             this.LblExpire.Text = "Expiring On:";
             // 
-            // label21
+            // lblInvoice
             // 
-            this.label21.AutoSize = true;
-            this.label21.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label21.ForeColor = System.Drawing.Color.Blue;
-            this.label21.Location = new System.Drawing.Point(573, 201);
-            this.label21.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label21.MinimumSize = new System.Drawing.Size(115, 25);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(115, 25);
-            this.label21.TabIndex = 37;
-            this.label21.Text = "Invoice#";
+            this.lblInvoice.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblInvoice.ForeColor = System.Drawing.Color.BlueViolet;
+            this.lblInvoice.Location = new System.Drawing.Point(573, 201);
+            this.lblInvoice.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblInvoice.MinimumSize = new System.Drawing.Size(115, 25);
+            this.lblInvoice.Name = "lblInvoice";
+            this.lblInvoice.Size = new System.Drawing.Size(115, 25);
+            this.lblInvoice.TabIndex = 37;
+            this.lblInvoice.Text = "Invoice#";
             // 
             // panDisplay
             // 
@@ -734,8 +733,8 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(696, 477);
             this.Controls.Add(this.panDisplay);
-            this.Controls.Add(this.label21);
-            this.Controls.Add(this.label19);
+            this.Controls.Add(this.lblInvoice);
+            this.Controls.Add(this.lblTrans);
             this.Controls.Add(this.txtMValues);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.txtMPoints);
@@ -817,7 +816,7 @@
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label lblTrans;
         private System.Windows.Forms.Label LblExpire;
         private System.Windows.Forms.Button btnVerify;
         private System.Windows.Forms.Button btnVoid;
@@ -825,7 +824,7 @@
         private System.Windows.Forms.Button btnRefund;
         private System.Windows.Forms.Button btnBalance;
         private System.Windows.Forms.Label label22;
-        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label lblInvoice;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Panel panDisplay;

@@ -111,19 +111,22 @@ namespace ThaniClient
                 Token = await wSec.GetSecurityToken(gsStore.WebThaniApiPath, userParam);
 
 
-                //get the transaction of Sale - LIVE
+                ////get the transaction of Sale - LIVE
                 //ICollection<POSSale> pos = await GetSale();
-                //Get Card number from selection  - LIVE
+                ////Get Card number from selection - LIVE
                 //string CardNo = (from o in pos select o.ReferenceNumber).ToString();
                 //string Cashier = (from o in pos select o.CashierID).ToString();
-                //decimal Totalsales =  (from o in pos select o.Total).ToString();
-                //decimal TotalPoints = Totalsales * clsWinGlobal.gsMassyRate ;
-                //decimal PointValue = TotalPoints * clsWinGlobal.gsRate ;
+                //this.lblTrans.Text = (from o in pos select o.TransactionNumber).ToString();
+                //decimal Totalsales = Convert.ToDecimal(from o in pos select o.Total);
+                //decimal TotalPoints = Totalsales * clsWinGlobal.gsMassyRate;
+                //decimal PointValue = TotalPoints * clsWinGlobal.gsRate;
 
                 //Testing
                 string CardNo = "42100999892";
                 this.lblLoca.Text = gsStore.LocID;
                 this.txtLoca.Text = gsStore.LocationName;
+                this.lblTrans.Text = "Test-09876";
+
                 //GetSale1();
 
                 //After card is swiped, get the Card holders Name from MassyAPI
@@ -158,7 +161,7 @@ namespace ThaniClient
 
         private void HideButtons(bool doChange)
         {
-            this.btnRedeem.Visible = doChange;
+            //this.btnRedeem.Visible = doChange;
 
             if (!doChange)
             {
@@ -355,7 +358,7 @@ namespace ThaniClient
                             {
                                 radioButton1.Select();
                                 //label19.Text = reader.GetValue(0).ToString();
-                                label19.Text = reader.GetValue(1).ToString();
+                                lblTrans.Text = reader.GetValue(1).ToString();
                                 txtCus.Text = reader.GetValue(9).ToString(); //card number
                                 label20.Text = Convert.ToDateTime(reader.GetValue(3).ToString()).ToShortDateString(); //Date
                                 // txtCus.Text = reader.GetValue(4).ToString();
@@ -472,13 +475,15 @@ namespace ThaniClient
                     this.txtPoints.Text = points.ptsValue.ToString();
                     this.txtLoca.Text = gsStore.LocationName; //points.ptsLocation;
                     this.txtCashier.Text = points.ptsCashier;
-
+                    this.lblInvoice.Text = Tpoints.response.invoice;
                     //Reponse from Web Api services
                     this.txtMPoints.Text = Tpoints.response.balance.p.ToString();
                     this.txtMValues.Text = Tpoints.response.balance.d.ToString();
                     this.txtMDiscount.Text = (Tpoints.response.balance.p * storeDiscountRate).ToString();
 
-                    this.btnRedeem.Text = "Redeem Points";
+                    HideButtons(false);
+                    //this.btnRedeem.Text = "Redeem Points";
+
                 }
 
 
