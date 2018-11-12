@@ -84,6 +84,17 @@ namespace ThaniWebApi.Controllers.Points
         public string ts { get; set; }
     }
 
+    public class MassyRedeem
+    {
+        //public string ptsLocation { get; set; }
+        public string card { get; set; }
+        public double units { get; set; } //(decimal) Points or Dollar value
+        public string unitType { get; set; } // (P or D) – P for points, D for dollars
+        public string mlid { get; set; }
+        public string pin { get; set; }
+        public string secret { get; set; }
+        public string ts { get; set; }
+    }
 
     //----------------------------------------------------------------
     // Massypoint response for display

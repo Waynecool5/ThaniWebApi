@@ -87,6 +87,48 @@ namespace ThaniWebApi.Controllers.Massy
             }
         }
 
+        [HttpGet]
+        [Route("GetMassyApiRedeem")]
+        public static async Task<MassyRespEarn> GetMassyApiRedeem(ICollection<MassyRedeem> mRedeem, string apiType)
+        {
+            HttpClient _clientMassy = new HttpClient(); // handler);
+
+            try
+            {
+                _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
+                _clientMassy.DefaultRequestHeaders.Accept.Clear();
+                _clientMassy.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                string strPath = MakeQueryString_Redeem(mRedeem, "redeem");
+
+                if (strPath != "")
+                {
+                    //Massy using a querystring from MakeQueryString() to collect data.
+                    var response = await _clientMassy.GetAsync(strPath);
+
+                    response.EnsureSuccessStatusCode();
+
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+
+
+                    MassyRespEarn ResponseData = JsonConvert.DeserializeObject<MassyRespEarn>(stringResponse);
+
+                    return ResponseData;
+                }
+                else
+                {
+                    return new MassyRespEarn();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new MassyRespEarn();
+            }
+        }
+
 
         private static async Task<MassyRespEarn> doMassyApiPoints(ICollection<MassyPoints> mPts,string apiType)
         {
@@ -292,6 +334,108 @@ namespace ThaniWebApi.Controllers.Massy
                 }
 
             }
+
+        private static String MakeQueryString_Redeem(ICollection<MassyRedeem> mRedeem, string apiType)
+        {
+            //----------------------------------------------------
+            // -- Make Certificate for qsa value
+            //------------------------------------------------
+
+            try
+            {
+                //Convert to json string
+                string jsonString = JsonConvert.SerializeObject(mRedeem, Formatting.None, new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                });
+
+                //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
+                string[] sd = new String[9];
+
+                ////Resize array sequence
+                //Array.Resize<string>(ref sd, 7);
+
+                int i = 0;
+
+                JArray jsonX = JArray.Parse(jsonString);
+
+                var list = from t in jsonX[0]
+                           select t;
+
+                foreach (string s in list)
+                {
+                    sd[i] = s;
+                    i++;
+                }
+
+                //------------------------------------------------
+                //card,units,unitType,mlid,ts,pin
+                //------------------------------------------------
+                string[] sequence = new string[0];
+
+
+                //------------------------------------------
+                //        prepare for arraysorting
+                //---------------------------------------
+                //card=0 :units=1 : unitType=2 : mlid=3 : ts=4 : 
+                //pin=5 : secret=6 : invoice=7 : limit=8 : fcn=9
+
+                
+                //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] };
+
+                //Secret
+                string key = sd[6].ToString();
+
+                //https://github.com/tompazourek/NaturalSort.Extension
+                //PM: Install-Package NaturalSort.Extension
+                // Sort array to natsort standard
+                var ordered = sequence.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+
+
+                //------------------------------------------------
+                //place :: to separate values
+                //------------------------------------------------
+                var HashString = string.Join("::", ordered);
+
+                /*For test Massy Response
+                    var tp = "1::Test";
+                    string qsa2 = tp.GetHmacSHA256("e5cc16024314d0bdc48e755fffc5e563");
+                    must return this value 
+                    42792d6294eef612ba48419ba83b773fea72380be4fb11ff1dabfd6b5e983529
+                */
+
+                //------------------------------------------------
+                //Create hash certificate
+                //------------------------------------------------
+                string qsa = HashString.GetHmacSHA256(key);
+
+
+                //------------------------------------------------
+                ////card =CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                //Create string form submission
+                //------------------------------------------------
+                string queryString2 = "";
+
+                //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                //queryString2 = String.Concat(mProfile.Select(o => "card=" + o.card + "&mlid=" + o.mlid + "&ts=" + o.ts));
+
+                //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                queryString2 = String.Concat(mRedeem.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
+                                                                 + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+
+                var strPath = ClsGlobal.MassyAPIver134 + apiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
+
+                return strPath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "";
+
+            }
+
+        }
 
 
         private static String MakeQueryString(ICollection<MassyPoints> mPts,string apiType)

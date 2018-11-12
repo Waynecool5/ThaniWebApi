@@ -263,7 +263,7 @@ namespace ThaniClient
             }
             else if (this.btnRedeem.Text == "Redeem Points")
             {
-
+                this.DeemSalesPoints("redeem");
             }
         }
 
@@ -397,6 +397,37 @@ namespace ThaniClient
         }
 
 
+        private void DeemSalesPoints(string apiType)
+        {
+            ////Default error message from Massy
+            //string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+            //                         ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+            try
+            {
+                this.panDisplay.Location = new System.Drawing.Point(100, 20);
+                this.btnHide.Text = "Cancel Redeem";
+                this.lblMode.Text = "redeem";
+                this.lblEdit.Text = "Total Redeem";
+
+                this.txtBalance.Text = this.txtMPoints.Text;
+                this.txtType.Text = this.txtMValues.Text;
+                this.txtPts.Text = this.txtMValues.Text;
+
+
+
+                this.panDisplay.Visible = true;
+                this.txtPts.Focus();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+
         private async void AddSalesPoints(string apiType)
         {
             ////Default error message from Massy
@@ -491,6 +522,81 @@ namespace ThaniClient
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+            }
+        }
+
+
+        private async Task<bool> DoRedeem(string CardNo, UserModel userParam, string apiType, double Tpts)
+        {//redeem Points
+
+            //values only for getting CustomerProfile
+            var points = new Point
+            {
+                Points_id = -1,
+                Document_id = -1,
+                ptsCustomerNo = CardNo, // "42100999892",
+                ptsFirstName = "",
+                ptsLastName = "",
+                ptsUnitType = "D",
+                ptsMode = "D",
+                ptsTotal = Tpts, //massy points units
+                ptsValue = 0.00,
+                ptsValueRate = 0.00,
+                ptsDiscount = 0.00,
+                ptsDiscountRate = 0.00,
+                ptsLocation = gsStore.LocID, //"SS",
+                ptsCashier = "",
+                ptsPin = 0,
+                ptsSecret = "",
+                ptsUnix = 0,
+                ptsInvoice = "",
+                ptsLimit = "",
+                ptsfcn = ""
+            };
+
+
+            if (!string.IsNullOrWhiteSpace(Token.Token))
+            {
+                using (var _client = new HttpClient())
+                {
+                    //Call Thani's Web Api
+                    _client.BaseAddress = new Uri(gsStore.WebThaniApiPath);// https://localhost:44305/"); 
+                    _client.DefaultRequestHeaders.Accept.Clear();
+                    _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    //var t = JsonConvert.DeserializeObject<Token>(token);
+
+                    _client.DefaultRequestHeaders.Clear();
+                    _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
+
+                    //redeem Points
+                    HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/GetRedeemProfile?apiType=" + apiType.ToString(), points);
+
+                    response.EnsureSuccessStatusCode();
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    // return URI of the created resource.
+                    //return response.Headers.Location;
+
+                    //return response.IsSuccessStatusCode;
+
+
+
+
+                }
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -671,10 +777,46 @@ namespace ThaniClient
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+
+
+        private void btnHide_Click(object sender, EventArgs e)
         {
             this.panDisplay.Visible = false;
+            this.panDisplay.Location = new System.Drawing.Point(690, 20);
         }
+
+        private async void  btnSubmit_ClickAsync(object sender, EventArgs e)
+        {
+            string Mode = this.lblMode.Text;
+            string CardNo = this.txtCardNo.Text;
+            double Tpts = Convert.ToDouble(this.txtPts.Text);
+
+            switch (Mode)
+            {
+                case "redeem":
+                    //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                    bool complete = await DoRedeem(CardNo, userParam, Mode, Tpts);
+
+                    if (complete == true)
+                    {
+                        this.txtInvoice.Text = Convert.ToString(Tpoints.response.invoice);
+                        this.txtBalance.Text = Convert.ToString(Tpoints.response.balance.p); //"Test";
+                        this.txtType.Text = Tpoints.response.balance.d; // "Testers";
+                        this.txtExpired.Text = Convert.ToString(Tpoints.response.expiry.pts); // "Testers";
+
+                        //Show new balance
+                        HideButtons(true);
+                    }
+                    return;
+                //case "balance":
+                //    //balance?card=CARD&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                //    return await MassyController.InsertMassyApiPoints(mPts, "balance");
+                default:
+                    return;
+            }
+
+        }
+
     }
 
 

@@ -15,6 +15,9 @@ namespace ThaniWebApi.Controllers.Points
         Task<MassyRespEarn> DoPointsAsync(string apiType, Point Points);
 
         Task<MassyRespProfile> GetCustProfile(string apiType, Point Points);
+
+        Task<MassyRespEarn> GetRedeem(string apiType, Point Points);
+
         //Task<MassyPoints> InsertPointsAsync(Point Points);
         //Task<dynamic> MassyController.InsertMassyApiPoints(MassyPoints mPts);
 

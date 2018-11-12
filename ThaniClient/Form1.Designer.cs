@@ -62,10 +62,6 @@
             this.label13 = new System.Windows.Forms.Label();
             this.txtMValues = new System.Windows.Forms.TextBox();
             this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label17 = new System.Windows.Forms.Label();
-            this.label18 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblLoca = new System.Windows.Forms.Label();
             this.label22 = new System.Windows.Forms.Label();
@@ -73,13 +69,25 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.lblTrans = new System.Windows.Forms.Label();
-            this.LblExpire = new System.Windows.Forms.Label();
             this.lblInvoice = new System.Windows.Forms.Label();
             this.panDisplay = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.lblMode = new System.Windows.Forms.Label();
+            this.btnSubmit = new System.Windows.Forms.Button();
+            this.txtBalance = new System.Windows.Forms.TextBox();
+            this.txtCardNo = new System.Windows.Forms.TextBox();
+            this.txtInvoice = new System.Windows.Forms.TextBox();
+            this.txtPts = new System.Windows.Forms.TextBox();
+            this.txtExpired = new System.Windows.Forms.TextBox();
+            this.txtType = new System.Windows.Forms.TextBox();
+            this.btnHide = new System.Windows.Forms.Button();
             this.label25 = new System.Windows.Forms.Label();
             this.label24 = new System.Windows.Forms.Label();
             this.label23 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
+            this.lblEdit = new System.Windows.Forms.Label();
+            this.label15 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panDisplay.SuspendLayout();
@@ -504,50 +512,6 @@
             this.label14.TabIndex = 29;
             this.label14.Text = "System Value:";
             // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label15.Location = new System.Drawing.Point(20, 148);
-            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(153, 25);
-            this.label15.TabIndex = 31;
-            this.label15.Text = "invoice Date:";
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label16.Location = new System.Drawing.Point(20, 116);
-            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(122, 25);
-            this.label16.TabIndex = 32;
-            this.label16.Text = "Invoice #:";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label17.Location = new System.Drawing.Point(28, 59);
-            this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(93, 25);
-            this.label17.TabIndex = 33;
-            this.label17.Text = "USERID";
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label18.Location = new System.Drawing.Point(22, 21);
-            this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(151, 25);
-            this.label18.TabIndex = 34;
-            this.label18.Text = "TRXNPOINTS";
-            // 
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.White;
@@ -638,17 +602,6 @@
             this.lblTrans.TabIndex = 35;
             this.lblTrans.Text = "Transaction #";
             // 
-            // LblExpire
-            // 
-            this.LblExpire.AutoSize = true;
-            this.LblExpire.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LblExpire.Location = new System.Drawing.Point(20, 292);
-            this.LblExpire.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.LblExpire.Name = "LblExpire";
-            this.LblExpire.Size = new System.Drawing.Size(144, 25);
-            this.LblExpire.TabIndex = 36;
-            this.LblExpire.Text = "Expiring On:";
-            // 
             // lblInvoice
             // 
             this.lblInvoice.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -663,41 +616,162 @@
             // 
             // panDisplay
             // 
-            this.panDisplay.BackColor = System.Drawing.Color.White;
-            this.panDisplay.Controls.Add(this.button1);
+            this.panDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.panDisplay.Controls.Add(this.lblMode);
+            this.panDisplay.Controls.Add(this.btnSubmit);
+            this.panDisplay.Controls.Add(this.txtBalance);
+            this.panDisplay.Controls.Add(this.txtCardNo);
+            this.panDisplay.Controls.Add(this.txtInvoice);
+            this.panDisplay.Controls.Add(this.txtPts);
+            this.panDisplay.Controls.Add(this.txtExpired);
+            this.panDisplay.Controls.Add(this.txtType);
+            this.panDisplay.Controls.Add(this.btnHide);
             this.panDisplay.Controls.Add(this.label25);
             this.panDisplay.Controls.Add(this.label24);
             this.panDisplay.Controls.Add(this.label23);
             this.panDisplay.Controls.Add(this.label18);
             this.panDisplay.Controls.Add(this.label17);
             this.panDisplay.Controls.Add(this.label16);
-            this.panDisplay.Controls.Add(this.LblExpire);
+            this.panDisplay.Controls.Add(this.lblEdit);
             this.panDisplay.Controls.Add(this.label15);
-            this.panDisplay.Location = new System.Drawing.Point(670, 21);
+            this.panDisplay.Location = new System.Drawing.Point(100, 20);
             this.panDisplay.Name = "panDisplay";
-            this.panDisplay.Size = new System.Drawing.Size(486, 384);
-            this.panDisplay.TabIndex = 39;
+            this.panDisplay.Size = new System.Drawing.Size(498, 386);
+            this.panDisplay.TabIndex = 40;
             this.panDisplay.Visible = false;
             // 
-            // button1
+            // lblMode
             // 
-            this.button1.BackColor = System.Drawing.Color.Red;
-            this.button1.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.ForeColor = System.Drawing.Color.Black;
-            this.button1.Location = new System.Drawing.Point(214, 331);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(96, 38);
-            this.button1.TabIndex = 40;
-            this.button1.Text = "CloseOut";
-            this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.lblMode.BackColor = System.Drawing.Color.Magenta;
+            this.lblMode.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblMode.ForeColor = System.Drawing.Color.Black;
+            this.lblMode.Location = new System.Drawing.Point(401, 273);
+            this.lblMode.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblMode.MinimumSize = new System.Drawing.Size(50, 20);
+            this.lblMode.Name = "lblMode";
+            this.lblMode.Size = new System.Drawing.Size(50, 34);
+            this.lblMode.TabIndex = 48;
+            this.lblMode.Text = "invoice Date:";
+            this.lblMode.Visible = false;
+            // 
+            // btnSubmit
+            // 
+            this.btnSubmit.BackColor = System.Drawing.Color.Lime;
+            this.btnSubmit.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnSubmit.ForeColor = System.Drawing.Color.Black;
+            this.btnSubmit.Location = new System.Drawing.Point(30, 333);
+            this.btnSubmit.Margin = new System.Windows.Forms.Padding(4);
+            this.btnSubmit.Name = "btnSubmit";
+            this.btnSubmit.Size = new System.Drawing.Size(165, 38);
+            this.btnSubmit.TabIndex = 47;
+            this.btnSubmit.Text = "Submit";
+            this.btnSubmit.UseVisualStyleBackColor = false;
+            this.btnSubmit.Click += new System.EventHandler(this.btnSubmit_ClickAsync);
+            // 
+            // txtBalance
+            // 
+            this.txtBalance.BackColor = System.Drawing.Color.MidnightBlue;
+            this.txtBalance.Font = new System.Drawing.Font("Verdana", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtBalance.ForeColor = System.Drawing.Color.White;
+            this.txtBalance.Location = new System.Drawing.Point(195, 117);
+            this.txtBalance.Margin = new System.Windows.Forms.Padding(4);
+            this.txtBalance.MinimumSize = new System.Drawing.Size(175, 40);
+            this.txtBalance.Name = "txtBalance";
+            this.txtBalance.ReadOnly = true;
+            this.txtBalance.Size = new System.Drawing.Size(175, 40);
+            this.txtBalance.TabIndex = 46;
+            this.txtBalance.Text = "0";
+            // 
+            // txtCardNo
+            // 
+            this.txtCardNo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.txtCardNo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtCardNo.Font = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtCardNo.ForeColor = System.Drawing.Color.Black;
+            this.txtCardNo.Location = new System.Drawing.Point(195, 69);
+            this.txtCardNo.Margin = new System.Windows.Forms.Padding(4);
+            this.txtCardNo.MinimumSize = new System.Drawing.Size(175, 40);
+            this.txtCardNo.Name = "txtCardNo";
+            this.txtCardNo.ReadOnly = true;
+            this.txtCardNo.Size = new System.Drawing.Size(287, 24);
+            this.txtCardNo.TabIndex = 45;
+            this.txtCardNo.Text = "####-####-####-####";
+            // 
+            // txtInvoice
+            // 
+            this.txtInvoice.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
+            this.txtInvoice.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtInvoice.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtInvoice.ForeColor = System.Drawing.Color.Black;
+            this.txtInvoice.Location = new System.Drawing.Point(195, 21);
+            this.txtInvoice.Margin = new System.Windows.Forms.Padding(4);
+            this.txtInvoice.MinimumSize = new System.Drawing.Size(175, 40);
+            this.txtInvoice.Name = "txtInvoice";
+            this.txtInvoice.ReadOnly = true;
+            this.txtInvoice.Size = new System.Drawing.Size(266, 26);
+            this.txtInvoice.TabIndex = 44;
+            this.txtInvoice.Text = "MassyRec#";
+            // 
+            // txtPts
+            // 
+            this.txtPts.BackColor = System.Drawing.Color.White;
+            this.txtPts.Font = new System.Drawing.Font("Verdana", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtPts.ForeColor = System.Drawing.Color.Red;
+            this.txtPts.Location = new System.Drawing.Point(195, 273);
+            this.txtPts.Margin = new System.Windows.Forms.Padding(4);
+            this.txtPts.MinimumSize = new System.Drawing.Size(175, 40);
+            this.txtPts.Name = "txtPts";
+            this.txtPts.Size = new System.Drawing.Size(175, 40);
+            this.txtPts.TabIndex = 43;
+            this.txtPts.Text = "0";
+            // 
+            // txtExpired
+            // 
+            this.txtExpired.BackColor = System.Drawing.Color.MidnightBlue;
+            this.txtExpired.Font = new System.Drawing.Font("Verdana", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtExpired.ForeColor = System.Drawing.Color.White;
+            this.txtExpired.Location = new System.Drawing.Point(195, 221);
+            this.txtExpired.Margin = new System.Windows.Forms.Padding(4);
+            this.txtExpired.MinimumSize = new System.Drawing.Size(175, 40);
+            this.txtExpired.Name = "txtExpired";
+            this.txtExpired.ReadOnly = true;
+            this.txtExpired.Size = new System.Drawing.Size(175, 40);
+            this.txtExpired.TabIndex = 42;
+            this.txtExpired.Text = "0";
+            // 
+            // txtType
+            // 
+            this.txtType.BackColor = System.Drawing.Color.MidnightBlue;
+            this.txtType.Font = new System.Drawing.Font("Verdana", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txtType.ForeColor = System.Drawing.Color.White;
+            this.txtType.Location = new System.Drawing.Point(195, 169);
+            this.txtType.Margin = new System.Windows.Forms.Padding(4);
+            this.txtType.MinimumSize = new System.Drawing.Size(175, 40);
+            this.txtType.Name = "txtType";
+            this.txtType.ReadOnly = true;
+            this.txtType.Size = new System.Drawing.Size(175, 40);
+            this.txtType.TabIndex = 41;
+            this.txtType.Text = "$0.00";
+            // 
+            // btnHide
+            // 
+            this.btnHide.BackColor = System.Drawing.Color.Red;
+            this.btnHide.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnHide.ForeColor = System.Drawing.Color.Black;
+            this.btnHide.Location = new System.Drawing.Point(320, 333);
+            this.btnHide.Margin = new System.Windows.Forms.Padding(4);
+            this.btnHide.Name = "btnHide";
+            this.btnHide.Size = new System.Drawing.Size(153, 38);
+            this.btnHide.TabIndex = 40;
+            this.btnHide.Text = "Cancel Redeem";
+            this.btnHide.UseVisualStyleBackColor = false;
+            this.btnHide.Click += new System.EventHandler(this.btnHide_Click);
             // 
             // label25
             // 
             this.label25.AutoSize = true;
             this.label25.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label25.Location = new System.Drawing.Point(21, 259);
+            this.label25.Location = new System.Drawing.Point(12, 230);
             this.label25.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(171, 25);
@@ -708,7 +782,7 @@
             // 
             this.label24.AutoSize = true;
             this.label24.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label24.Location = new System.Drawing.Point(17, 224);
+            this.label24.Location = new System.Drawing.Point(12, 177);
             this.label24.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(161, 25);
@@ -719,12 +793,69 @@
             // 
             this.label23.AutoSize = true;
             this.label23.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label23.Location = new System.Drawing.Point(17, 186);
+            this.label23.Location = new System.Drawing.Point(12, 126);
             this.label23.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(175, 25);
             this.label23.TabIndex = 37;
             this.label23.Text = "Balance Points:";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label18.Location = new System.Drawing.Point(378, 204);
+            this.label18.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(151, 25);
+            this.label18.TabIndex = 34;
+            this.label18.Text = "TRXNPOINTS";
+            this.label18.Visible = false;
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label17.Location = new System.Drawing.Point(12, 72);
+            this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(93, 25);
+            this.label17.TabIndex = 33;
+            this.label17.Text = "USERID";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.Location = new System.Drawing.Point(12, 25);
+            this.label16.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(122, 25);
+            this.label16.TabIndex = 32;
+            this.label16.Text = "Invoice #:";
+            // 
+            // lblEdit
+            // 
+            this.lblEdit.AutoSize = true;
+            this.lblEdit.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblEdit.Location = new System.Drawing.Point(12, 282);
+            this.lblEdit.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblEdit.Name = "lblEdit";
+            this.lblEdit.Size = new System.Drawing.Size(166, 25);
+            this.lblEdit.TabIndex = 36;
+            this.lblEdit.Text = "Total Redeem:";
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label15.Location = new System.Drawing.Point(387, 177);
+            this.label15.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(153, 25);
+            this.label15.TabIndex = 31;
+            this.label15.Text = "invoice Date:";
+            this.label15.Visible = false;
             // 
             // Form1
             // 
@@ -810,14 +941,9 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.TextBox txtMValues;
         private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.Label label16;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label lblTrans;
-        private System.Windows.Forms.Label LblExpire;
         private System.Windows.Forms.Button btnVerify;
         private System.Windows.Forms.Button btnVoid;
         private System.Windows.Forms.Button btnHistory;
@@ -827,12 +953,25 @@
         private System.Windows.Forms.Label lblInvoice;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label lblLoca;
         private System.Windows.Forms.Panel panDisplay;
+        private System.Windows.Forms.Button btnSubmit;
+        private System.Windows.Forms.TextBox txtBalance;
+        private System.Windows.Forms.TextBox txtCardNo;
+        private System.Windows.Forms.TextBox txtInvoice;
+        private System.Windows.Forms.TextBox txtPts;
+        private System.Windows.Forms.TextBox txtExpired;
+        private System.Windows.Forms.TextBox txtType;
+        private System.Windows.Forms.Button btnHide;
         private System.Windows.Forms.Label label25;
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Label lblLoca;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.Label lblEdit;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.Label lblMode;
     }
 }
 

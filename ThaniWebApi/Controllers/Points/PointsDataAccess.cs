@@ -32,7 +32,7 @@ namespace ThaniWebApi.Controllers.Points
         public ICollection<MassyPoints> mPts { get; set; }
 
         public ICollection<MassyProfile> mProfile { get; set; }
-     
+        public ICollection<MassyRedeem> mRedeem { get; set; }
 
         private HttpClient _client;
 
@@ -291,6 +291,78 @@ namespace ThaniWebApi.Controllers.Points
         }
 
 
+        public async Task<MassyRespEarn> GetRedeem(string apiType, Point Points)
+        {
+            string json = "";
+
+            try
+            {
+                using (var Sqlconn = new SqlConnection(conn))
+                {
+                    await Sqlconn.OpenAsync();
+
+                    var structure = new OneToOne<MassyRedeem>(
+                                     // if you don't override a column, the default rules are used 
+                                     new ColumnOverride<MassyRedeem>("ptsCustomerNo", "card"),
+                                     new ColumnOverride<MassyRedeem>("ptsUnits", "units"),
+                                     new ColumnOverride<MassyRedeem>("ptsUnitType", "unitType"),
+                                     new ColumnOverride<MassyRedeem>("ptsMlid", "mlid"),
+                                     new ColumnOverride<MassyRedeem>("ptsUnix", "ts"),
+                                     new ColumnOverride<MassyRedeem>("ptsPin", "pin"),
+                                     new ColumnOverride<MassyRedeem>("ptsSecret", "secret")
+                                );
+
+                    Parm parm = new Parm {
+                        Loc_ID = Points.ptsLocation,
+                        Card = Points.ptsCustomerNo,
+                        Units = Points.ptsTotal,
+                        UnitType = Points.ptsUnitType,
+                    };
+
+                    //return point object for submission to MassyAPI
+                    //ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
+
+                    mRedeem = Sqlconn.Query("GetRedeemProfile", parm, Query.Returns(structure));
+
+                    if (mRedeem.Count > 0)
+                    {
+                        //Call MassyAPI System
+
+                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        MassyRespEarn mResp = await MassyController.GetMassyApiRedeem(mRedeem, apiType);
+
+                        return mResp;
+                    }
+                    else
+                    {
+
+                        //Default error message from Massy
+                        json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                        ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+                        MassyRespEarn mResp = JsonConvert.DeserializeObject<MassyRespEarn>(json);
+
+                        return mResp;
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                //Default error message from Massy
+                json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                        ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+                MassyRespEarn mResp = JsonConvert.DeserializeObject<MassyRespEarn>(json);
+
+                return mResp;
+
+            }
+        }
+
 
         //public async Task<IEnumerable<Point>> GetSomeJsonAsync()
         //{
@@ -536,6 +608,8 @@ namespace ThaniWebApi.Controllers.Points
         public int XMode { get; set; }
         public string Loc_ID { get; set; }
         public string Card { get; set; }
+        public double Units { get; set; }
+        public string UnitType { get; set; }
     }
 
     internal class MassyCard

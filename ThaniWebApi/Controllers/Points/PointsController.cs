@@ -65,6 +65,15 @@ namespace ThaniWebApi.Controllers.Points
         //----------------------------------------------
 
         [HttpPost]
+        [Route("GetRedeem")]
+        public async Task<MassyRespEarn> GetRedeem(string apiType, [FromBody] Point Points)
+        {
+            return await _PointsRepository.GetRedeem(apiType, Points);
+        }
+
+        //----------------------------------------------
+
+        [HttpPost]
         [Route("DoPointsAsync")]
         public async Task<MassyRespEarn> DoPointsAsync( string apiType,[FromBody] Point Points)
         {
