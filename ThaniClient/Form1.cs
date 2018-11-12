@@ -29,7 +29,7 @@ namespace ThaniClient
         static bool FTime = true;
         //static clsWinGlobal wcls;
         static clsSecurity wSec = new clsSecurity();
-       
+
         //static ICollection<TotalPoints> Tpoints { get; set; }
         static MassyResponse Tpoints = null;
         static MassyRespProfile TProfile = null;
@@ -96,7 +96,7 @@ namespace ThaniClient
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-               //return null;
+                //return null;
             }
             //oJson as Object = JsonConvert.DeserializeObject(File.ReadAllText(MyFilePath))
         }
@@ -165,7 +165,7 @@ namespace ThaniClient
 
             if (!doChange)
             {
-                this.btnRedeem.Text ="Redeem Points" ;
+                this.btnRedeem.Text = "Redeem Points";
             }
             else
             {
@@ -181,7 +181,7 @@ namespace ThaniClient
         }
 
 
- #region Set rate options
+        #region Set rate options
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
             clsWinGlobal.gsRate = clsWinGlobal.gsMassyRate;
@@ -200,7 +200,7 @@ namespace ThaniClient
         #endregion
 
 
-#region Form events to call MassyApi
+        #region Form events to call MassyApi
 
         private async void btnVoid_Click(object sender, EventArgs e)
         {
@@ -534,7 +534,7 @@ namespace ThaniClient
             {
                 Points_id = -1,
                 Document_id = -1,
-                ptsCustomerNo = CardNo, // "42100999892",
+                ptsCustomerNo = "42100999892", //CardNo, // "42100999892",
                 ptsFirstName = "",
                 ptsLastName = "",
                 ptsUnitType = "D",
@@ -781,155 +781,174 @@ namespace ThaniClient
 
         private void btnHide_Click(object sender, EventArgs e)
         {
+            this.txtMPoints.Text = "";
+            this.txtMPoints.Text = this.txtBalance.Text;
+            this.txtMValues.Text = "";
+            this.txtMValues.Text = this.txtType.Text;
+            
             this.panDisplay.Visible = false;
             this.panDisplay.Location = new System.Drawing.Point(690, 20);
         }
 
-        private async void  btnSubmit_ClickAsync(object sender, EventArgs e)
+        private async void btnSubmit_ClickAsync(object sender, EventArgs e)
         {
-            string Mode = this.lblMode.Text;
-            string CardNo = this.txtCardNo.Text;
-            double Tpts = Convert.ToDouble(this.txtPts.Text);
-
-            switch (Mode)
+            try
             {
-                case "redeem":
-                    //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
-                    bool complete = await DoRedeem(CardNo, userParam, Mode, Tpts);
 
-                    if (complete == true)
-                    {
-                        this.txtInvoice.Text = Convert.ToString(Tpoints.response.invoice);
-                        this.txtBalance.Text = Convert.ToString(Tpoints.response.balance.p); //"Test";
-                        this.txtType.Text = Tpoints.response.balance.d; // "Testers";
-                        this.txtExpired.Text = Convert.ToString(Tpoints.response.expiry.pts); // "Testers";
 
-                        //Show new balance
-                        HideButtons(true);
-                    }
-                    return;
-                //case "balance":
-                //    //balance?card=CARD&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
-                //    return await MassyController.InsertMassyApiPoints(mPts, "balance");
-                default:
-                    return;
+                string Mode = this.lblMode.Text;
+                string CardNo = this.txtCardNo.Text;
+                double Tpts = Convert.ToDouble(this.txtPts.Text);
+
+                switch (Mode)
+                {
+                    case "redeem":
+                        //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                        bool complete = await DoRedeem(CardNo, userParam, Mode, Tpts);
+
+                        if (complete == true)
+                        {
+                            this.txtInvoice.Text = "";
+                            this.txtInvoice.Text = Convert.ToString(Tpoints.response.invoice);
+                            this.txtBalance.Text = "";
+                            this.txtBalance.Text = Convert.ToString(Tpoints.response.balance.p); //"Test";
+                            this.txtType.Text = "";
+                            this.txtType.Text = Tpoints.response.balance.d; // "Testers";
+                            this.txtExpired.Text = "";
+                            this.txtExpired.Text = Convert.ToString(Tpoints.response.expiry.pts); // "Testers";
+
+                            //Show new balance
+                            HideButtons(true);
+                        }
+                        return;
+                    //case "balance":
+                    //    //balance?card=CARD&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                    //    return await MassyController.InsertMassyApiPoints(mPts, "balance");
+                    default:
+                        return;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
 
         }
 
+
     }
 
 
 
-    public class POSSale
-    {
-        public int StoreID { get; set; }
-        public int TransactionNumber { get; set; }
-        public int BatchNumber { get; set; }
-        public DateTime Time { get; set; }
-        public int CustomerID { get; set; }
-        public int CashierID { get; set; }
-        public double Total { get; set; }
-        public double SalesTax { get; set; }
-        public string Comment { get; set; }
-        public string ReferenceNumber { get; set; } // scan Card Number
-        public string CompName { get; set; }
-        public string Name { get; set; }
-        public string Cashier { get; set; }
-    }
+
+        public class POSSale
+        {
+            public int StoreID { get; set; }
+            public int TransactionNumber { get; set; }
+            public int BatchNumber { get; set; }
+            public DateTime Time { get; set; }
+            public int CustomerID { get; set; }
+            public int CashierID { get; set; }
+            public double Total { get; set; }
+            public double SalesTax { get; set; }
+            public string Comment { get; set; }
+            public string ReferenceNumber { get; set; } // scan Card Number
+            public string CompName { get; set; }
+            public string Name { get; set; }
+            public string Cashier { get; set; }
+        }
 
 
-    internal class Point
-    {
-        public int Points_id { get; set; }
-        public int Document_id { get; set; }
-        public string ptsCustomerNo { get; set; }//Card number
-        public string ptsFirstName { get; set; } //Card holder First Name
-        public string ptsLastName { get; set; } //Card holder Last Name
-        public string ptsUnitType { get; set; } // (P or D) – P for points, D for dollars
-        public string ptsMode { get; set; }
-        public double ptsTotal { get; set; } //(decimal) Points 
-        public double ptsValue { get; set; } //(decimal) Dollar value
-        public double ptsValueRate { get; set; } //10 cents(decimal) Dollar value
-        public double ptsDiscount { get; set; } //(decimal) Dollar value
-        public double ptsDiscountRate { get; set; } //10 cents (decimal) Dollar value
-        public string ptsLocation { get; set; } // (integer) Massy Merchant Location ID
-        public string ptsCashier { get; set; }
-        public int ptsMlid { get; set; } // (integer) Massy Merchant Location ID
-        public int ptsUnix { get; set; } // (integer) Unix timestamp
-        public int ptsPin { get; set; } // (integer)00000 5-digit user pin
-        public string ptsQsa { get; set; } // (string) The generated hash
-        public string ptsSecret { get; set; } // (string) The Secret for the selected store
-        public string ptsInvoice { get; set; } // (string) The invoice # of process
-        public string ptsLimit { get; set; } // (string) The limit to retreive data
-        public string ptsfcn { get; set; }
-    }
+        internal class Point
+        {
+            public int Points_id { get; set; }
+            public int Document_id { get; set; }
+            public string ptsCustomerNo { get; set; }//Card number
+            public string ptsFirstName { get; set; } //Card holder First Name
+            public string ptsLastName { get; set; } //Card holder Last Name
+            public string ptsUnitType { get; set; } // (P or D) – P for points, D for dollars
+            public string ptsMode { get; set; }
+            public double ptsTotal { get; set; } //(decimal) Points 
+            public double ptsValue { get; set; } //(decimal) Dollar value
+            public double ptsValueRate { get; set; } //10 cents(decimal) Dollar value
+            public double ptsDiscount { get; set; } //(decimal) Dollar value
+            public double ptsDiscountRate { get; set; } //10 cents (decimal) Dollar value
+            public string ptsLocation { get; set; } // (integer) Massy Merchant Location ID
+            public string ptsCashier { get; set; }
+            public int ptsMlid { get; set; } // (integer) Massy Merchant Location ID
+            public int ptsUnix { get; set; } // (integer) Unix timestamp
+            public int ptsPin { get; set; } // (integer)00000 5-digit user pin
+            public string ptsQsa { get; set; } // (string) The generated hash
+            public string ptsSecret { get; set; } // (string) The Secret for the selected store
+            public string ptsInvoice { get; set; } // (string) The invoice # of process
+            public string ptsLimit { get; set; } // (string) The limit to retreive data
+            public string ptsfcn { get; set; }
+        }
 
-    //----------------------------------------------------------------
-    // Massypoint response for display
-    //{"response":{"invoice":"510162","points":6,"userid":"TERMINAL",
-    // "balance":{"p":122,"d":"12.20"},
-    //"footer":["Earnings Footer Text"],
-    //"expiry":{"pts":107,"dat":"2018-10-31"}},"code":1,"HttpStatusCode":200}
-    //------------------------------------------------------
-    internal class MassyResponse
-    {
-        public Response response { get; set; }
-        public int code { get; set; }
-        public int HttpStatusCode { get; set; }
-    }
+        //----------------------------------------------------------------
+        // Massypoint response for display
+        //{"response":{"invoice":"510162","points":6,"userid":"TERMINAL",
+        // "balance":{"p":122,"d":"12.20"},
+        //"footer":["Earnings Footer Text"],
+        //"expiry":{"pts":107,"dat":"2018-10-31"}},"code":1,"HttpStatusCode":200}
+        //------------------------------------------------------
+        internal class MassyResponse
+        {
+            public Response response { get; set; }
+            public int code { get; set; }
+            public int HttpStatusCode { get; set; }
+        }
 
-    public class Response
-    {
-        public string invoice { get; set; }
-        public int points { get; set; }
-        public string userid { get; set; }
-        public Balance balance { get; set; }
-        public string[] footer { get; set; }
-        public Expiry expiry { get; set; }
-    }
+        public class Response
+        {
+            public string invoice { get; set; }
+            public int points { get; set; }
+            public string userid { get; set; }
+            public Balance balance { get; set; }
+            public string[] footer { get; set; }
+            public Expiry expiry { get; set; }
+        }
 
-    public class Balance
-    {
-        public int p { get; set; }
-        public string d { get; set; }
-    }
+        public class Balance
+        {
+            public int p { get; set; }
+            public string d { get; set; }
+        }
 
-    public class Expiry
-    {
-        public int pts { get; set; }
-        public string dat { get; set; }
-    }
+        public class Expiry
+        {
+            public int pts { get; set; }
+            public string dat { get; set; }
+        }
 
-    //-----------------------------------------------
-    public class UserModel
-    {
-        public int Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Token { get; set; }
-    }
-
-
-    //----------------------------------
-    public class apiCall
-    {
-        public string apiType { get; set; }
-    }
-
-    public class AppStore
-    {
-        public string LocID { get; set; }
-        public string LocationName { get; set; }
-        public string SqlSource { get; set; }
-        public string SqlCatalog { get; set; }
-        public string SqlUser { get; set; }
-        public string SqlPassword { get; set; }
-        public string WebThaniApiPath { get; set; }
-    }
+        //-----------------------------------------------
+        public class UserModel
+        {
+            public int Id { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Username { get; set; }
+            public string Password { get; set; }
+            public string Token { get; set; }
+        }
 
 
+        //----------------------------------
+        public class apiCall
+        {
+            public string apiType { get; set; }
+        }
+
+        public class AppStore
+        {
+            public string LocID { get; set; }
+            public string LocationName { get; set; }
+            public string SqlSource { get; set; }
+            public string SqlCatalog { get; set; }
+            public string SqlUser { get; set; }
+            public string SqlPassword { get; set; }
+            public string WebThaniApiPath { get; set; }
+        }
 
 }
+

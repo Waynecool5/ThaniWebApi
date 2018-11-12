@@ -350,7 +350,7 @@ namespace ThaniWebApi.Controllers.Massy
                 });
 
                 //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
-                string[] sd = new String[9];
+                string[] sd = new String[8];
 
                 ////Resize array sequence
                 //Array.Resize<string>(ref sd, 7);
@@ -378,14 +378,14 @@ namespace ThaniWebApi.Controllers.Massy
                 //        prepare for arraysorting
                 //---------------------------------------
                 //card=0 :units=1 : unitType=2 : mlid=3 : ts=4 : 
-                //pin=5 : secret=6 : invoice=7 : limit=8 : fcn=9
+                //pin=4 : secret=5 : invoice=7 : limit=8 : fcn=9
 
                 
                 //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
-                sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[4], sd[5] };
+                sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[6], sd[4] };
 
                 //Secret
-                string key = sd[6].ToString();
+                string key = sd[5].ToString();
 
                 //https://github.com/tompazourek/NaturalSort.Extension
                 //PM: Install-Package NaturalSort.Extension
