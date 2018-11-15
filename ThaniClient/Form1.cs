@@ -106,6 +106,7 @@ namespace ThaniClient
         {
             if (FTime == true)
             {
+                HideButtons(true);
 
                 //get Token Security Access to API
                 Token = await wSec.GetSecurityToken(gsStore.WebThaniApiPath, userParam);
@@ -152,7 +153,7 @@ namespace ThaniClient
 
                 }
 
-                HideButtons(true);
+                
 
                 FTime = false;
             }
@@ -204,9 +205,13 @@ namespace ThaniClient
 
         private async void btnVoid_Click(object sender, EventArgs e)
         {
+            //Propmpt for approval
+
+            //use exsisting security token
             bool proceed = await CheckToken(Token);
             if (proceed == true)
             {
+                DoVoidSalesPoints();
 
             }
 
@@ -237,7 +242,7 @@ namespace ThaniClient
             bool proceed = await CheckToken(Token);
             if (proceed == true)
             {
-
+                RefundSalesPoints();
             }
         }
 
@@ -263,7 +268,7 @@ namespace ThaniClient
             }
             else if (this.btnRedeem.Text == "Redeem Points")
             {
-                this.DeemSalesPoints("redeem");
+                this.RedeemSalesPoints();
             }
         }
 
@@ -396,8 +401,34 @@ namespace ThaniClient
 
         }
 
+        private void DoVoidSalesPoints()
+        {
+            try
+            {
+                this.panDisplay.Location = new System.Drawing.Point(100, 20);
+                this.txtInvoice.Text = this.lblInvoice.Text;
+                this.txtCardNo.Text = this.txtCus.Text;
+                this.btnHide.Text = "Cancel Void";
+                this.lblMode.Text = "void";
+                this.lblEdit.Text = "Total Void";
 
-        private void DeemSalesPoints(string apiType)
+                this.btnSubmit.Text = "Submit Void";
+
+                this.txtBalance.Text = this.txtMPoints.Text;
+                this.txtType.Text = this.txtMValues.Text;
+                this.txtPts.Text = this.txtMValues.Text;
+
+                this.panDisplay.Visible = true;
+                this.txtPts.Focus();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        private void RedeemSalesPoints()
         {
             ////Default error message from Massy
             //string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
@@ -406,9 +437,11 @@ namespace ThaniClient
             try
             {
                 this.panDisplay.Location = new System.Drawing.Point(100, 20);
+                this.txtCardNo.Text = this.txtCus.Text;
                 this.btnHide.Text = "Cancel Redeem";
                 this.lblMode.Text = "redeem";
                 this.lblEdit.Text = "Total Redeem";
+                this.btnSubmit.Text = "Submit Redeem";
 
                 this.txtBalance.Text = this.txtMPoints.Text;
                 this.txtType.Text = this.txtMValues.Text;
@@ -427,6 +460,36 @@ namespace ThaniClient
             }
         }
 
+        private void RefundSalesPoints()
+        {
+            ////Default error message from Massy
+            //string json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+            //                         ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+            try
+            {
+                this.panDisplay.Location = new System.Drawing.Point(100, 20);
+                this.btnHide.Text = "Cancel Refund";
+                this.lblMode.Text = "refund";
+                this.lblEdit.Text = "Total Refund";
+                this.btnSubmit.Text = "Submit Refund";
+
+                this.txtBalance.Text = this.txtMPoints.Text;
+                this.txtType.Text = this.txtMValues.Text;
+                this.txtPts.Text = this.txtMValues.Text;
+
+
+
+                this.panDisplay.Visible = true;
+                this.txtPts.Focus();
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
 
         private async void AddSalesPoints(string apiType)
         {
@@ -534,17 +597,17 @@ namespace ThaniClient
             {
                 Points_id = -1,
                 Document_id = -1,
-                ptsCustomerNo = "42100999892", //CardNo, // "42100999892",
+                ptsCustomerNo = "42100999892", //CardNo, // "42100999892", //required
                 ptsFirstName = "",
                 ptsLastName = "",
                 ptsUnitType = "D",
                 ptsMode = "D",
-                ptsTotal = Tpts, //massy points units
+                ptsTotal = Tpts, //massy points units  //required
                 ptsValue = 0.00,
                 ptsValueRate = 0.00,
                 ptsDiscount = 0.00,
                 ptsDiscountRate = 0.00,
-                ptsLocation = gsStore.LocID, //"SS",
+                ptsLocation = gsStore.LocID, //"SS", //required
                 ptsCashier = "",
                 ptsPin = 0,
                 ptsSecret = "",
@@ -600,6 +663,153 @@ namespace ThaniClient
             }
         }
 
+        private async Task<bool> DoRefund(string CardNo, UserModel userParam, string apiType, double Tpts)
+        {//redeem Points
+
+            //values only for getting CustomerProfile
+            var points = new Point
+            {
+                Points_id = -1,
+                Document_id = -1,
+                ptsCustomerNo = "42100999892", //CardNo, // "42100999892",//required
+                ptsFirstName = "",
+                ptsLastName = "",
+                ptsUnitType = "D",
+                ptsMode = "D",
+                ptsTotal = Tpts, //massy points units //required
+                ptsValue = 0.00,
+                ptsValueRate = 0.00,
+                ptsDiscount = 0.00,
+                ptsDiscountRate = 0.00,
+                ptsLocation = gsStore.LocID, //"SS", //required
+                ptsCashier = "",
+                ptsPin = 0,
+                ptsSecret = "",
+                ptsUnix = 0,
+                ptsInvoice = "",
+                ptsLimit = "",
+                ptsfcn = ""
+            };
+
+
+            if (!string.IsNullOrWhiteSpace(Token.Token))
+            {
+                using (var _client = new HttpClient())
+                {
+                    //Call Thani's Web Api
+                    _client.BaseAddress = new Uri(gsStore.WebThaniApiPath);// https://localhost:44305/"); 
+                    _client.DefaultRequestHeaders.Accept.Clear();
+                    _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    //var t = JsonConvert.DeserializeObject<Token>(token);
+
+                    _client.DefaultRequestHeaders.Clear();
+                    _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
+
+                    //redeem Points
+                    HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/GetRefundProfile?apiType=" + apiType.ToString(), points);
+
+                    response.EnsureSuccessStatusCode();
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    // return URI of the created resource.
+                    //return response.Headers.Location;
+
+                    //return response.IsSuccessStatusCode;
+
+
+
+
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private async Task<bool> DoVoid(string InvoiceNo, UserModel userParam, string apiType, double Tpts)
+        {//redeem Points
+
+            //values only for getting CustomerProfile
+            var points = new Point
+            {
+                Points_id = -1,
+                Document_id = -1,
+                ptsCustomerNo = "", //CardNo, // "42100999892",
+                ptsFirstName = "",
+                ptsLastName = "",
+                ptsUnitType = "D",
+                ptsMode = "D",
+                ptsTotal = Tpts, //massy points units
+                ptsValue = 0.00,
+                ptsValueRate = 0.00,
+                ptsDiscount = 0.00,
+                ptsDiscountRate = 0.00,
+                ptsLocation = gsStore.LocID, //"SS", required
+                ptsCashier = "",
+                ptsPin = 0,
+                ptsSecret = "",
+                ptsUnix = 0,
+                ptsInvoice = InvoiceNo, //required
+                ptsLimit = "",
+                ptsfcn = ""
+            };
+
+
+            if (!string.IsNullOrWhiteSpace(Token.Token))
+            {
+                using (var _client = new HttpClient())
+                {
+                    //Call Thani's Web Api
+                    _client.BaseAddress = new Uri(gsStore.WebThaniApiPath);// https://localhost:44305/"); 
+                    _client.DefaultRequestHeaders.Accept.Clear();
+                    _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+                    //var t = JsonConvert.DeserializeObject<Token>(token);
+
+                    _client.DefaultRequestHeaders.Clear();
+                    _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + Token.Token.ToString());// t.access_token);
+
+                    //redeem Points
+                    HttpResponseMessage response = await _client.PostAsJsonAsync("api/points/GetVoidProfile?apiType=" + apiType.ToString(), points);
+
+                    response.EnsureSuccessStatusCode();
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        Tpoints = await response.Content.ReadAsAsync<MassyResponse>();
+
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                    // return URI of the created resource.
+                    //return response.Headers.Location;
+
+                    //return response.IsSuccessStatusCode;
+
+
+
+
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         private async Task<bool> GetCustomerProfile(string CardNo, UserModel userParam, string apiType)
         {
@@ -795,16 +1005,55 @@ namespace ThaniClient
             try
             {
 
-
+                bool complete = false;
                 string Mode = this.lblMode.Text;
                 string CardNo = this.txtCardNo.Text;
+                string InvoiceNo = this.txtInvoice.Text;
                 double Tpts = Convert.ToDouble(this.txtPts.Text);
 
                 switch (Mode)
                 {
                     case "redeem":
                         //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
-                        bool complete = await DoRedeem(CardNo, userParam, Mode, Tpts);
+                         complete = await DoRedeem(CardNo, userParam, Mode, Tpts);
+
+                        if (complete == true)
+                        {
+                            this.txtInvoice.Text = "";
+                            this.txtInvoice.Text = Convert.ToString(Tpoints.response.invoice);
+                            this.txtBalance.Text = "";
+                            this.txtBalance.Text = Convert.ToString(Tpoints.response.balance.p); //"Test";
+                            this.txtType.Text = "";
+                            this.txtType.Text = Tpoints.response.balance.d; // "Testers";
+                            this.txtExpired.Text = "";
+                            this.txtExpired.Text = Convert.ToString(Tpoints.response.expiry.pts); // "Testers";
+
+                            //Show new balance
+                            HideButtons(true);
+                        }
+                        return;
+                    case "refund":
+                        //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                         complete = await DoRefund(CardNo, userParam, Mode, Tpts);
+
+                        if (complete == true)
+                        {
+                            this.txtInvoice.Text = "";
+                            this.txtInvoice.Text = Convert.ToString(Tpoints.response.invoice);
+                            this.txtBalance.Text = "";
+                            this.txtBalance.Text = Convert.ToString(Tpoints.response.balance.p); //"Test";
+                            this.txtType.Text = "";
+                            this.txtType.Text = Tpoints.response.balance.d; // "Testers";
+                            this.txtExpired.Text = "";
+                            this.txtExpired.Text = Convert.ToString(Tpoints.response.expiry.pts); // "Testers";
+
+                            //Show new balance
+                            HideButtons(true);
+                        }
+                        return;
+                    case "void":
+                        //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
+                        complete = await DoVoid(InvoiceNo, userParam, Mode, Tpts);
 
                         if (complete == true)
                         {

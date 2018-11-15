@@ -13,24 +13,21 @@ namespace ThaniWebApi
         public static String Encoding_KB = "8080808080808080"; // Unmodifiable
         public static String Encoding_IV = "8080808080808080"; // Unmodifiable
 
-        ////Live
-        //public static String SqlUser = "ubritene_sa"; // Modifiable
-        //public static String SqlPassword = "dedan!0987o"; // Modifiable
-        //public static String SqlCatalog = "ubritene_WebAsync";
-        //public static String SqlSource2 = "162.249.5.100"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
 
-        //Live Test
-        public static String SqlUser = "DB_A428B0_WebAsync_admin"; // Modifiable
-        public static String SqlPassword = "dedan!0987o"; // Modifiable
-        public static String SqlCatalog = "DB_A428B0_WebAsync";
-        public static String SqlSource2 = "SQL5030.site4now.net"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
+        ////Live Test
+        //public static String SqlUser = "DB_A428B0_WebAsync_admin"; // Modifiable
+        //public static String SqlPassword = "dedan!0987o"; // Modifiable
+        //public static String SqlCatalog = "DB_A428B0_WebAsync";
+        //public static String SqlSource2 = "SQL5030.site4now.net"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
 
         //Local Testing
-        //public static String SqlUser = "sa"; // Modifiable
-        //public static String SqlPassword = "dedan!0987o"; // Modifiable
-        //public static String SqlCatalog = "WebAsync";
-        ////public static String SqlSource2 = "LAPTOPHP\\SQLEXP2017"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
-        //public static String SqlSource2 = "OFFICE\\SQL2017"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
+        public static String SqlUser = "sa"; // Modifiable
+        public static String SqlPassword = "dedan!0987o"; // Modifiable
+        public static String SqlCatalog = "WebAsync";
+        //public static String SqlSource2 = "LAPTOPHP\\SQLEXP2017"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
+        public static String SqlSource2 = "OFFICE\\SQL2017"; //office\\sql2017"; // "(LOCALDB)\\MSSQLLOCALDB";
+
+
         public static String MassyAPIver134 = "http://beta.massycard.com/loyalty/massy/api/rest2/";
         public static readonly string Secret = "weg24*792#9Fe8PO87u56f122@b=ksJ3ou80";
         //Install-Package System.Data.Common -Version 4.3.0

@@ -129,6 +129,90 @@ namespace ThaniWebApi.Controllers.Massy
             }
         }
 
+        [HttpGet]
+        [Route("GetMassyApiRefund")]
+        public static async Task<MassyRespEarn> GetMassyApiRefund(ICollection<MassyRefund> mRefund, string apiType)
+        {
+            HttpClient _clientMassy = new HttpClient(); // handler);
+
+            try
+            {
+                _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
+                _clientMassy.DefaultRequestHeaders.Accept.Clear();
+                _clientMassy.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                string strPath = MakeQueryString_Refund(mRefund, "refund");
+
+                if (strPath != "")
+                {
+                    //Massy using a querystring from MakeQueryString() to collect data.
+                    var response = await _clientMassy.GetAsync(strPath);
+
+                    response.EnsureSuccessStatusCode();
+
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+
+
+                    MassyRespEarn ResponseData = JsonConvert.DeserializeObject<MassyRespEarn>(stringResponse);
+
+                    return ResponseData;
+                }
+                else
+                {
+                    return new MassyRespEarn();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new MassyRespEarn();
+            }
+        }
+
+        [HttpGet]
+        [Route("GetMassyApiVoid")]
+        public static async Task<MassyRespEarn> GetMassyApiVoid(ICollection<MassyVoid> mVoid, string apiType)
+        {
+            HttpClient _clientMassy = new HttpClient(); // handler);
+
+            try
+            {
+                _clientMassy.BaseAddress = new Uri(ClsGlobal.MassyAPIver134);
+                _clientMassy.DefaultRequestHeaders.Accept.Clear();
+                _clientMassy.DefaultRequestHeaders.Accept.Add(
+                    new MediaTypeWithQualityHeaderValue("application/json"));
+
+                //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                string strPath = MakeQueryString_Void(mVoid, "void");
+
+                if (strPath != "")
+                {
+                    //Massy using a querystring from MakeQueryString() to collect data.
+                    var response = await _clientMassy.GetAsync(strPath);
+
+                    response.EnsureSuccessStatusCode();
+
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+
+
+                    MassyRespEarn ResponseData = JsonConvert.DeserializeObject<MassyRespEarn>(stringResponse);
+
+                    return ResponseData;
+                }
+                else
+                {
+                    return new MassyRespEarn();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new MassyRespEarn();
+            }
+        }
+
 
         private static async Task<MassyRespEarn> doMassyApiPoints(ICollection<MassyPoints> mPts,string apiType)
         {
@@ -233,8 +317,7 @@ namespace ThaniWebApi.Controllers.Massy
 
 
         }
-
-
+        
         private static String MakeQueryString_Profile(ICollection<MassyProfile> mProfile, string apiType)
             {
                 //----------------------------------------------------
@@ -423,6 +506,201 @@ namespace ThaniWebApi.Controllers.Massy
                 //redeem?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin=PIN&qsa=GENERATEDHASH
                 queryString2 = String.Concat(mRedeem.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
                                                                  + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+
+                var strPath = ClsGlobal.MassyAPIver134 + apiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
+
+                return strPath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "";
+
+            }
+
+        }
+
+        private static String MakeQueryString_Refund(ICollection<MassyRefund> mRefund, string apiType)
+        {
+            //----------------------------------------------------
+            // -- Make Certificate for qsa value
+            //------------------------------------------------
+
+            try
+            {
+                //Convert to json string
+                string jsonString = JsonConvert.SerializeObject(mRefund, Formatting.None, new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                });
+
+                //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
+                string[] sd = new String[8];
+
+                ////Resize array sequence
+                //Array.Resize<string>(ref sd, 7);
+
+                int i = 0;
+
+                JArray jsonX = JArray.Parse(jsonString);
+
+                var list = from t in jsonX[0]
+                           select t;
+
+                foreach (string s in list)
+                {
+                    sd[i] = s;
+                    i++;
+                }
+
+                //------------------------------------------------
+                //card,units,unitType,mlid,ts,pin
+                //------------------------------------------------
+                string[] sequence = new string[0];
+
+
+                //------------------------------------------
+                //        prepare for arraysorting
+                //---------------------------------------
+                //card=0 :units=1 : unitType=2 : mlid=3 : ts=4 : 
+                //pin=4 : secret=5 : invoice=7 : limit=8 : fcn=9
+
+
+                //refund?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                sequence = new[] { sd[0], sd[1], sd[2], sd[3], sd[6], sd[4] };
+
+                //Secret
+                string key = sd[5].ToString();
+
+                //https://github.com/tompazourek/NaturalSort.Extension
+                //PM: Install-Package NaturalSort.Extension
+                // Sort array to natsort standard
+                var ordered = sequence.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+
+
+                //------------------------------------------------
+                //place :: to separate values
+                //------------------------------------------------
+                var HashString = string.Join("::", ordered);
+
+                /*For test Massy Response
+                    var tp = "1::Test";
+                    string qsa2 = tp.GetHmacSHA256("e5cc16024314d0bdc48e755fffc5e563");
+                    must return this value 
+                    42792d6294eef612ba48419ba83b773fea72380be4fb11ff1dabfd6b5e983529
+                */
+
+                //------------------------------------------------
+                //Create hash certificate
+                //------------------------------------------------
+                string qsa = HashString.GetHmacSHA256(key);
+
+
+                //------------------------------------------------
+                //Create string form submission
+                //------------------------------------------------
+                string queryString2 = "";
+
+                //refund?card=CARD&units=UNITVALUE&unitType=UNITTYPE&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                queryString2 = String.Concat(mRefund.Select(o => "card=" + o.card + "&units=" + o.units + "&unitType="
+                                                                 + o.unitType + "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
+
+                var strPath = ClsGlobal.MassyAPIver134 + apiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
+
+                return strPath;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return "";
+
+            }
+
+        }
+
+        private static String MakeQueryString_Void(ICollection<MassyVoid> mVoid, string apiType)
+        {
+            //----------------------------------------------------
+            // -- Make Certificate for qsa value
+            //------------------------------------------------
+
+            try
+            {
+                //Convert to json string
+                string jsonString = JsonConvert.SerializeObject(mVoid, Formatting.None, new JsonSerializerSettings()
+                {
+                    ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+                });
+
+                //Points jsonX = JsonConvert.DeserializeObject<Points>(jsonString);
+                string[] sd = new String[6];
+
+                ////Resize array sequence
+                //Array.Resize<string>(ref sd, 7);
+
+                int i = 0;
+
+                JArray jsonX = JArray.Parse(jsonString);
+
+                var list = from t in jsonX[0]
+                           select t;
+
+                foreach (string s in list)
+                {
+                    sd[i] = s;
+                    i++;
+                }
+
+                //------------------------------------------------
+                //card,units,unitType,mlid,ts,pin
+                //------------------------------------------------
+                string[] sequence = new string[0];
+
+
+                //------------------------------------------
+                //        prepare for arraysorting
+                //---------------------------------------
+                //card=0 :units=1 : unitType=2 : mlid=3 : ts=4 : 
+                //pin=4 : secret=5 : invoice=7 : limit=8 : fcn=9
+
+
+                //void?invoice=INVOICE#&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                sequence = new[] { sd[0], sd[1], sd[4], sd[2] };
+
+                //Secret
+                string key = sd[3].ToString();
+
+                //https://github.com/tompazourek/NaturalSort.Extension
+                //PM: Install-Package NaturalSort.Extension
+                // Sort array to natsort standard
+                var ordered = sequence.OrderBy(x => x, StringComparer.OrdinalIgnoreCase.WithNaturalSort());
+
+
+                //------------------------------------------------
+                //place :: to separate values
+                //------------------------------------------------
+                var HashString = string.Join("::", ordered);
+
+                /*For test Massy Response
+                    var tp = "1::Test";
+                    string qsa2 = tp.GetHmacSHA256("e5cc16024314d0bdc48e755fffc5e563");
+                    must return this value 
+                    42792d6294eef612ba48419ba83b773fea72380be4fb11ff1dabfd6b5e983529
+                */
+
+                //------------------------------------------------
+                //Create hash certificate
+                //------------------------------------------------
+                string qsa = HashString.GetHmacSHA256(key);
+
+
+                //------------------------------------------------
+               //Create string form submission
+                //------------------------------------------------
+                string queryString2 = "";
+
+                //void?invoice=INVOICE#&mlid=LOCATIONID&ts=UNIXTIMESTAMP&pin= PIN&qsa=GENERATEDHASH
+                queryString2 = String.Concat(mVoid.Select(o => "invoice=" + o.invoice +  "&mlid=" + o.mlid + "&ts=" + o.ts + "&pin=" + o.pin));
 
                 var strPath = ClsGlobal.MassyAPIver134 + apiType + "?" + queryString2 + "&qsa=" + qsa.ToString();
 

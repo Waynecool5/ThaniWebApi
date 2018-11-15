@@ -112,11 +112,11 @@
             this.btnClose.BackColor = System.Drawing.Color.Red;
             this.btnClose.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnClose.ForeColor = System.Drawing.Color.Black;
-            this.btnClose.Location = new System.Drawing.Point(587, 15);
+            this.btnClose.Location = new System.Drawing.Point(582, 13);
             this.btnClose.Margin = new System.Windows.Forms.Padding(4);
             this.btnClose.Name = "btnClose";
             this.btnClose.Size = new System.Drawing.Size(96, 38);
-            this.btnClose.TabIndex = 1;
+            this.btnClose.TabIndex = 6;
             this.btnClose.Text = "CloseOut";
             this.btnClose.UseVisualStyleBackColor = false;
             // 
@@ -246,7 +246,7 @@
             this.txtSales.MinimumSize = new System.Drawing.Size(175, 40);
             this.txtSales.Name = "txtSales";
             this.txtSales.Size = new System.Drawing.Size(175, 40);
-            this.txtSales.TabIndex = 14;
+            this.txtSales.TabIndex = 3;
             this.txtSales.Text = "20000.00";
             // 
             // txtPoints
@@ -259,7 +259,7 @@
             this.txtPoints.MinimumSize = new System.Drawing.Size(175, 40);
             this.txtPoints.Name = "txtPoints";
             this.txtPoints.Size = new System.Drawing.Size(175, 40);
-            this.txtPoints.TabIndex = 15;
+            this.txtPoints.TabIndex = 5;
             this.txtPoints.Text = "20.00";
             // 
             // txtMDiscount
@@ -285,7 +285,7 @@
             this.txtTPoints.MinimumSize = new System.Drawing.Size(175, 40);
             this.txtTPoints.Name = "txtTPoints";
             this.txtTPoints.Size = new System.Drawing.Size(175, 40);
-            this.txtTPoints.TabIndex = 17;
+            this.txtTPoints.TabIndex = 4;
             this.txtTPoints.Text = "2000";
             // 
             // txtLoca
@@ -331,11 +331,11 @@
             // 
             this.btnBalance.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnBalance.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.btnBalance.Location = new System.Drawing.Point(162, 12);
+            this.btnBalance.Location = new System.Drawing.Point(152, 13);
             this.btnBalance.Margin = new System.Windows.Forms.Padding(4);
             this.btnBalance.Name = "btnBalance";
-            this.btnBalance.Size = new System.Drawing.Size(73, 39);
-            this.btnBalance.TabIndex = 6;
+            this.btnBalance.Size = new System.Drawing.Size(73, 38);
+            this.btnBalance.TabIndex = 1;
             this.btnBalance.Text = "Balance";
             this.btnBalance.UseVisualStyleBackColor = true;
             this.btnBalance.Click += new System.EventHandler(this.btnBalance_Click);
@@ -344,11 +344,11 @@
             // 
             this.btnHistory.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnHistory.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.btnHistory.Location = new System.Drawing.Point(420, 13);
+            this.btnHistory.Location = new System.Drawing.Point(410, 13);
             this.btnHistory.Margin = new System.Windows.Forms.Padding(4);
             this.btnHistory.Name = "btnHistory";
-            this.btnHistory.Size = new System.Drawing.Size(73, 39);
-            this.btnHistory.TabIndex = 5;
+            this.btnHistory.Size = new System.Drawing.Size(73, 38);
+            this.btnHistory.TabIndex = 4;
             this.btnHistory.Text = "History";
             this.btnHistory.UseVisualStyleBackColor = true;
             this.btnHistory.Click += new System.EventHandler(this.btnHistory_Click);
@@ -357,11 +357,11 @@
             // 
             this.btnRefund.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRefund.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.btnRefund.Location = new System.Drawing.Point(334, 14);
+            this.btnRefund.Location = new System.Drawing.Point(324, 13);
             this.btnRefund.Margin = new System.Windows.Forms.Padding(4);
             this.btnRefund.Name = "btnRefund";
-            this.btnRefund.Size = new System.Drawing.Size(73, 39);
-            this.btnRefund.TabIndex = 4;
+            this.btnRefund.Size = new System.Drawing.Size(73, 38);
+            this.btnRefund.TabIndex = 3;
             this.btnRefund.Text = "Refund";
             this.btnRefund.UseVisualStyleBackColor = true;
             this.btnRefund.Click += new System.EventHandler(this.btnRefund_Click);
@@ -370,26 +370,27 @@
             // 
             this.btnVerify.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnVerify.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.btnVerify.Location = new System.Drawing.Point(248, 14);
+            this.btnVerify.Location = new System.Drawing.Point(238, 13);
             this.btnVerify.Margin = new System.Windows.Forms.Padding(4);
             this.btnVerify.Name = "btnVerify";
-            this.btnVerify.Size = new System.Drawing.Size(73, 39);
-            this.btnVerify.TabIndex = 3;
+            this.btnVerify.Size = new System.Drawing.Size(73, 38);
+            this.btnVerify.TabIndex = 2;
             this.btnVerify.Text = "Verify";
             this.btnVerify.UseVisualStyleBackColor = true;
             this.btnVerify.Click += new System.EventHandler(this.btnVerify_Click);
             // 
             // btnVoid
             // 
+            this.btnVoid.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
             this.btnVoid.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnVoid.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.btnVoid.Location = new System.Drawing.Point(506, 14);
+            this.btnVoid.Location = new System.Drawing.Point(496, 13);
             this.btnVoid.Margin = new System.Windows.Forms.Padding(4);
             this.btnVoid.Name = "btnVoid";
-            this.btnVoid.Size = new System.Drawing.Size(73, 39);
-            this.btnVoid.TabIndex = 2;
+            this.btnVoid.Size = new System.Drawing.Size(73, 38);
+            this.btnVoid.TabIndex = 5;
             this.btnVoid.Text = "Void";
-            this.btnVoid.UseVisualStyleBackColor = true;
+            this.btnVoid.UseVisualStyleBackColor = false;
             this.btnVoid.Click += new System.EventHandler(this.btnVoid_Click);
             // 
             // label10
@@ -412,7 +413,7 @@
             this.radioButton1.Location = new System.Drawing.Point(132, 17);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(88, 20);
-            this.radioButton1.TabIndex = 22;
+            this.radioButton1.TabIndex = 0;
             this.radioButton1.TabStop = true;
             this.radioButton1.Text = "Customer";
             this.radioButton1.UseVisualStyleBackColor = false;
@@ -422,11 +423,11 @@
             // 
             this.radioButton2.AutoSize = true;
             this.radioButton2.BackColor = System.Drawing.Color.White;
-            this.radioButton2.Location = new System.Drawing.Point(245, 19);
+            this.radioButton2.Location = new System.Drawing.Point(245, 17);
             this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(55, 20);
-            this.radioButton2.TabIndex = 23;
-            this.radioButton2.Text = "Barp";
+            this.radioButton2.Size = new System.Drawing.Size(59, 20);
+            this.radioButton2.TabIndex = 1;
+            this.radioButton2.Text = "BARP";
             this.radioButton2.UseVisualStyleBackColor = false;
             this.radioButton2.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
             // 
@@ -434,11 +435,11 @@
             // 
             this.radioButton3.AutoSize = true;
             this.radioButton3.BackColor = System.Drawing.Color.White;
-            this.radioButton3.Location = new System.Drawing.Point(331, 19);
+            this.radioButton3.Location = new System.Drawing.Point(331, 17);
             this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(59, 20);
-            this.radioButton3.TabIndex = 24;
-            this.radioButton3.Text = "Staff";
+            this.radioButton3.Size = new System.Drawing.Size(68, 20);
+            this.radioButton3.TabIndex = 2;
+            this.radioButton3.Text = "STAFF";
             this.radioButton3.UseVisualStyleBackColor = false;
             this.radioButton3.CheckedChanged += new System.EventHandler(this.radioButton3_CheckedChanged);
             // 
@@ -460,9 +461,9 @@
             this.label12.Location = new System.Drawing.Point(359, 202);
             this.label12.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(219, 23);
+            this.label12.Size = new System.Drawing.Size(202, 23);
             this.label12.TabIndex = 26;
-            this.label12.Text = "Massy System Points:";
+            this.label12.Text = "Massy Sys. Invoice:";
             // 
             // txtMPoints
             // 
@@ -515,8 +516,8 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.White;
-            this.panel2.Controls.Add(this.lblLoca);
             this.panel2.Controls.Add(this.label22);
+            this.panel2.Controls.Add(this.lblLoca);
             this.panel2.Controls.Add(this.label20);
             this.panel2.Controls.Add(this.txtLoca);
             this.panel2.Controls.Add(this.txtCashier);
@@ -547,7 +548,7 @@
             // 
             this.label22.AutoSize = true;
             this.label22.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label22.Location = new System.Drawing.Point(543, 15);
+            this.label22.Location = new System.Drawing.Point(551, 15);
             this.label22.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(126, 25);
@@ -558,7 +559,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Verdana", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label20.Location = new System.Drawing.Point(430, 21);
+            this.label20.Location = new System.Drawing.Point(444, 18);
             this.label20.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label20.MinimumSize = new System.Drawing.Size(105, 18);
             this.label20.Name = "label20";
@@ -606,11 +607,11 @@
             // 
             this.lblInvoice.Font = new System.Drawing.Font("Verdana", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblInvoice.ForeColor = System.Drawing.Color.BlueViolet;
-            this.lblInvoice.Location = new System.Drawing.Point(573, 201);
+            this.lblInvoice.Location = new System.Drawing.Point(556, 201);
             this.lblInvoice.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblInvoice.MinimumSize = new System.Drawing.Size(115, 25);
             this.lblInvoice.Name = "lblInvoice";
-            this.lblInvoice.Size = new System.Drawing.Size(115, 25);
+            this.lblInvoice.Size = new System.Drawing.Size(132, 25);
             this.lblInvoice.TabIndex = 37;
             this.lblInvoice.Text = "Invoice#";
             // 
@@ -662,7 +663,7 @@
             this.btnSubmit.Location = new System.Drawing.Point(30, 333);
             this.btnSubmit.Margin = new System.Windows.Forms.Padding(4);
             this.btnSubmit.Name = "btnSubmit";
-            this.btnSubmit.Size = new System.Drawing.Size(165, 38);
+            this.btnSubmit.Size = new System.Drawing.Size(157, 38);
             this.btnSubmit.TabIndex = 47;
             this.btnSubmit.Text = "Submit";
             this.btnSubmit.UseVisualStyleBackColor = false;
@@ -684,16 +685,14 @@
             // 
             // txtCardNo
             // 
-            this.txtCardNo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(255)))), ((int)(((byte)(192)))));
-            this.txtCardNo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.txtCardNo.BackColor = System.Drawing.Color.White;
             this.txtCardNo.Font = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtCardNo.ForeColor = System.Drawing.Color.Black;
-            this.txtCardNo.Location = new System.Drawing.Point(195, 69);
+            this.txtCardNo.Location = new System.Drawing.Point(195, 64);
             this.txtCardNo.Margin = new System.Windows.Forms.Padding(4);
             this.txtCardNo.MinimumSize = new System.Drawing.Size(175, 40);
             this.txtCardNo.Name = "txtCardNo";
-            this.txtCardNo.ReadOnly = true;
-            this.txtCardNo.Size = new System.Drawing.Size(287, 24);
+            this.txtCardNo.Size = new System.Drawing.Size(287, 40);
             this.txtCardNo.TabIndex = 45;
             this.txtCardNo.Text = "####-####-####-####";
             // 
@@ -758,10 +757,10 @@
             this.btnHide.BackColor = System.Drawing.Color.Red;
             this.btnHide.Font = new System.Drawing.Font("Verdana", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnHide.ForeColor = System.Drawing.Color.Black;
-            this.btnHide.Location = new System.Drawing.Point(320, 333);
+            this.btnHide.Location = new System.Drawing.Point(332, 333);
             this.btnHide.Margin = new System.Windows.Forms.Padding(4);
             this.btnHide.Name = "btnHide";
-            this.btnHide.Size = new System.Drawing.Size(153, 38);
+            this.btnHide.Size = new System.Drawing.Size(140, 38);
             this.btnHide.TabIndex = 40;
             this.btnHide.Text = "Cancel Redeem";
             this.btnHide.UseVisualStyleBackColor = false;
@@ -819,9 +818,9 @@
             this.label17.Location = new System.Drawing.Point(12, 72);
             this.label17.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(93, 25);
+            this.label17.Size = new System.Drawing.Size(151, 25);
             this.label17.TabIndex = 33;
-            this.label17.Text = "USERID";
+            this.label17.Text = "Customer_ID";
             // 
             // label16
             // 

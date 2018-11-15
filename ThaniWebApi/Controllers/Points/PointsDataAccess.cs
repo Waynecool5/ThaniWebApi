@@ -33,6 +33,8 @@ namespace ThaniWebApi.Controllers.Points
 
         public ICollection<MassyProfile> mProfile { get; set; }
         public ICollection<MassyRedeem> mRedeem { get; set; }
+        public ICollection<MassyRefund> mRefund { get; set; }
+        public ICollection<MassyVoid> mVoid { get; set; }
 
         private HttpClient _client;
 
@@ -45,8 +47,7 @@ namespace ThaniWebApi.Controllers.Points
         {
             _client = new HttpClient();
         }
-
-
+        
         public async Task<IEnumerable<Point>> GetPointsAsync()
         {
             
@@ -71,8 +72,7 @@ namespace ThaniWebApi.Controllers.Points
 
             return Points;
         }
-
-
+        
         public async Task<IEnumerable<Comp>> GetSomeJsonAsync()
         {
             using (var Sqlconn = new SqlConnection(conn))
@@ -96,8 +96,7 @@ namespace ThaniWebApi.Controllers.Points
             return CompData;
 
         }
-
-
+        
         public async Task<MassyRespProfile> GetCustProfile(string apiType, Point Points)
         {
             string json = "";
@@ -208,7 +207,6 @@ namespace ThaniWebApi.Controllers.Points
             }
         }
 
-
         public async Task<ICollection<MassyPoints>> InsertPointsAsync(string apiType, Point Points)
         {
             var strVal = new StringBuilder();
@@ -290,7 +288,6 @@ namespace ThaniWebApi.Controllers.Points
 
         }
 
-
         public async Task<MassyRespEarn> GetRedeem(string apiType, Point Points)
         {
             string json = "";
@@ -363,6 +360,147 @@ namespace ThaniWebApi.Controllers.Points
             }
         }
 
+        public async Task<MassyRespEarn> GetRefund(string apiType, Point Points)
+        {
+            string json = "";
+
+            try
+            {
+                using (var Sqlconn = new SqlConnection(conn))
+                {
+                    await Sqlconn.OpenAsync();
+
+                    var structure = new OneToOne<MassyRefund>(
+                                     // if you don't override a column, the default rules are used 
+                                     new ColumnOverride<MassyRefund>("ptsCustomerNo", "card"),
+                                     new ColumnOverride<MassyRefund>("ptsUnits", "units"),
+                                     new ColumnOverride<MassyRefund>("ptsUnitType", "unitType"),
+                                     new ColumnOverride<MassyRefund>("ptsMlid", "mlid"),
+                                     new ColumnOverride<MassyRefund>("ptsUnix", "ts"),
+                                     new ColumnOverride<MassyRefund>("ptsPin", "pin"),
+                                     new ColumnOverride<MassyRefund>("ptsSecret", "secret")
+                                );
+
+                    Parm parm = new Parm
+                    {
+                        Loc_ID = Points.ptsLocation,
+                        Card = Points.ptsCustomerNo,
+                        Units = Points.ptsTotal,
+                        UnitType = Points.ptsUnitType,
+                    };
+
+                    //return point object for submission to MassyAPI
+                    //ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
+
+                    mRefund = Sqlconn.Query("GetRedeemProfile", parm, Query.Returns(structure));
+
+                    if (mRefund.Count > 0)
+                    {
+                        //Call MassyAPI System
+
+                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        MassyRespEarn mResp = await MassyController.GetMassyApiRefund(mRefund, apiType);
+
+                        return mResp;
+                    }
+                    else
+                    {
+
+                        //Default error message from Massy
+                        json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                        ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+                        MassyRespEarn mResp = JsonConvert.DeserializeObject<MassyRespEarn>(json);
+
+                        return mResp;
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                //Default error message from Massy
+                json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                        ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+                MassyRespEarn mResp = JsonConvert.DeserializeObject<MassyRespEarn>(json);
+
+                return mResp;
+
+            }
+        }
+
+        public async Task<MassyRespEarn> GetVoid(string apiType, Point Points)
+        {
+            string json = "";
+
+            try
+            {
+                using (var Sqlconn = new SqlConnection(conn))
+                {
+                    await Sqlconn.OpenAsync();
+
+                    var structure = new OneToOne<MassyVoid>(
+                                     // if you don't override a column, the default rules are used 
+                                     new ColumnOverride<MassyVoid>("ptsInvoice", "invoice"),
+                                     new ColumnOverride<MassyVoid>("ptsMlid", "mlid"),
+                                     new ColumnOverride<MassyVoid>("ptsUnix", "ts"),
+                                     new ColumnOverride<MassyVoid>("ptsPin", "pin"),
+                                     new ColumnOverride<MassyVoid>("ptsSecret", "secret")
+                                );
+
+                    Parm parm = new Parm
+                    {
+                        Loc_ID = Points.ptsLocation,
+                        Invoice = Points.ptsInvoice,
+                    };
+
+                    //return point object for submission to MassyAPI
+                    //ResultPts = Sqlconn.Query<Point>("InsertDocuments", parm);
+
+                    mVoid = Sqlconn.Query("GetVoidProfile", parm, Query.Returns(structure));
+
+                    if (mVoid.Count > 0)
+                    {
+                        //Call MassyAPI System
+
+                        //customerProfile?card=LOYALTY&mlid=LOCATIONID&ts=UNIXTIMESTAMP&qsa=GENERATEDHASH
+                        MassyRespEarn mResp = await MassyController.GetMassyApiVoid(mVoid, apiType);
+
+                        return mResp;
+                    }
+                    else
+                    {
+
+                        //Default error message from Massy
+                        json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                        ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+                        MassyRespEarn mResp = JsonConvert.DeserializeObject<MassyRespEarn>(json);
+
+                        return mResp;
+
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+
+                //Default error message from Massy
+                json = @"{""response"":{ ""invoice"":""000000"",""points"":""0"",""userid"":""TERMINAL"",
+                                        ""balance"":{""p"":""0"",""d"":""0.00""},""footer"":[""Earnings Footer Text""],""expiry"":{""pts"":""0"",""dat"":""1900-01-31""}},""code"":""FAIL"",""HttpStatusCode"":""900""}";
+
+                MassyRespEarn mResp = JsonConvert.DeserializeObject<MassyRespEarn>(json);
+
+                return mResp;
+
+            }
+        }
 
         //public async Task<IEnumerable<Point>> GetSomeJsonAsync()
         //{
@@ -610,6 +748,7 @@ namespace ThaniWebApi.Controllers.Points
         public string Card { get; set; }
         public double Units { get; set; }
         public string UnitType { get; set; }
+        public string Invoice { get; set; }
     }
 
     internal class MassyCard

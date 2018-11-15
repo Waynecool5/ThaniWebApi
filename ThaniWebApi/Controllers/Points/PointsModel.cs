@@ -96,6 +96,31 @@ namespace ThaniWebApi.Controllers.Points
         public string ts { get; set; }
     }
 
+    public class MassyRefund
+    {
+        //public string ptsLocation { get; set; }
+        public string card { get; set; }
+        public double units { get; set; } //(decimal) Points or Dollar value
+        public string unitType { get; set; } // (P or D) – P for points, D for dollars
+        public string mlid { get; set; }
+        public string pin { get; set; }
+        public string secret { get; set; }
+        public string ts { get; set; }
+    }
+
+    public class MassyVoid
+    {
+        //public string ptsLocation { get; set; }
+        // public string card { get; set; }
+        //public double units { get; set; } //(decimal) Points or Dollar value
+        //public string unitType { get; set; } // (P or D) – P for points, D for dollars
+        public string invoice { get; set; }
+        public string mlid { get; set; }
+        public string pin { get; set; }
+        public string secret { get; set; }
+        public string ts { get; set; }
+    }
+
     //----------------------------------------------------------------
     // Massypoint response for display
     //{"response":{"invoice":"510162","points":6,"userid":"TERMINAL",

@@ -74,6 +74,23 @@ namespace ThaniWebApi.Controllers.Points
         //----------------------------------------------
 
         [HttpPost]
+        [Route("GetRefundProfile")]
+        public async Task<MassyRespEarn> GetRefundProfile(string apiType, [FromBody] Point Points)
+        {
+            return await _PointsRepository.GetRefund(apiType, Points);
+        }
+
+        //----------------------------------------------
+
+        [HttpPost]
+        [Route("GetVoidProfile")]
+        public async Task<MassyRespEarn> GetVoidProfile(string apiType, [FromBody] Point Points)
+        {
+            return await _PointsRepository.GetVoid(apiType, Points);
+        }
+        //----------------------------------------------
+
+        [HttpPost]
         [Route("DoPointsAsync")]
         public async Task<MassyRespEarn> DoPointsAsync( string apiType,[FromBody] Point Points)
         {
