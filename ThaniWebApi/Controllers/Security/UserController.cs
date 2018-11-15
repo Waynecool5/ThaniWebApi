@@ -27,7 +27,7 @@ namespace ThaniWebApi.Controllers.Security
         [Route("authenticate")]
         public IActionResult Authenticate([FromBody]UserModel userParam)
         {
-             user = _UserRepository.Authenticate(userParam.Username, userParam.Password);
+             user = _UserRepository.Authenticate(userParam.Username, userParam.Password, userParam.APPId, userParam.APIData, userParam.APITimeStamp);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });

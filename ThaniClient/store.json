@@ -5,7 +5,9 @@
   "SqlCatalog": "WebAsync",
   "SqlUser": "sa",
   "SqlPassword": "dedan!0987o",
-  "WebThaniApiPath": "http://localhost:54574/"
+  "WebThaniApiPath": "http://localhost:54574/",
+  "APPId": "4d53bce03ec34c0a911182d4c228ee6c",
+  "APIKey": "A93reRTUJHsCuQSHR+L3GxqOJyDmQpCgps102ciuabc="
 }
 //Local Test
 

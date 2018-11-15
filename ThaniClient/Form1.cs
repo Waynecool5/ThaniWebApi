@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using Newtonsoft.Json;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace ThaniClient
 {
@@ -37,6 +38,7 @@ namespace ThaniClient
         static ICollection<POSSale> PosSales { get; set; }
         static UserModel Token = null;
         static AppStore gsStore { get; set; }
+
 
         float storeDiscountRate = 0.10F;
 
@@ -79,6 +81,32 @@ namespace ThaniClient
                 conn = "Data Source=tcp:" + gsStore.SqlSource + "; Initial Catalog=" + gsStore.SqlCatalog + "; Persist Security Info=True;" +
                   "User ID=" + gsStore.SqlUser.ToString() + ";Password=" + gsStore.SqlPassword + "";
 
+
+                //Creating the raw signature string
+                string requestSignatureBase64String = "";
+              
+                //Calculate UNIX time
+                DateTime epochStart = new DateTime(1970, 01, 01, 0, 0, 0, 0, DateTimeKind.Utc);
+                TimeSpan timeSpan = DateTime.UtcNow - epochStart;
+                string requestTimeStamp = Convert.ToUInt64(timeSpan.TotalSeconds).ToString();
+
+                string signatureRawData = String.Format("{0}{1}", gsStore.APPId, requestTimeStamp); // {2}{3}{4}{5}", APPId, requestHttpMethod, requestUri, requestTimeStamp, nonce, requestContentBase64String);
+
+                var secretKeyByteArray = Convert.FromBase64String(gsStore.APIKey);
+
+                byte[] signature = Encoding.UTF8.GetBytes(signatureRawData);
+
+                using (HMACSHA256 hmac = new HMACSHA256(secretKeyByteArray))
+                {
+                    byte[] signatureBytes = hmac.ComputeHash(signature);
+                    requestSignatureBase64String = Convert.ToBase64String(signatureBytes);
+                    //Setting the values in the Authorization header using custom scheme (amx)
+                   // request.Headers.Authorization = new AuthenticationHeaderValue("amx", string.Format("{0}:{1}:{2}:{3}", APPId, requestSignatureBase64String, nonce, requestTimeStamp));
+                }
+
+                // response = await base.SendAsync(request, cancellationToken);
+
+
                 //Thani Loacation values
                 userParam = new UserModel
                 {
@@ -87,8 +115,12 @@ namespace ThaniClient
                     LastName = "User1",
                     Username = "test1",
                     Password = "test1",
+                    APPId = gsStore.APPId,
+                    APIData = requestSignatureBase64String,
+                    APITimeStamp = requestTimeStamp,
                     Token = ""
                 };
+
 
                 this.btnRedeem.Text = "Send Points";
 
@@ -1178,6 +1210,10 @@ namespace ThaniClient
             public string LastName { get; set; }
             public string Username { get; set; }
             public string Password { get; set; }
+            public string APPId { get; set; }
+            public string APIData { get; set; }
+            //public string APIKey { get; set; }
+            public string APITimeStamp { get; set; }
             public string Token { get; set; }
         }
 
@@ -1197,6 +1233,8 @@ namespace ThaniClient
             public string SqlUser { get; set; }
             public string SqlPassword { get; set; }
             public string WebThaniApiPath { get; set; }
+            public string APIKey { get; set; }
+            public string APPId { get; set; }
         }
 
 }
